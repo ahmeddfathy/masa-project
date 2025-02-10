@@ -1,0 +1,302 @@
+:root {
+    --primary: #4F46E5;
+    --primary-hover: #4338CA;
+    --primary-light: rgba(79, 70, 229, 0.08);
+    --danger: #EF4444;
+    --danger-hover: #DC2626;
+    --success: #10B981;
+    --success-hover: #059669;
+    --warning: #F59E0B;
+    --warning-hover: #D97706;
+    --info: #3B82F6;
+    --info-hover: #2563EB;
+    --border-color: #E5E7EB;
+    --text-dark: #1F2937;
+    --text-medium: #374151;
+    --text-light: #6B7280;
+    --text-muted: #9CA3AF;
+}
+
+/* Container Styles */
+.orders-container {
+    padding: 1.5rem;
+    width: 100%;
+}
+
+/* Icon Styles */
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.fs-sm {
+    font-size: 0.875rem;
+}
+
+/* Search & Filter Styles */
+.search-wrapper {
+    position: relative;
+}
+
+.search-wrapper .input-group {
+    background: var(--bs-light);
+    border-radius: 0.5rem;
+}
+
+.input-group-text {
+    border-radius: 0.5rem 0 0 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    height: 48px;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: none;
+    background: var(--bs-light);
+}
+
+/* Card Styles */
+.card {
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+/* Button Styles */
+.btn-wave {
+    position: relative;
+    overflow: hidden;
+    transform: translate3d(0, 0, 0);
+}
+
+.btn-wave::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform .5s, opacity 1s;
+}
+
+.btn-wave:active::after {
+    transform: scale(0, 0);
+    opacity: .3;
+    transition: 0s;
+}
+
+/* Table Styles */
+.table > :not(caption) > * > * {
+    padding: 1rem;
+}
+
+.table > thead {
+    background: var(--bs-light);
+}
+
+.table > thead th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+/* Action Buttons */
+.action-buttons .btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Light Button Variants */
+.btn-light-info {
+    background-color: rgba(var(--info-rgb), 0.1);
+    color: var(--info);
+    border: none;
+}
+
+.btn-light-info:hover {
+    background-color: var(--info);
+    color: white;
+}
+
+.btn-light-primary {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    border: none;
+}
+
+.btn-light-primary:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-light-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: none;
+    width: 40px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-light-danger:hover {
+    background-color: var(--danger);
+    color: white;
+    transform: rotate(90deg);
+}
+
+.btn-light-danger i {
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-light-success {
+    background-color: rgba(var(--success-rgb), 0.1);
+    color: var(--success);
+    border: none;
+}
+
+.btn-light-success:hover {
+    background-color: var(--success);
+    color: white;
+}
+
+/* Status Colors */
+.bg-gradient-primary { background: linear-gradient(45deg, var(--primary), #4e73df); }
+.bg-gradient-success { background: linear-gradient(45deg, var(--success), #1cc88a); }
+.bg-gradient-warning { background: linear-gradient(45deg, var(--warning), #f6c23e); }
+.bg-gradient-info { background: linear-gradient(45deg, var(--info), #36b9cc); }
+
+/* Badge Styles */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 1em;
+}
+
+/* Empty State */
+.empty-state {
+    padding: 2rem;
+}
+
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Filter Button Group Styles */
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.filter-buttons .btn {
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    min-width: 120px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .orders-container {
+        padding: 0.75rem;
+    }
+
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    .action-buttons .btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .filter-buttons {
+        width: 100%;
+    }
+
+    .filter-buttons .btn {
+        flex: 1;
+    }
+
+    .btn-light-danger {
+        width: 48px;
+        flex: 0 0 48px;
+    }
+}
+
+/* Animation for filter reset */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.btn-light-danger:active i {
+    animation: spin 0.3s ease-in-out;
+}
+
+/* Hover effect for filter buttons */
+.filter-buttons .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.filter-buttons .btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}

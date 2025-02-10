@@ -1,0 +1,575 @@
+<x-app-layout>
+  <x-slot name="header">
+    <div class="flex justify-between items-center">
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        {{ __('Reports & Analytics') }}
+      </h2>
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-4 mb-6">
+          <div class="relative">
+            <select id="period-selector"
+              class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              onchange="window.location.href=`{{ route('admin.reports.index') }}?period=${this.value}`">
+              <option value="week" @selected($period === 'week')>This Week</option>
+              <option value="month" @selected($period === 'month')>This Month</option>
+              <option value="quarter" @selected($period === 'quarter')>This Quarter</option>
+              <option value="year" @selected($period === 'year')>This Year</option>
+            </select>
+          </div>
+
+          <div class="relative">
+            <input type="date"
+              id="custom-date"
+              class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              value="{{ request('date', now()->format('Y-m-d')) }}"
+              onchange="window.location.href=`{{ route('admin.reports.index') }}?date=${this.value}`">
+          </div>
+        </div>
+      </div>
+    </div>
+  </x-slot>
+
+  <div class="py-12">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <!-- Growth Indicators -->
+      <div class="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Sales Growth -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 {{ $salesReport['growth']['trend'] === 'up' ? 'bg-green-500' : 'bg-red-500' }} rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M{{ $salesReport['growth']['trend'] === 'up' ? '13 7l5 5m0 0l-5 5m5-5H6' : '11 17l-5-5m0 0l5-5m-5 5h12' }}" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Sales Growth</dt>
+                  <dd class="flex items-baseline">
+                    <div class="text-2xl font-semibold text-gray-900">
+                      {{ number_format($salesReport['growth']['percentage'], 1) }}%
+                    </div>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold {{ $salesReport['growth']['trend'] === 'up' ? 'text-green-600' : 'text-red-600' }}">
+                      {{ $salesReport['growth']['trend'] === 'up' ? '↑' : '↓' }}
+                    </div>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+            <div class="mt-2 text-xs text-gray-500">
+              Compared to previous period
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total Sales</dt>
+                  <dd class="text-lg font-semibold text-gray-900">${{ number_format($salesReport['total_sales'], 2) }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total Orders</dt>
+                  <dd class="text-lg font-semibold text-gray-900">{{ $salesReport['orders_count'] }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Average Order Value</dt>
+                  <dd class="text-lg font-semibold text-gray-900">${{ number_format($salesReport['average_order_value'], 2) }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+          <div class="p-6">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 bg-red-500 rounded-md p-3">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Completion Rate</dt>
+                  <dd class="text-lg font-semibold text-gray-900">{{ $appointmentsReport['completion_rate'] }}%</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Period Comparison -->
+      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Period Comparison</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-500">Current Period</h4>
+              <p class="mt-2 text-2xl font-semibold text-gray-900">
+                ${{ number_format($salesReport['growth']['current_amount'] / 100, 2) }}
+              </p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-500">Previous Period</h4>
+              <p class="mt-2 text-2xl font-semibold text-gray-900">
+                ${{ number_format($salesReport['growth']['previous_amount'] / 100, 2) }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sales Chart -->
+      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Sales Trend</h3>
+          <div class="h-96">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Methods Chart -->
+      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Sales by Payment Method</h3>
+          <div class="h-80">
+            <canvas id="paymentMethodsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stock Distribution Chart -->
+      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Stock Distribution</h3>
+          <div class="h-80">
+            <canvas id="stockDistributionChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Products Analysis -->
+      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Top Selling Products</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                  <th class="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Units Sold</th>
+                  <th class="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                  <th class="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Trend</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($salesReport['top_products'] as $product)
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ $product['name'] }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {{ number_format($product['total_quantity']) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    ${{ number_format($product['total_revenue'] / 100, 2) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $product['trend'] > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                      {{ $product['trend'] > 0 ? '↑' : '↓' }} {{ abs($product['trend']) }}%
+                    </span>
+                  </td>
+                </tr>
+                @empty
+                <tr>
+                  <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                    No products found
+                  </td>
+                </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        <!-- Top Products -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-medium text-gray-900">Top Products</h3>
+            </div>
+            <div class="flow-root">
+              <ul role="list" class="-my-5 divide-y divide-gray-200">
+                @foreach($topProducts as $product)
+                <li class="py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900 truncate">
+                        {{ $product->name }}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+                @endforeach
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Status -->
+        <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-medium text-gray-900">Inventory Status</h3>
+            </div>
+            <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <div class="px-4 py-5 bg-gray-50 rounded-lg overflow-hidden sm:p-6">
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Products</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $inventoryReport['total_products'] }}</dd>
+              </div>
+              <div class="px-4 py-5 bg-gray-50 rounded-lg overflow-hidden sm:p-6">
+                <dt class="text-sm font-medium text-gray-500 truncate">Low Stock Items</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $inventoryReport['low_stock_count'] }}</dd>
+              </div>
+              <div class="px-4 py-5 bg-gray-50 rounded-lg overflow-hidden sm:p-6">
+                <dt class="text-sm font-medium text-gray-500 truncate">Out of Stock</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $inventoryReport['out_of_stock_count'] }}</dd>
+              </div>
+              <div class="px-4 py-5 bg-gray-50 rounded-lg overflow-hidden sm:p-6">
+                <dt class="text-sm font-medium text-gray-500 truncate">Average Stock Level</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ $inventoryReport['average_stock'] }}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <!-- Peak Hours Analysis -->
+      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Peak Hours Analysis</h3>
+          <div class="h-80">
+            <canvas id="peakHoursChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Analysis -->
+      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Top Customers</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th class="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Orders</th>
+                  <th class="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total Spent</th>
+                  <th class="px-6 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Average Order</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                @foreach($salesReport['top_customers'] as $customer)
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ $customer->user->name }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {{ $customer->orders }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    ${{ number_format($customer->total / 100, 2) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    ${{ number_format(($customer->total / $customer->orders) / 100, 2) }}
+                  </td>
+                </tr>
+                @endforeach
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointments Analysis -->
+      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
+        <div class="p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Appointments Overview</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Appointments Status Chart -->
+            <div class="h-80">
+              <canvas id="appointmentsChart"></canvas>
+            </div>
+            <!-- Appointments Stats -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="p-4 bg-gray-50 rounded-lg">
+                <h4 class="text-sm font-medium text-gray-500">Total Appointments</h4>
+                <p class="mt-2 text-2xl font-semibold text-gray-900">
+                  {{ $appointmentsReport['total'] }}
+                </p>
+              </div>
+              <div class="p-4 bg-gray-50 rounded-lg">
+                <h4 class="text-sm font-medium text-gray-500">Completion Rate</h4>
+                <p class="mt-2 text-2xl font-semibold text-gray-900">
+                  {{ $appointmentsReport['completion_rate'] }}%
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @push('scripts')
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Debug data
+    console.log('Sales Data:', @json($salesReport['daily_data']));
+    console.log('Payment Data:', @json($salesReport['payment_methods']));
+    console.log('Stock Data:', @json($inventoryReport['stock_distribution']));
+
+    // Sales Trend Chart
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    const salesData = @json($salesReport['daily_data']);
+
+    new Chart(salesCtx, {
+      type: 'line',
+      data: {
+        labels: Object.keys(salesData),
+        datasets: [{
+          label: 'Sales',
+          data: Object.values(salesData).map(d => d.sales),
+          borderColor: 'rgb(59, 130, 246)',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          fill: true,
+          tension: 0.4
+        }, {
+          label: 'Orders',
+          data: Object.values(salesData).map(d => d.orders),
+          borderColor: 'rgb(16, 185, 129)',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        },
+        plugins: {
+          legend: {
+            position: 'top'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                if (context.dataset.label === 'Sales') {
+                  return `Sales: $${context.raw.toFixed(2)}`;
+                }
+                return `Orders: ${context.raw}`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: value => '$' + value.toFixed(2)
+            }
+          }
+        }
+      }
+    });
+
+    // Payment Methods Chart
+    const paymentCtx = document.getElementById('paymentMethodsChart').getContext('2d');
+    const paymentData = @json($salesReport['payment_methods']);
+
+    new Chart(paymentCtx, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(paymentData).map(method => method.toUpperCase()),
+        datasets: [{
+          data: Object.values(paymentData),
+          backgroundColor: [
+            'rgb(59, 130, 246)',
+            'rgb(16, 185, 129)',
+            'rgb(244, 63, 94)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const value = context.raw;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${context.label}: $${value.toFixed(2)} (${percentage}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Stock Distribution Chart
+    const stockCtx = document.getElementById('stockDistributionChart').getContext('2d');
+    const stockData = @json($inventoryReport['stock_distribution']);
+
+    new Chart(stockCtx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(stockData),
+        datasets: [{
+          label: 'Products',
+          data: Object.values(stockData),
+          backgroundColor: 'rgb(59, 130, 246)',
+          borderColor: 'rgb(37, 99, 235)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+
+    // Peak Hours Chart
+    const peakHoursCtx = document.getElementById('peakHoursChart').getContext('2d');
+    const peakHoursData = @json($salesReport['peak_hours']);
+
+    new Chart(peakHoursCtx, {
+      type: 'bar',
+      data: {
+        labels: peakHoursData.map(d => `${d.hour}:00`),
+        datasets: [{
+          label: 'Orders',
+          data: peakHoursData.map(d => d.count),
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgb(37, 99, 235)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              title: (items) => `Hour: ${items[0].label}`,
+              label: (item) => `Orders: ${item.raw}`
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1
+            }
+          }
+        }
+      }
+    });
+
+    // Appointments Chart
+    const appointmentsCtx = document.getElementById('appointmentsChart').getContext('2d');
+    const appointmentsData = @json($appointmentsReport['by_status']);
+
+    new Chart(appointmentsCtx, {
+      type: 'pie',
+      data: {
+        labels: Object.keys(appointmentsData),
+        datasets: [{
+          data: Object.values(appointmentsData),
+          backgroundColor: [
+            'rgb(59, 130, 246)',
+            'rgb(16, 185, 129)',
+            'rgb(244, 63, 94)',
+            'rgb(234, 179, 8)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right'
+          }
+        }
+      }
+    });
+  });
+  </script>
+  @endpush
+</x-app-layout>

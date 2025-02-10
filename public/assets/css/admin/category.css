@@ -1,0 +1,354 @@
+/* Container Styles */
+.categories-container {
+    padding: 1.5rem;
+    width: 100%;
+}
+
+/* Icon Styles */
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Font Sizes */
+.fs-sm {
+    font-size: 0.875rem;
+}
+
+/* Search Styles */
+.search-wrapper {
+    position: relative;
+}
+
+.search-wrapper .input-group {
+    background: var(--bs-light);
+    border-radius: 0.5rem;
+}
+
+.input-group-text {
+    border-radius: 0.5rem 0 0 0.5rem;
+    padding: 0.75rem 1rem;
+}
+
+.form-control {
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    background: var(--bs-light);
+}
+
+/* Card Styles */
+.card {
+    border-radius: 1.5rem;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.shadow-hover {
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 1rem 3rem rgba(0,0,0,0.075);
+    transform: translateY(-5px);
+}
+
+.category-card {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+.category-card:hover {
+    border-color: var(--primary) !important;
+}
+
+.category-card .card-title {
+    color: var(--bs-dark);
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.category-card .description {
+    min-height: 3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #6c757d;
+}
+
+/* Badge Styles */
+.bg-primary-subtle {
+    background-color: rgba(var(--primary-rgb), 0.1) !important;
+}
+
+.badge {
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+}
+
+.rounded-circle {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Spacing */
+.gap-3 {
+    gap: 1rem !important;
+}
+
+/* Button Styles */
+.btn-wave {
+    position: relative;
+    overflow: hidden;
+    transform: translate3d(0, 0, 0);
+}
+
+.btn-wave::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform .5s, opacity 1s;
+}
+
+.btn-wave:active::after {
+    transform: scale(0, 0);
+    opacity: .3;
+    transition: 0s;
+}
+
+/* Stats Cards */
+.stat-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card .card-body {
+    padding: 1.5rem;
+}
+
+.stat-card .icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.9);
+    margin-left: 1rem;
+}
+
+.stat-card h6 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.stat-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #4338CA, #6366F1) !important;
+}
+
+.bg-gradient-success {
+    background: linear-gradient(45deg, #059669, #10B981) !important;
+}
+
+.bg-gradient-info {
+    background: linear-gradient(45deg, #0284C7, #38BDF8) !important;
+}
+
+.text-primary {
+    color: #4338CA !important;
+}
+
+.text-success {
+    color: #059669 !important;
+}
+
+.text-info {
+    color: #0284C7 !important;
+}
+
+/* Empty State */
+.empty-icon {
+    width: 80px;
+    height: 80px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dropdown Styles */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bs-light);
+}
+
+.dropdown-item i {
+    width: 1.25rem;
+}
+
+/* Action Buttons */
+.action-buttons .btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Light Button Variants */
+.btn-light-info {
+    background-color: rgba(var(--info-rgb), 0.1);
+    color: var(--info);
+    border: none;
+}
+
+.btn-light-info:hover {
+    background-color: var(--info);
+    color: white;
+}
+
+.btn-light-primary {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    border: none;
+}
+
+.btn-light-primary:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-light-secondary {
+    background-color: var(--secondary-light);
+    color: var(--secondary);
+    border: none;
+}
+
+.btn-light-secondary:hover {
+    background-color: var(--secondary);
+    color: white;
+}
+
+.btn-light-danger {
+    background-color: rgba(var(--danger-rgb), 0.1);
+    color: var(--danger);
+    border: none;
+}
+
+.btn-light-danger:hover {
+    background-color: var(--danger);
+    color: white;
+}
+
+/* Detail Items */
+.detail-item label {
+    font-size: 0.875rem;
+}
+
+/* Image Placeholders */
+.no-image {
+    width: 40px;
+    height: 40px;
+    background-color: #f8f9fa;
+}
+
+/* Table Styles */
+.table th {
+    font-weight: 600;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .categories-container {
+        padding: 0.75rem;
+    }
+
+    .category-card {
+        margin-bottom: 1rem;
+    }
+
+    .card-body {
+        padding: 1rem !important;
+    }
+
+    .action-buttons .btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.75rem;
+    }
+
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+
+    .stat-card .card-body {
+        padding: 1.25rem;
+    }
+
+    .stat-card .icon-circle {
+        width: 40px;
+        height: 40px;
+    }
+
+    .stat-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .stat-card h6 {
+        font-size: 0.8125rem;
+    }
+}

@@ -1,0 +1,300 @@
+/* Signup Page Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Cairo', sans-serif;
+}
+
+/* Global Styles */
+:root {
+    --primary-color: #6c5ce7;
+    --secondary-color: #a8a6ff;
+    --background-color: #f0f3ff;
+    --glass-background: rgba(255, 255, 255, 0.35);
+    --glass-background-dark: rgba(255, 255, 255, 0.25);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+    --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --text-color: #2d3436;
+    --text-light: #636e72;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7ff, #f0f3ff, #ffffff);
+    min-height: 100vh;
+    font-family: 'Cairo', sans-serif;
+}
+
+.signup-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glassmorphism Effects */
+.signup-form-container {
+    background: var(--glass-background);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 20px;
+    border: var(--glass-border);
+    box-shadow: var(--card-shadow);
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    overflow: hidden;
+    animation: formAppear 0.6s ease-out;
+}
+
+.form-card {
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Enhanced Form Elements */
+.form-group {
+    margin-bottom: 1.8rem;
+    position: relative;
+}
+
+.form-label {
+    color: var(--text-color);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    display: block;
+    font-size: 0.95rem;
+    padding-left: 0.5rem;
+}
+
+.input-group {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(108, 92, 231, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.input-group:focus-within {
+    border-color: var(--primary-color);
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.1);
+}
+
+.input-group-text {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    padding: 0.75rem 1rem;
+}
+
+.form-control {
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.form-control:focus {
+    background: transparent;
+    box-shadow: none;
+}
+
+.form-control::placeholder {
+    color: #a0a0a0;
+    font-weight: 400;
+}
+
+/* Enhanced Button */
+.btn-signup {
+    background: var(--primary-color);
+    color: white;
+    border: 2px solid var(--primary-color);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.btn-signup:hover {
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.2);
+}
+
+/* Decorative Elements */
+.decorative-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--glass-background);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: var(--glass-border);
+    animation: float 6s ease-in-out infinite;
+}
+
+.circle-1 {
+    width: 300px;
+    height: 300px;
+    top: -150px;
+    right: -150px;
+}
+
+.circle-2 {
+    width: 200px;
+    height: 200px;
+    bottom: -100px;
+    left: -100px;
+    animation-delay: -3s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(10px, -10px) rotate(5deg); }
+}
+
+/* Enhanced Typography */
+.signup-title {
+    color: var(--text-color);
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.signup-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* Links and Additional Text */
+.login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.login-link a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.login-link a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* Form Check Styles */
+.form-check {
+    margin: 1.2rem 0;
+    padding-left: 1.8rem;
+}
+
+.form-check-input {
+    border: 2px solid var(--primary-color);
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: 0.2rem;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.1);
+}
+
+.form-check-label {
+    color: var(--text-color);
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+/* Validation Styles */
+.invalid-feedback {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    font-weight: 500;
+}
+
+.input-group.is-invalid {
+    border-color: #e74c3c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .signup-container {
+        padding: 1rem;
+    }
+
+    .form-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .signup-title {
+        font-size: 1.75rem;
+    }
+
+    .decorative-circle {
+        opacity: 0.3;
+    }
+}
+
+/* RTL Support */
+[dir="rtl"] .input-group-text {
+    border-left: none;
+    border-right: none;
+}
+
+[dir="rtl"] .form-check {
+    padding-right: 1.5em;
+    padding-left: 0;
+}
+
+[dir="rtl"] .form-check .form-check-input {
+    float: right;
+    margin-right: -1.5em;
+    margin-left: 0;
+}
+
+/* Animation */
+@keyframes formAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

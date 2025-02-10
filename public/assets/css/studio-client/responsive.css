@@ -1,0 +1,501 @@
+/* Responsive Design for All Pages */
+
+/* Small devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+    :root {
+        --font-size-xxl: 2.5rem;
+        --font-size-xl: 2rem;
+        --font-size-lg: 1.5rem;
+        --font-size-md: 1.1rem;
+        --spacing-xxl: 3rem;
+        --spacing-xl: 2.5rem;
+        --spacing-lg: 2rem;
+    }
+
+    /* Navigation */
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+
+    .navbar-toggler {
+        padding: 0.4rem 0.8rem;
+    }
+
+    .navbar-nav {
+        background: var(--gradient-primary);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    /* Hero Section */
+    .hero {
+        min-height: 70vh;
+        padding: 80px 0;
+    }
+
+    .hero-content {
+        padding: var(--spacing-md);
+        margin: 0 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Services Section */
+    .service-card {
+        padding: var(--spacing-md);
+        margin-bottom: 1.5rem;
+    }
+
+    .service-detail {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Gallery */
+    .gallery-filter button {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+        margin: 0.25rem;
+    }
+
+    .gallery-item {
+        margin-bottom: 1rem;
+    }
+
+    .gallery-item img {
+        height: 250px;
+    }
+
+    .gallery-info h4 {
+        font-size: 1.2rem;
+    }
+
+    /* Contact Section */
+    .contact-info-card {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .map-container {
+        height: 300px;
+    }
+
+    /* About Page */
+    .team-member {
+        margin-bottom: 2rem;
+    }
+
+    .achievement-card {
+        margin-bottom: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+        padding: var(--spacing-lg) 0;
+        text-align: center;
+    }
+
+    footer .col-md-4 {
+        margin-bottom: 2rem;
+    }
+
+    .social-links {
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* Medium devices (tablets, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    :root {
+        --font-size-xxl: 3rem;
+        --font-size-xl: 2.5rem;
+        --font-size-lg: 1.8rem;
+        --font-size-md: 1.2rem;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .gallery-filter button {
+        padding: 0.6rem 1rem;
+    }
+}
+
+/* Large devices (desktops, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .hero h1 {
+        font-size: 3rem;
+    }
+
+    .service-card {
+        padding: var(--spacing-md);
+    }
+}
+
+/* Extra large devices (large desktops, 992px and up) */
+@media (min-width: 992px) {
+    .navbar-expand-lg .navbar-nav {
+        margin-right: auto;
+    }
+}
+
+/* Common Responsive Fixes */
+@media (max-width: 991.98px) {
+    /* Fix for sticky navbar on mobile */
+    .navbar.scrolled {
+        background: var(--gradient-primary);
+    }
+
+    /* Improve touch targets */
+    .nav-link,
+    .btn,
+    .social-links a {
+        padding: 0.8rem !important;
+    }
+
+    /* Improve readability */
+    p {
+        font-size: var(--font-size-base);
+        line-height: 1.6;
+    }
+
+    /* Fix spacing */
+    section {
+        padding: var(--spacing-xl) 0;
+    }
+
+    .curved-section {
+        padding-top: 120px;
+    }
+}
+
+/* Animation Optimization for Mobile */
+@media (max-width: 768px) {
+    .hero-content:hover,
+    .service-card:hover,
+    .gallery-item:hover img {
+        transform: none;
+    }
+
+    /* Disable parallax on mobile for better performance */
+    .hero {
+        background-attachment: scroll !important;
+    }
+}
+
+/* Auth Pages Responsive Styles */
+@media (max-width: 1200px) {
+    .auth-card {
+        max-width: 600px;
+        padding: 35px;
+    }
+}
+
+@media (max-width: 991px) {
+    .auth-card {
+        max-width: 500px;
+        padding: 30px;
+    }
+
+    .auth-header h2 {
+        font-size: 2.2rem;
+    }
+
+    .auth-form .input-group {
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .auth-section {
+        padding: 20px;
+        height: auto;
+        min-height: calc(100vh - 76px);
+    }
+
+    .auth-card {
+        margin: 0;
+        padding: 25px 20px;
+        border-radius: 20px;
+    }
+
+    .auth-header {
+        margin-bottom: 25px;
+    }
+
+    .auth-header h2 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .auth-header p {
+        font-size: 1rem;
+    }
+
+    .auth-form .form-label {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .auth-form .input-group {
+        margin-bottom: 12px;
+    }
+
+    .auth-form .input-group-text {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    .auth-form .form-control {
+        padding: 12px 15px;
+        font-size: 0.95rem;
+    }
+
+    .auth-form .btn-primary {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+
+    .form-row {
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+
+    .form-row > [class*="col-"] {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .form-check-label {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .auth-section {
+        padding: 15px;
+    }
+
+    .auth-card {
+        padding: 20px 15px;
+        border-radius: 15px;
+    }
+
+    .auth-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .auth-form .input-group-text {
+        padding: 10px 12px;
+    }
+
+    .auth-form .form-control {
+        padding: 10px 12px;
+    }
+
+    /* Stack inputs in mobile view */
+    .form-row .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 12px;
+    }
+
+    /* Adjust button size for better touch targets */
+    .auth-form .btn-primary {
+        padding: 14px 20px;
+        font-size: 1rem;
+    }
+}
+
+/* Landscape Mode Fixes */
+@media (max-height: 600px) and (orientation: landscape) {
+    .auth-section {
+        height: auto;
+        min-height: calc(100vh - 76px);
+        padding: 20px 0;
+    }
+
+    .auth-card {
+        margin: 0 auto;
+    }
+
+    .auth-header {
+        margin-bottom: 20px;
+    }
+
+    .auth-form .input-group {
+        margin-bottom: 10px;
+    }
+}
+
+/* High Resolution Displays */
+@media (min-width: 1400px) {
+    .auth-card {
+        max-width: 650px;
+        padding: 45px;
+    }
+
+    .auth-header h2 {
+        font-size: 2.8rem;
+    }
+
+    .auth-form .input-group {
+        margin-bottom: 25px;
+    }
+
+    .auth-form .input-group-text {
+        padding: 18px 25px;
+        font-size: 1.2rem;
+    }
+
+    .auth-form .form-control {
+        padding: 18px 25px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Responsive Typography */
+@media (max-width: 1200px) {
+    :root {
+        --font-size-xxl: 3rem;
+        --font-size-xl: 2.5rem;
+        --font-size-lg: 1.75rem;
+    }
+}
+
+@media (max-width: 992px) {
+    :root {
+        --font-size-xxl: 2.75rem;
+        --font-size-xl: 2.25rem;
+        --font-size-lg: 1.5rem;
+        --font-size-md: 1.1rem;
+    }
+
+    .navbar-brand {
+        font-size: var(--font-size-lg);
+    }
+
+    h1 {
+        font-size: calc(var(--font-size-xxl) * 0.9);
+    }
+
+    h2 {
+        font-size: calc(var(--font-size-xl) * 0.9);
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-xxl: 2.5rem;
+        --font-size-xl: 2rem;
+        --font-size-lg: 1.5rem;
+        --font-size-md: 1rem;
+        --font-size-base: 0.95rem;
+    }
+
+    body {
+        line-height: 1.5;
+    }
+
+    .section-title {
+        font-size: calc(var(--font-size-xl) * 0.9);
+    }
+
+    .section-subtitle {
+        font-size: var(--font-size-base);
+    }
+}
+
+@media (max-width: 576px) {
+    :root {
+        --font-size-xxl: 2rem;
+        --font-size-xl: 1.75rem;
+        --font-size-lg: 1.25rem;
+        --font-size-md: 0.95rem;
+    }
+
+    h1 {
+        font-size: calc(var(--font-size-xxl) * 0.85);
+    }
+
+    h2 {
+        font-size: calc(var(--font-size-xl) * 0.85);
+    }
+
+    h3 {
+        font-size: calc(var(--font-size-lg) * 0.9);
+    }
+
+    .navbar-brand {
+        font-size: calc(var(--font-size-lg) * 0.9);
+    }
+
+    .nav-link {
+        font-size: var(--font-size-base);
+    }
+}
+
+/* RTL Specific Responsive Adjustments */
+[dir="rtl"] {
+    @media (max-width: 768px) {
+        .nav-link {
+            text-align: right;
+            padding-right: 1rem !important;
+        }
+    }
+}
+
+/* Mobile Navigation Improvements */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: rgba(0, 0, 0, 0.95);
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .nav-link {
+        padding: 0.5rem 1rem !important;
+        margin: 0.25rem 0;
+    }
+}
+
+/* Form Elements Responsive */
+@media (max-width: 768px) {
+    input, textarea, select {
+        font-size: var(--font-size-base);
+    }
+
+    .btn {
+        font-size: var(--font-size-base);
+        padding: 0.5rem 1.25rem;
+    }
+}
+
+/* Footer Responsive */
+@media (max-width: 768px) {
+    footer h3 {
+        font-size: calc(var(--font-size-lg) * 0.9);
+        margin-bottom: 1rem;
+    }
+
+    footer p {
+        font-size: var(--font-size-base);
+    }
+}

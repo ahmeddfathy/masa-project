@@ -1,0 +1,327 @@
+/* Notifications Page Styles */
+:root {
+    /* ألوان أكثر وضوحًا وحيوية */
+    --primary-color: #4A3AFF;     /* أزرق نابض بالحياة مع عمق أكبر */
+    --secondary-color: #7B6EFF;   /* درجة فاتحة مع تباين واضح */
+    --success-color: #2ECC71;     /* أخضر مشرق وحيوي */
+    --warning-color: #F39C12;     /* برتقالي دافئ وواضح */
+    --danger-color: #FF4D4D;      /* أحمر صارخ وواضح */
+    --processing-color: #3498DB;  /* أزرق هادئ وواضح */
+
+    /* خلفية مشرقة وواضحة */
+    --background-color: #F0F4FF;  /* خلفية مشرقة وناعمة */
+
+    /* تأثير زجاجي أكثر وضوحًا */
+    --glass-background: rgba(255, 255, 255, 0.75);
+    --glass-background-dark: rgba(255, 255, 255, 0.65);
+    --glass-border: 1px solid rgba(74, 58, 255, 0.25);
+
+    /* تم إزالة الظل */
+    --card-shadow: none;
+
+    /* درجات لونية أكثر تباينًا */
+    --text-color: #1E2A38;        /* أزرق رمادي داكن وواضح */
+    --text-light: #2C3E50;        /* أزرق رمادي متوسط مع وضوح */
+    --text-muted: #4A5F6E;        /* رمادي مائل للأزرق أكثر حيوية */
+    --heading-color: #1E2A38;     /* متناسق مع لون النص الرئيسي مع تأكيد */
+}
+
+body {
+    background: linear-gradient(135deg, var(--background-color), #fff);
+    min-height: 100vh;
+    font-family: 'Tajawal', sans-serif;
+}
+
+/* Container */
+.notifications-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0.75rem;
+}
+
+/* Page Title */
+.header-container {
+    background: var(--glass-background);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 2rem 0;
+    margin-bottom: 2.5rem;
+    box-shadow: none;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    position: relative;
+    display: inline-block;
+}
+
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 0;
+    width: 60%;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+/* Mark All as Read Button */
+.btn-outline-primary {
+    color: var(--primary-color);
+    border: 2.5px solid var(--primary-color);
+    background: var(--glass-background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(74, 58, 255, 0.05);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(74, 58, 255, 0.15);
+}
+
+/* Notification Item */
+.notification-item {
+    background: var(--glass-background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 1.75rem;
+    margin-bottom: 0.75rem;
+    border: 2px solid rgba(74, 58, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(74, 58, 255, 0.08);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    border-color: rgba(74, 58, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.notification-item.unread {
+    background: rgba(74, 58, 255, 0.05);
+    border-right: 4px solid var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-right-width: 4px;
+}
+
+/* Notification Icon */
+.notification-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(74, 58, 255, 0.1);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1.75rem;
+    border: 2px solid rgba(108, 92, 231, 0.2);
+    box-shadow: none;
+}
+
+/* Notification Content */
+.notification-item h5 {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.notification-item p {
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+    font-size: 1rem;
+}
+
+/* Notification Time */
+.notification-time {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(74, 58, 255, 0.08);
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    width: fit-content;
+    border: 2px solid rgba(74, 58, 255, 0.15);
+    transition: all 0.3s ease;
+}
+
+.notification-time:hover {
+    border-color: rgba(74, 58, 255, 0.25);
+    background: rgba(74, 58, 255, 0.1);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--glass-background);
+    backdrop-filter: blur(8px);
+    border-radius: 30px;
+    border: 2px solid rgba(74, 58, 255, 0.15);
+    box-shadow: 0 4px 15px rgba(74, 58, 255, 0.05);
+    margin-top: 2rem;
+    transition: all 0.3s ease;
+}
+
+.empty-state:hover {
+    border-color: rgba(74, 58, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.empty-state-icon {
+    width: 120px;
+    height: 120px;
+    background: rgba(74, 58, 255, 0.08);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    font-size: 3rem;
+    color: var(--primary-color);
+    border: 3px solid rgba(74, 58, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(74, 58, 255, 0.08);
+}
+
+.empty-state h3 {
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin: 0 auto 2rem;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+}
+
+.page-link {
+    background: var(--glass-background);
+    border: var(--glass-border);
+    color: var(--text-color);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.page-link:hover,
+.page-item.active .page-link {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.notification-item {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .notifications-container {
+        padding: 1rem 0.5rem;
+    }
+
+    .notification-item {
+        padding: 1.25rem;
+    }
+
+    .notification-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+
+    .btn-outline-primary {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .empty-state {
+        padding: 3rem 1.5rem;
+    }
+
+    .empty-state-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 3rem;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* Mark as Read Button */
+.btn-sm.btn-outline-primary {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    background: var(--glass-background);
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(74, 58, 255, 0.05);
+}
+
+.btn-sm.btn-outline-primary:hover {
+    box-shadow: 0 4px 12px rgba(74, 58, 255, 0.12);
+}
+
+/* Add shadow to make cards stand out more */
+.notification-item {
+    box-shadow: 0 2px 8px rgba(74, 58, 255, 0.05);
+}
