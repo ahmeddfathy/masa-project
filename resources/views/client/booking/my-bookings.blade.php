@@ -5,69 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حجوزاتي - Lense Soma Studio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #40B3A2;
-            --secondary-color: #FF69B4;
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #f8f9fa;
-        }
-
-        .navbar {
-            background-color: var(--primary-color);
-        }
-
-        .navbar-brand img {
-            max-height: 50px;
-        }
-
-        .booking-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .booking-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px;
-        }
-
-        .booking-body {
-            padding: 20px;
-        }
-
-        .status-badge {
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .status-pending {
-            background-color: #ffd700;
-            color: #000;
-        }
-
-        .status-confirmed {
-            background-color: #28a745;
-            color: #fff;
-        }
-
-        .status-completed {
-            background-color: #17a2b8;
-            color: #fff;
-        }
-
-        .status-cancelled {
-            background-color: #dc3545;
-            color: #fff;
-        }
-    </style>
+    <link href="/assets/css/booking/my-bookings.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->

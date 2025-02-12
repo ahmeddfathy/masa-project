@@ -5,37 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تم الحجز بنجاح - Lense Soma Studio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #40B3A2;
-            --secondary-color: #FF69B4;
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #f8f9fa;
-        }
-
-        .success-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            padding: 40px;
-            margin-top: 50px;
-            text-align: center;
-        }
-
-        .success-icon {
-            color: var(--primary-color);
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
-
-        .booking-details {
-            margin-top: 30px;
-            text-align: right;
-        }
-    </style>
+    <link href="/assets/css/booking/success.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">

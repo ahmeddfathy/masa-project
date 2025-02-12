@@ -5,77 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حجز جلسة تصوير - Lense Soma Studio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #40B3A2;  /* اللون التركواز من اللوجو */
-            --secondary-color: #FF69B4;  /* اللون الوردي من اللوجو */
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #f8f9fa;
-        }
-
-        .navbar {
-            background-color: var(--primary-color);
-        }
-
-        .navbar-brand img {
-            max-height: 50px;
-        }
-
-        .booking-form {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            padding: 30px;
-            margin-top: 30px;
-        }
-
-        .form-label {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: darken(var(--primary-color), 10%);
-        }
-
-        .package-card {
-            border: 2px solid #eee;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .package-card:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-5px);
-        }
-
-        .package-card.selected {
-            border-color: var(--secondary-color);
-            background-color: rgba(255,105,180,0.1);
-        }
-
-        .gallery-preview {
-            margin-bottom: 30px;
-        }
-
-        .gallery-preview img {
-            border-radius: 10px;
-            margin-bottom: 15px;
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-    </style>
+    <link href="/assets/css/booking.css" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->

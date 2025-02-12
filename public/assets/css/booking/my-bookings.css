@@ -1,0 +1,176 @@
+/* My Bookings Page Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Primary Colors (60%) - Pink */
+    --primary-color: #40B3A2;  /* تركواز */
+    --primary-light: #65C6B8;  /* تركواز فاتح */
+    --primary-dark: #2A8577;   /* تركواز غامق */
+
+    /* Secondary Colors (30%) - Pink */
+    --secondary-color: #FF69B4;  /* وردي */
+    --secondary-light: #FFB6C1;  /* وردي فاتح */
+    --secondary-dark: #FF1493;   /* وردي غامق */
+
+    /* Accent Colors (10%) */
+    --accent-color: #9B59B6;     /* بنفسجي */
+    --accent-light: #BB8FCE;     /* بنفسجي فاتح */
+    --accent-dark: #7D3C98;      /* بنفسجي غامق */
+
+    /* Neutral Colors */
+    --light-color: #ffffff;
+    --dark-color: #1a1a1a;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+
+    /* Background and Effects */
+    --background-color: #F0F4FF;
+    --glass-background: rgba(255, 255, 255, 0.75);
+    --glass-background-dark: rgba(255, 255, 255, 0.65);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.55);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(135deg, var(--background-color), #fff);
+    min-height: 100vh;
+}
+
+/* Navbar Styles */
+.navbar {
+    background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+    padding: 1rem 0;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand img {
+    max-height: 50px;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.05);
+}
+
+/* Booking Card Styles */
+.booking-card {
+    background: var(--glass-background);
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.booking-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.booking-header {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.booking-header h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.booking-body {
+    padding: 20px;
+}
+
+/* Status Badge Styles */
+.status-badge {
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.status-pending {
+    background-color: var(--secondary-light);
+    color: var(--dark-color);
+}
+
+.status-confirmed {
+    background-color: var(--primary-light);
+    color: var(--dark-color);
+}
+
+.status-completed {
+    background-color: var(--accent-light);
+    color: var(--dark-color);
+}
+
+.status-cancelled {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Button Styles */
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+}
+
+/* Empty State Styles */
+.alert-info {
+    background: var(--glass-background);
+    border: var(--glass-border);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    color: var(--primary-dark);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .booking-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .booking-body {
+        padding: 15px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.booking-card {
+    animation: fadeIn 0.6s ease-out;
+}

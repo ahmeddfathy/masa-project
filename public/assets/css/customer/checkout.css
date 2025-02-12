@@ -1,18 +1,37 @@
 /* Checkout Page Styles */
 :root {
-    /* Colors */
-    --primary-color: #6c5ce7;
-    --primary-hover: #5d4ed6;
-    --secondary-color: #a8a6ff;
-    --background-color: #f0f3ff;
-    --glass-background: rgba(255, 255, 255, 0.25);
-    --glass-background-dark: rgba(255, 255, 255, 0.15);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.18);
-    --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-    --text-color: #2d3436;
-    --text-light: #636e72;
-    --danger-color: #e74c3c;
-    --success-color: #00b894;
+    /* Primary Colors (60%) - Pink */
+    --primary-color: #ff69b4;  /* وردي */
+    --primary-light: #ffb6c1;  /* وردي فاتح */
+    --primary-dark: #ff1493;   /* وردي غامق */
+
+    /* Secondary Colors (30%) - Light Blue */
+    --secondary-color: #87ceeb;  /* أزرق فاتح */
+    --secondary-light: #b0e0e6;  /* أزرق فاتح جداً */
+    --secondary-dark: #4682b4;   /* أزرق متوسط */
+
+    /* Accent Colors (10%) */
+    --accent-color: #40e0d0;     /* تركواز */
+    --accent-light: #7fffd4;     /* تركواز فاتح */
+    --accent-dark: #20b2aa;      /* تركواز غامق */
+
+    /* Neutral Colors */
+    --light-color: #ffffff;
+    --dark-color: #1a1a1a;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+
+    /* Background and Effects */
+    --background-color: #F0F4FF;
+    --glass-background: rgba(255, 255, 255, 0.75);
+    --glass-background-dark: rgba(255, 255, 255, 0.65);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.55);
+    --card-shadow: none;
+    --text-color: #1E2A38;
+    --text-light: #2C3E50;
+    --danger-color: #FF4D4D;
+    --success-color: #2ECC71;
     --border-color: #E2E8F0;
     --heading-color: #2d3436;
 

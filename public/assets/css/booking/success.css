@@ -1,0 +1,186 @@
+/* Booking Success Page Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Primary Colors */
+    --primary-color: #40B3A2;  /* تركواز */
+    --primary-light: #65C6B8;  /* تركواز فاتح */
+    --primary-dark: #2A8577;   /* تركواز غامق */
+
+    /* Secondary Colors */
+    --secondary-color: #FF69B4;  /* وردي */
+    --secondary-light: #FFB6C1;  /* وردي فاتح */
+    --secondary-dark: #FF1493;   /* وردي غامق */
+
+    /* Accent Colors */
+    --accent-color: #9B59B6;     /* بنفسجي */
+    --accent-light: #BB8FCE;     /* بنفسجي فاتح */
+    --accent-dark: #7D3C98;      /* بنفسجي غامق */
+
+    /* Neutral Colors */
+    --light-color: #ffffff;
+    --dark-color: #1a1a1a;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+
+    /* Background and Effects */
+    --background-color: #F0F4FF;
+    --glass-background: rgba(255, 255, 255, 0.75);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.55);
+    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(135deg, var(--background-color), #fff);
+    min-height: 100vh;
+}
+
+/* Success Card Styles */
+.success-card {
+    background: var(--glass-background);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    padding: 3rem 2rem;
+    margin-top: 50px;
+    text-align: center;
+    animation: slideUp 0.6s ease-out;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 20px;
+    animation: scaleIn 0.5s ease-out 0.3s both;
+}
+
+.success-card h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.lead {
+    color: var(--dark-color);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+/* Booking Details Styles */
+.booking-details {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-top: 2rem;
+    text-align: right;
+}
+
+.booking-details h4 {
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.booking-details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.booking-details li {
+    margin-bottom: 0.75rem;
+    color: var(--dark-color);
+}
+
+.booking-details li strong {
+    color: var(--primary-dark);
+    margin-left: 0.5rem;
+}
+
+.booking-details ul ul {
+    margin: 0.5rem 1.5rem;
+}
+
+/* Button Styles */
+.btn {
+    padding: 0.75rem 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-dark));
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    background: transparent;
+    margin-right: 1rem;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Animations */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .success-card {
+        padding: 2rem 1rem;
+        margin-top: 30px;
+    }
+
+    .booking-details {
+        padding: 1.5rem;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+
+    .btn-outline-primary {
+        margin-right: 0;
+    }
+}

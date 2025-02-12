@@ -1,7 +1,27 @@
 /* Global Styles */
 :root {
-    --primary-color: #4A3AFF;     /* أزرق مائل للبنفسجي - واضح ومريح */
-    --secondary-color: #7B6EFF;   /* درجة أفتح - للعناصر الثانوية */
+    /* Primary Colors (60%) - Pink */
+    --primary-color: #ff69b4;  /* وردي */
+    --primary-light: #ffb6c1;  /* وردي فاتح */
+    --primary-dark: #ff1493;   /* وردي غامق */
+
+    /* Secondary Colors (30%) - Light Blue */
+    --secondary-color: #87ceeb;  /* أزرق فاتح */
+    --secondary-light: #b0e0e6;  /* أزرق فاتح جداً */
+    --secondary-dark: #4682b4;   /* أزرق متوسط */
+
+    /* Accent Colors (10%) */
+    --accent-color: #40e0d0;     /* تركواز */
+    --accent-light: #7fffd4;     /* تركواز فاتح */
+    --accent-dark: #20b2aa;      /* تركواز غامق */
+
+    /* Neutral Colors */
+    --light-color: #ffffff;
+    --dark-color: #1a1a1a;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+
     --background-color: #F0F4FF;  /* خلفية فاتحة مائلة للأزرق */
     --glass-background: rgba(255, 255, 255, 0.75);      /* شفافية عالية للوضوح */
     --glass-background-dark: rgba(255, 255, 255, 0.65);  /* شفافية معتدلة */

@@ -55,7 +55,7 @@ body {
 .heading_container h2 {
   position: relative;
   font-weight: bold;
-  background: linear-gradient(300deg, #140d75, #7335b7, #140d75, #2d25a0);
+  background: linear-gradient(300deg, var(--primary-dark), var(--secondary-color), var(--primary-dark), var(--secondary-dark));
   background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -105,7 +105,7 @@ a:focus {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(45deg, #7335b7, #140d75);
+  background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
   border-radius: 0 0 350px 0;
   overflow: hidden;
   width: 100%;

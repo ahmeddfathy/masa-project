@@ -1,3 +1,40 @@
+:root {
+    /* Primary Colors (60%) - Pink */
+    --primary-color: #ff69b4;  /* وردي */
+    --primary-light: #ffb6c1;  /* وردي فاتح */
+    --primary-dark: #ff1493;   /* وردي غامق */
+
+    /* Secondary Colors (30%) - Light Blue */
+    --secondary-color: #87ceeb;  /* أزرق فاتح */
+    --secondary-light: #b0e0e6;  /* أزرق فاتح جداً */
+    --secondary-dark: #4682b4;   /* أزرق متوسط */
+
+    /* Accent Colors (10%) */
+    --accent-color: #40e0d0;     /* تركواز */
+    --accent-light: #7fffd4;     /* تركواز فاتح */
+    --accent-dark: #20b2aa;      /* تركواز غامق */
+
+    /* Neutral Colors */
+    --light-color: #ffffff;
+    --dark-color: #1a1a1a;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+
+    /* Background and Effects */
+    --background-color: #F0F4FF;
+    --glass-background: rgba(255, 255, 255, 0.75);
+    --glass-background-dark: rgba(255, 255, 255, 0.65);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.55);
+    --card-shadow: none;
+    --text-color: #1E2A38;
+    --text-light: #2C3E50;
+    --danger-color: #FF4D4D;
+    --success-color: #2ECC71;
+    --warning-color: #F39C12;
+    --info-color: #3498DB;
+}
+
 /* Container Styles */
 .categories-container {
     padding: 1.5rem;
