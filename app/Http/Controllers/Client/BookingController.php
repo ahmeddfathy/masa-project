@@ -7,18 +7,38 @@ use App\Models\Booking;
 use App\Models\Package;
 use App\Models\PackageAddon;
 use App\Models\Service;
+use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $services = Service::where('is_active', true)->get();
         $packages = Package::where('is_active', true)->get();
         $addons = PackageAddon::where('is_active', true)->get();
 
-        return view('client.booking.index', compact('services', 'packages', 'addons'));
+        // جلب صور الجاليري
+        $gallery_images = Gallery::latest()->take(5)->get();
+
+        // استرجاع البيانات المحفوظة من الجلسة إذا وجدت
+        $oldFormData = session('booking_form_data', []);
+        if (!empty($oldFormData)) {
+            // نقل البيانات المحفوظة إلى old() helper
+            foreach ($oldFormData as $key => $value) {
+                session()->flash("_old_input.{$key}", $value);
+            }
+            // حذف البيانات من الجلسة بعد استخدامها
+            session()->forget('booking_form_data');
+        }
+
+        return view('client.booking.index', compact(
+            'services',
+            'packages',
+            'addons',
+            'gallery_images'
+        ));
     }
 
     public function store(Request $request)
@@ -86,7 +106,30 @@ class BookingController extends Controller
 
     public function myBookings()
     {
-        $bookings = Auth::user()->bookings()->latest()->paginate(10);
+        $bookings = Auth::user()->bookings()
+            ->with(['service', 'package', 'addons'])
+            ->latest()
+            ->paginate(10);
         return view('client.booking.my-bookings', compact('bookings'));
+    }
+
+    public function show(Booking $booking)
+    {
+        // التحقق من أن الحجز يخص المستخدم الحالي
+        if ($booking->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $booking->load(['service', 'package', 'addons']);
+        return view('client.booking.show', compact('booking'));
+    }
+
+    public function saveFormData(Request $request)
+    {
+        // حفظ بيانات النموذج في الجلسة
+        session(['booking_form_data' => $request->all()]);
+
+        // التوجيه حسب نوع الطلب
+        return redirect()->route($request->query('redirect', 'register'));
     }
 }

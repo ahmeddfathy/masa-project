@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Order, User, Appointment, CartItem, Cart};
+use App\Models\{Order, User, Booking, CartItem, Cart};
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -16,10 +16,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-
-
         return $this->clientDashboard($user);
-
     }
 
     private function clientDashboard($user)
@@ -31,7 +28,8 @@ class DashboardController extends Controller
 
         $stats = [
             'orders_count' => $user->orders()->count(),
-            'appointments_count' => $user->appointments()->count(),
+            'appointments_count' => $user->appointments()->count(), // مواعيد المتجر
+            'bookings_count' => $user->bookings()->count(), // حجوزات الاستوديو
             'cart_items_count' => $cartItemsCount,
             'unread_notifications' => $user->unreadNotifications()->count(),
         ];
@@ -52,7 +50,7 @@ class DashboardController extends Controller
                 ];
             });
 
-        // المواعيد القادمة
+        // المواعيد القادمة (المتجر)
         $upcoming_appointments = $user->appointments()
             ->where('appointment_date', '>=', now())
             ->orderBy('appointment_date')
@@ -63,6 +61,20 @@ class DashboardController extends Controller
                 $appointment->status_color = $this->getStatusColor($appointment->status);
                 $appointment->status_text = $this->getStatusText($appointment->status);
                 return $appointment;
+            });
+
+        // الحجوزات القادمة (الاستوديو)
+        $upcoming_bookings = $user->bookings()
+            ->with(['service', 'package'])
+            ->where('session_date', '>=', now())
+            ->orderBy('session_date')
+            ->orderBy('session_time')
+            ->take(4)
+            ->get()
+            ->map(function ($booking) {
+                $booking->status_color = $this->getStatusColor($booking->status);
+                $booking->status_text = $this->getStatusText($booking->status);
+                return $booking;
             });
 
         // آخر الإشعارات
@@ -106,6 +118,7 @@ class DashboardController extends Controller
             'stats',
             'recent_orders',
             'upcoming_appointments',
+            'upcoming_bookings',
             'recent_notifications',
             'addresses',
             'phones'
@@ -116,9 +129,10 @@ class DashboardController extends Controller
     {
         return match ($status) {
             'pending' => 'warning',
-            'processing' => 'info',
+            'confirmed' => 'info',
             'completed' => 'success',
             'cancelled' => 'danger',
+            'processing' => 'primary',
             default => 'secondary'
         };
     }
@@ -127,9 +141,10 @@ class DashboardController extends Controller
     {
         return match ($status) {
             'pending' => 'قيد الانتظار',
-            'processing' => 'قيد المعالجة',
+            'confirmed' => 'مؤكد',
             'completed' => 'مكتمل',
             'cancelled' => 'ملغي',
+            'processing' => 'قيد المعالجة',
             default => 'غير معروف'
         };
     }

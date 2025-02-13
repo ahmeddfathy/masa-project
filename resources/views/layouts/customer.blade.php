@@ -380,13 +380,17 @@
                         <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="/"><i class="fas fa-home ms-1"></i>الرئيسية</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('products*') ? 'active' : '' }}" href="/products"><i class="fas fa-tshirt ms-1"></i>المنتجات</a>
+                        <a class="nav-link {{ request()->is('products*') ? 'active' : '' }}" href="/products"><i class="fas fa-store ms-1"></i>المتجر</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="/dashboard"><i class="fas fa-user ms-1"></i>حسابي</a>
+                        <a class="nav-link {{ request()->is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.index') }}">
+                            <i class="fas fa-calendar-alt ms-1"></i>مواعيد المتجر
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.index') }}"><i class="fas fa-calendar-alt ms-1"></i>المواعيد</a>
+                        <a class="nav-link {{ request()->is('client/book*') ? 'active' : '' }}" href="{{ route('client.bookings.create') }}">
+                            <i class="fas fa-camera ms-1"></i>حجز جلسة تصوير
+                        </a>
                     </li>
                 </ul>
                 <div class="nav-buttons d-flex align-items-center">
@@ -440,20 +444,32 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('products*') ? 'active' : '' }}" href="/products">
-                        <i class="fas fa-shopping-bag"></i>
-                        المنتجات
+                        <i class="fas fa-store"></i>
+                        المتجر
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.index') }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        مواعيد المتجر
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('client/book*') ? 'active' : '' }}" href="{{ route('client.bookings.create') }}">
+                        <i class="fas fa-camera"></i>
+                        حجز جلسة تصوير
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('client/bookings/my*') ? 'active' : '' }}" href="{{ route('client.bookings.my') }}">
+                        <i class="fas fa-camera-retro"></i>
+                        حجوزاتي
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('orders*') ? 'active' : '' }}" href="/orders">
                         <i class="fas fa-shopping-bag"></i>
-                        الطلبات
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('appointments*') ? 'active' : '' }}" href="/appointments">
-                        <i class="fas fa-calendar-check"></i>
-                        المواعيد
+                        طلباتي
                     </a>
                 </li>
                 <li class="nav-item">

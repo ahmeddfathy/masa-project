@@ -18,59 +18,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('home') }}">عدسة سوما</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">الرئيسية</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">معرض الصور</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('services') ? 'active' : '' }}" href="{{ route('services') }}">خدماتنا</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}" href="{{ route('products.index') }}">منتجاتنا</a>
-                    </li>
-                    @guest
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('register') }}">التسجيل</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('login') }}">تسجيل الدخول</a>
-                        </li>
-                    @endguest
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">من نحن</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contact">اتصل بنا</a>
-                    </li>
-                    @auth
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard') }}">لوحة التحكم</a>
-                        </li>
-                        <li class="nav-item">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <a class="nav-link" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault(); this.closest('form').submit();">
-                                    تسجيل الخروج
-                                </a>
-                            </form>
-                        </li>
-                    @endauth
-                </ul>
-            </div>
-        </div>
-    </nav>
+    @include('parts.navbar')
 
     <!-- Gallery Carousel -->
     <section class="gallery-carousel-section">
@@ -192,35 +140,7 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h3>عدسة سوما</h3>
-                    <p>نوثق لحظاتكم الجميلة بلمسة فنية مميزة</p>
-                </div>
-                <div class="col-md-4">
-                    <h3>تواصل معنا</h3>
-                    <p>
-                        <i class="fas fa-phone"></i> +966 50 000 0000<br>
-                        <i class="fas fa-envelope"></i> info@studio.com
-                    </p>
-                </div>
-                <div class="col-md-4">
-                    <h3>تابعنا على</h3>
-                    <div class="social-links">
-                        <a href="#" class="me-2"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="me-2"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="text-center mt-4">
-                <p>&copy; 2024 عدسة سوما. جميع الحقوق محفوظة</p>
-            </div>
-        </div>
-    </footer>
+    @include('parts.footer')
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

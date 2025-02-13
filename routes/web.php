@@ -53,8 +53,6 @@ Route::get('/services', function () {
 })->name('services');
 
 
-
-
 // Products Routes (Public)
 Route::prefix('products')->name('products.')->group(function () {
     Route::get('/', [ProductController::class, 'index'])->name('index');
@@ -241,13 +239,19 @@ Route::post('/contact', [ContactController::class, 'send'])->name('contact.send'
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
     Route::post('/products/filter', [ProductController::class, 'filter'])->name('products.filter');
 
-// Client Routes
+    // Booking Routes (Public View)
+Route::get('/client/book', [App\Http\Controllers\Client\BookingController::class, 'index'])->name('client.bookings.create');
+Route::post('/client/book/save-form', [App\Http\Controllers\Client\BookingController::class, 'saveFormData'])->name('client.bookings.save-form');
+
+// Protected Routes (Require Authentication)
 Route::middleware(['auth'])->name('client.')->prefix('client')->group(function () {
-    // Booking Routes
-    Route::get('/book', [BookingController::class, 'index'])->name('bookings.create');
-    Route::post('/book', [BookingController::class, 'store'])->name('bookings.store');
-    Route::get('/book/success/{booking}', [BookingController::class, 'success'])->name('bookings.success');
-    Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('bookings.my');
+    // Protected Booking Routes
+    Route::prefix('bookings')->name('bookings.')->group(function () {
+        Route::post('/store', [App\Http\Controllers\Client\BookingController::class, 'store'])->name('store');
+        Route::get('/success/{booking}', [App\Http\Controllers\Client\BookingController::class, 'success'])->name('success');
+        Route::get('/my', [App\Http\Controllers\Client\BookingController::class, 'myBookings'])->name('my');
+        Route::get('/{booking}', [App\Http\Controllers\Client\BookingController::class, 'show'])->name('show');
+    });
 
     // إضافة مسار جديد للحصول على الإضافات
     Route::get('/packages/{package}/addons', function (App\Models\Package $package) {

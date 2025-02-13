@@ -108,7 +108,7 @@
                 </div>
                 <div class="card-info">
                     <h3>{{ $stats['orders_count'] }}</h3>
-                    <p>الطلبات</p>
+                    <p>طلباتي</p>
                 </div>
                 <div class="card-arrow">
                     <a href="/orders" class="stretched-link">
@@ -120,30 +120,30 @@
         <div class="col-12 col-sm-6 col-md-3">
             <div class="dashboard-card appointments">
                 <div class="card-icon">
-                    <i class="fas fa-calendar-check"></i>
+                    <i class="fas fa-calendar-alt"></i>
                 </div>
                 <div class="card-info">
                     <h3>{{ $stats['appointments_count'] }}</h3>
-                    <p>المواعيد</p>
+                    <p>مواعيد المتجر</p>
                 </div>
                 <div class="card-arrow">
-                    <a href="/appointments" class="stretched-link">
+                    <a href="{{ route('appointments.index') }}" class="stretched-link">
                         <i class="fas fa-arrow-left"></i>
                     </a>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-md-3">
-            <div class="dashboard-card cart">
+            <div class="dashboard-card bookings">
                 <div class="card-icon">
-                    <i class="fas fa-shopping-cart"></i>
+                    <i class="fas fa-camera"></i>
                 </div>
                 <div class="card-info">
-                    <h3>{{ $stats['cart_items_count'] }}</h3>
-                    <p>منتجات في السلة</p>
+                    <h3>{{ $stats['bookings_count'] }}</h3>
+                    <p>حجوزات الاستوديو</p>
                 </div>
                 <div class="card-arrow">
-                    <a href="/cart" class="stretched-link">
+                    <a href="{{ route('client.bookings.my') }}" class="stretched-link">
                         <i class="fas fa-arrow-left"></i>
                     </a>
                 </div>
@@ -298,10 +298,10 @@
         </div>
     </div>
 
-    <!-- Recent Orders & Upcoming Appointments -->
+    <!-- Recent Orders & Upcoming Appointments/Bookings -->
     <div class="row g-3 g-md-4">
         <!-- Recent Orders -->
-        <div class="col-12 col-xl-6">
+        <div class="col-12 col-xl-4">
             <div class="section-card h-100">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
                     <h2 class="mb-0">آخر الطلبات</h2>
@@ -350,12 +350,12 @@
             </div>
         </div>
 
-        <!-- Upcoming Appointments -->
-        <div class="col-12 col-xl-6">
+        <!-- Upcoming Store Appointments -->
+        <div class="col-12 col-xl-4">
             <div class="section-card h-100">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
-                    <h2 class="mb-0">المواعيد القادمة</h2>
-                    <a href="/appointments" class="btn btn-outline-primary btn-sm">
+                    <h2 class="mb-0">مواعيد المتجر</h2>
+                    <a href="{{ route('appointments.index') }}" class="btn btn-outline-primary btn-sm">
                         عرض الكل <i class="fas fa-arrow-left me-1"></i>
                     </a>
                 </div>
@@ -386,7 +386,7 @@
                             </div>
                         </div>
                         <div class="appointment-footer">
-                            <a href="/appointments/{{ $appointment->id }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('appointments.show', $appointment) }}" class="btn btn-primary btn-sm">
                                 التفاصيل <i class="fas fa-arrow-left me-1"></i>
                             </a>
                         </div>
@@ -395,8 +395,60 @@
                 </div>
                 @else
                 <div class="empty-state">
-                    <i class="fas fa-calendar-check"></i>
+                    <i class="fas fa-calendar-alt"></i>
                     <p>لا توجد مواعيد قادمة</p>
+                </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Upcoming Studio Bookings -->
+        <div class="col-12 col-xl-4">
+            <div class="section-card h-100">
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
+                    <h2 class="mb-0">حجوزات الاستوديو</h2>
+                    <a href="{{ route('client.bookings.my') }}" class="btn btn-outline-primary btn-sm">
+                        عرض الكل <i class="fas fa-arrow-left me-1"></i>
+                    </a>
+                </div>
+                @if(count($upcoming_bookings) > 0)
+                <div class="bookings-grid">
+                    @foreach($upcoming_bookings as $booking)
+                    <div class="booking-card">
+                        <div class="booking-header">
+                            <div class="date">
+                                <i class="fas fa-calendar me-2"></i>
+                                {{ $booking->session_date->format('Y/m/d') }}
+                            </div>
+                            <div class="time">
+                                <i class="fas fa-clock me-2"></i>
+                                {{ $booking->session_time->format('H:i') }}
+                            </div>
+                        </div>
+                        <div class="booking-body">
+                            <h5>{{ $booking->service->name }}</h5>
+                            <p class="package">
+                                <i class="fas fa-box me-2"></i>
+                                {{ $booking->package->name }}
+                            </p>
+                            <div class="status">
+                                <span class="badge bg-{{ $booking->status_color }}">
+                                    {{ $booking->status_text }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="booking-footer">
+                            <a href="{{ route('client.bookings.show', $booking) }}" class="btn btn-primary btn-sm">
+                                التفاصيل <i class="fas fa-arrow-left me-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="empty-state">
+                    <i class="fas fa-camera"></i>
+                    <p>لا توجد حجوزات قادمة</p>
                 </div>
                 @endif
             </div>

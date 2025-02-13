@@ -52,7 +52,7 @@ class BookingController extends Controller
 
     public function reports()
     {
-        // إحصائيات وتقارير الحجوزات
+        // إحصائيات أساسية
         $stats = [
             'total_bookings' => Booking::count(),
             'pending_bookings' => Booking::where('status', 'pending')->count(),
@@ -64,6 +64,26 @@ class BookingController extends Controller
                 ->sum('total_amount')
         ];
 
-        return view('admin.bookings.reports', compact('stats'));
+        // بيانات الحجوزات الشهرية للرسم البياني
+        $monthlyBookings = Booking::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // بيانات حالات الحجوزات للرسم البياني الدائري
+        $pendingBookings = Booking::where('status', 'pending')->count();
+        $confirmedBookings = Booking::where('status', 'confirmed')->count();
+        $completedBookings = Booking::where('status', 'completed')->count();
+        $cancelledBookings = Booking::where('status', 'cancelled')->count();
+
+        return view('admin.bookings.reports', compact(
+            'stats',
+            'monthlyBookings',
+            'pendingBookings',
+            'confirmedBookings',
+            'completedBookings',
+            'cancelledBookings'
+        ));
     }
 }

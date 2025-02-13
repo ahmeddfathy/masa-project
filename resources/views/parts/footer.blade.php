@@ -2,7 +2,9 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <h3>عدسة سوما</h3>
+                <div class="logo-container">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="عدسة سوما">
+                </div>
                 <p>نوثق لحظاتكم الجميلة بلمسة فنية مميزة</p>
             </div>
             <div class="col-md-4">
