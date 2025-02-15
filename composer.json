@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.0",
         "maatwebsite/excel": "^1.1",
+        "paytabscom/laravel_paytabs": "*",
         "phpoffice/phpspreadsheet": "^3.8",
         "spatie/laravel-permission": "^6.10",
         "vonage/client": "*"

@@ -12,6 +12,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -152,7 +153,10 @@ class User extends Authenticatable
         return $this->role === 'admin'; // أو أي منطق آخر تستخدمه لتحديد المشرف
     }
 
-    public function bookings(): HasMany
+    /**
+     * Get the user's bookings.
+     */
+    public function bookings()
     {
         return $this->hasMany(Booking::class);
     }

@@ -258,3 +258,9 @@ Route::middleware(['auth'])->name('client.')->prefix('client')->group(function (
         return $package->addons()->where('is_active', true)->get();
     })->name('packages.addons');
 });
+
+// مسارات الدفع
+Route::prefix('client/bookings/payment')->name('client.bookings.payment.')->group(function () {
+    Route::post('callback', [BookingController::class, 'paymentCallback'])->name('callback');
+    Route::get('return', [BookingController::class, 'paymentReturn'])->name('return');
+});

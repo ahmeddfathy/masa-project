@@ -208,8 +208,15 @@
                 <div class="text-center">
                     @auth
                         <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-check me-2"></i>تأكيد الحجز
+                            <i class="fas fa-credit-card me-2"></i>الدفع وتأكيد الحجز
+                            <small class="d-block text-white-50">سيتم تحويلك إلى بوابة الدفع الآمنة</small>
                         </button>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-lock me-1"></i>
+                                جميع المعاملات مؤمنة ومشفرة
+                            </small>
+                        </div>
                     @else
                         <button type="submit" class="btn btn-primary btn-lg" formaction="{{ route('client.bookings.save-form') }}">
                             <i class="fas fa-user-plus me-2"></i>تسجيل حساب جديد لإكمال الحجز
@@ -222,6 +229,38 @@
                         </p>
                     @endauth
                 </div>
+
+                @auth
+                <div class="mt-4 text-center">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="mb-3">معلومات الدفع والحجز:</h6>
+                                    <ul class="list-unstyled text-start mb-0">
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            سيتم تأكيد الحجز تلقائياً بعد اكتمال عملية الدفع
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            الدفع آمن ومشفر عبر PayTabs
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            في حالة فشل الدفع، لن يتم تأكيد الحجز
+                                        </li>
+                                        <li>
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            يمكنك متابعة حالة حجزك من صفحة حجوزاتي
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endauth
             </form>
         </div>
     </div>
