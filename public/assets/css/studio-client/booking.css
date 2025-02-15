@@ -1,21 +1,35 @@
 /* Variables */
 :root {
-    --primary-gradient: linear-gradient(45deg, #FF69B4, #87CEEB);
-    --secondary-gradient: linear-gradient(45deg, #87CEEB, #FF69B4);
-    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    --border-radius: 20px;
-    --transition: all 0.3s ease;
+    --primary-color: #2196f3;
+    --secondary-color: #00bcd4;
+    --text-dark: #1a1a2e;
+    --text-light: #f4f4f4;
+    --background-light: #f8f9fa;
+    --background-dark: #f1f4f9;
+    --primary-gradient: linear-gradient(45deg, #2196f3, #00bcd4);
+    --secondary-gradient: linear-gradient(45deg, #00bcd4, #2196f3);
+    --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    --border-radius: 15px;
+    --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --select-border: #e2e8f0;
+    --select-focus: #2196f3;
+    --select-arrow: #64748b;
+    --option-hover: #f0f7ff;
+    --option-selected: #e3f2fd;
+    --navbar-bg: #ff69b4;
+    --navbar-text: #ffffff;
 }
 
 /* Page Container */
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0 2rem;
 }
 
 /* Gallery Carousel */
 .gallery-carousel {
+    margin-top: 1rem;
     margin-bottom: 4rem;
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -131,12 +145,13 @@
 }
 
 .booking-form h2 {
-    color: #2c3e50;
+    color: var(--primary-color);
     font-size: 2.2rem;
     font-weight: 700;
     margin-bottom: 2.5rem;
     text-align: center;
     position: relative;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .booking-form h2::after {
@@ -171,17 +186,16 @@
 }
 
 .input-group {
-    background: #f8f9fa;
+    background: var(--background-light);
     border-radius: 12px;
     overflow: hidden;
     transition: var(--transition);
-    border: 2px solid transparent;
+    border: 2px solid rgba(33, 150, 243, 0.2);
 }
 
 .input-group:focus-within {
     border-color: var(--primary-color);
-    background: #fff;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
 }
 
 .input-group-text {
@@ -209,12 +223,12 @@
 
 /* Package Cards */
 .package-card {
-    background: #ffffff;
+    background: white;
     border-radius: 20px;
     padding: 2rem;
     margin-bottom: 1.5rem;
-    border: 2px solid #eef2f7;
-    transition: all 0.3s ease;
+    border: 2px solid rgba(33, 150, 243, 0.1);
+    transition: var(--transition);
     position: relative;
     cursor: pointer;
     overflow: hidden;
@@ -244,8 +258,9 @@
 }
 
 .package-card.selected {
-    border-color: #2196f3;
-    background: rgba(33, 150, 243, 0.02);
+    border-color: var(--primary-color);
+    background: rgba(33, 150, 243, 0.05);
+    box-shadow: 0 10px 30px rgba(33, 150, 243, 0.1);
 }
 
 .package-card h5 {
@@ -309,14 +324,15 @@
 
 /* Submit Button */
 .btn-primary {
-    background: linear-gradient(45deg, #2196f3, #00bcd4);
+    background: var(--primary-gradient);
+    color: white;
     border: none;
     border-radius: 12px;
     padding: 1rem 2.5rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(var(--primary-rgb), 0.3);
+    transition: var(--transition);
+    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
     position: relative;
     overflow: hidden;
 }
@@ -334,8 +350,8 @@
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(33, 150, 243, 0.4);
 }
 
 .btn-primary:hover::before {
@@ -426,6 +442,154 @@
 
 /* تحديث خلفية الصفحة */
 body {
-    background: linear-gradient(135deg, #f6f8fd 0%, #f1f4f9 100%);
+    background: linear-gradient(135deg, var(--background-light) 0%, var(--background-dark) 100%);
+    color: var(--text-dark);
+    line-height: 1.6;
+    font-family: 'Cairo', sans-serif;
     min-height: 100vh;
+}
+
+/* Typography Improvements */
+h2, h5, .form-label {
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.text-muted {
+    color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* تحسين شكل عناصر الاختيار */
+.form-select {
+    appearance: none;
+    background-color: white;
+    border: 2px solid var(--select-border);
+    padding: 0.8rem 2.5rem 0.8rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 1rem center;
+    background-size: 16px;
+}
+
+.form-select:hover {
+    border-color: var(--select-focus);
+}
+
+.form-select:focus {
+    border-color: var(--select-focus);
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
+    outline: none;
+}
+
+/* تحسين شكل الخيارات داخل القائمة المنسدلة */
+.form-select option {
+    padding: 1rem;
+    font-weight: 500;
+}
+
+.form-select option:hover {
+    background-color: var(--option-hover);
+}
+
+.form-select option:checked {
+    background-color: var(--option-selected);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* تحسين تباين عنوان حقل الاختيار */
+.form-label {
+    color: var(--text-dark);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+/* تحسين مظهر مجموعة الاختيار */
+.input-group .form-select {
+    border-radius: 12px;
+    border: 2px solid rgba(33, 150, 243, 0.2);
+    transition: var(--transition);
+}
+
+.input-group .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15);
+}
+
+/* إضافة تأثير عند التحويم */
+.input-group:hover .form-select {
+    border-color: var(--select-focus);
+}
+
+/* تحسين مظهر الخيار المعطل */
+.form-select option:disabled {
+    color: #9ca3af;
+    background-color: #f3f4f6;
+}
+
+/* تحسين التباين للخيار الافتراضي */
+.form-select option[value=""] {
+    color: #64748b;
+    font-style: italic;
+}
+
+/* تحسين قراءة النص في حالة الخطأ */
+.form-select.is-invalid {
+    border-color: #dc3545;
+    background-color: #fff;
+    box-shadow: none;
+}
+
+.form-select.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 4px rgba(220, 53, 69, 0.15);
+}
+
+/* تحديث تنسيق الناف بار */
+.navbar {
+    background-color: var(--navbar-bg) !important;
+    padding: 0.8rem 0;
+    box-shadow: 0 2px 10px rgba(255, 105, 180, 0.2);
+    min-height: 70px;
+}
+
+.navbar-brand,
+.nav-link,
+.navbar .navbar-nav .nav-link {
+    color: var(--navbar-text) !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+    font-size: 1.3rem;
+    padding: 0.5rem 0;
+}
+
+.navbar-nav {
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-nav .nav-item {
+    margin: 0 0.3rem;
+}
+
+.navbar .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.7);
+    padding: 0.5rem 0.75rem;
+}
+
+.navbar .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar .nav-link:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
 }

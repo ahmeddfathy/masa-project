@@ -53,12 +53,27 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="num_photos" class="form-label">عدد الصور</label>
-                                    <input type="number" class="form-control @error('num_photos') is-invalid @enderror"
-                                           id="num_photos" name="num_photos" value="{{ old('num_photos', $package->num_photos) }}" required>
+                                <div class="form-group">
+                                    <label for="num_photos">عدد الصور</label>
+                                    <input type="number" name="num_photos" id="num_photos"
+                                           class="form-control @error('num_photos') is-invalid @enderror"
+                                           value="{{ old('num_photos', $package->num_photos) }}" required min="1">
                                     @error('num_photos')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="themes_count">عدد الثيمات</label>
+                                    <input type="number" name="themes_count" id="themes_count"
+                                           class="form-control @error('themes_count') is-invalid @enderror"
+                                           value="{{ old('themes_count', $package->themes_count) }}" required min="1">
+                                    @error('themes_count')
+                                        <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>

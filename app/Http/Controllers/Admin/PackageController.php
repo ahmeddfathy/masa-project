@@ -29,6 +29,7 @@ class PackageController extends Controller
             'base_price' => 'required|numeric|min:0',
             'duration' => 'required|integer|min:1',
             'num_photos' => 'required|integer|min:1',
+            'themes_count' => 'required|integer|min:1',
             'is_active' => 'boolean',
             'service_ids' => 'required|array',
             'service_ids.*' => 'exists:services,id'
@@ -55,6 +56,7 @@ class PackageController extends Controller
             'base_price' => 'required|numeric|min:0',
             'duration' => 'required|integer|min:1',
             'num_photos' => 'required|integer|min:1',
+            'themes_count' => 'required|integer|min:1',
             'is_active' => 'boolean',
             'service_ids' => 'required|array',
             'service_ids.*' => 'exists:services,id'

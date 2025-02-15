@@ -536,3 +536,132 @@
     transform: scale(1.2);
 }
 
+
+/* Contact Form Styles */
+.contact-section {
+    background-color: var(--light-color);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 0;
+}
+
+.contact-section .glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form {
+    direction: rtl;
+    text-align: right;
+}
+
+.contact-form .form-control {
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    padding: 12px 16px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    color: var(--dark-color);
+}
+
+.contact-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.15);
+    background-color: #fff;
+}
+
+.contact-form .form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+}
+
+.contact-form textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.contact-form .btn-primary {
+    padding: 12px 40px;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    background: var(--gradient-primary);
+    border: none;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-form .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.3);
+}
+
+.contact-form .btn-primary:active {
+    transform: translateY(0);
+}
+
+.contact-form .invalid-feedback {
+    font-size: 0.875rem;
+    color: #dc3545;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+.contact-form .alert {
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+.contact-form .alert-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    border: 2px solid rgba(25, 135, 84, 0.2);
+    color: #198754;
+}
+
+/* Add a decorative element to the contact section */
+.contact-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: var(--gradient-primary);
+    opacity: 0.03;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+}
+
+/* Add hover effects to form inputs */
+.contact-form .form-control:hover {
+    border-color: rgba(var(--primary-rgb), 0.3);
+}
+
+/* Style the form heading */
+.contact-section h2 {
+    color: var(--dark-color);
+    font-weight: 700;
+    margin-bottom: 2rem;
+    position: relative;
+    display: inline-block;
+}
+
+.contact-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}

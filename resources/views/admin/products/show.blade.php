@@ -165,6 +165,89 @@
                                 </div>
                             </div>
                             @endif
+
+                            <!-- Product Options -->
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-4">
+                                            <i class="fas fa-cog text-primary me-2"></i>
+                                            خيارات المنتج
+                                        </h5>
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="option-item d-flex align-items-center p-3 rounded border">
+                                                    <i class="fas fa-calendar-check text-primary me-2"></i>
+                                                    <span>حجز موعد للمقاسات</span>
+                                                    <span class="ms-auto">
+                                                        @if($product->enable_appointments)
+                                                            <i class="fas fa-check text-success"></i>
+                                                        @else
+                                                            <i class="fas fa-times text-danger"></i>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="option-item d-flex align-items-center p-3 rounded border">
+                                                    <i class="fas fa-palette text-primary me-2"></i>
+                                                    <span>اختيار الألوان المحددة</span>
+                                                    <span class="ms-auto">
+                                                        @if($product->enable_color_selection)
+                                                            <i class="fas fa-check text-success"></i>
+                                                        @else
+                                                            <i class="fas fa-times text-danger"></i>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="option-item d-flex align-items-center p-3 rounded border">
+                                                    <i class="fas fa-paint-brush text-primary me-2"></i>
+                                                    <span>إضافة لون مخصص</span>
+                                                    <span class="ms-auto">
+                                                        @if($product->enable_custom_color)
+                                                            <i class="fas fa-check text-success"></i>
+                                                        @else
+                                                            <i class="fas fa-times text-danger"></i>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="option-item d-flex align-items-center p-3 rounded border">
+                                                    <i class="fas fa-ruler text-primary me-2"></i>
+                                                    <span>اختيار المقاسات المحددة</span>
+                                                    <span class="ms-auto">
+                                                        @if($product->enable_size_selection)
+                                                            <i class="fas fa-check text-success"></i>
+                                                        @else
+                                                            <i class="fas fa-times text-danger"></i>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="option-item d-flex align-items-center p-3 rounded border">
+                                                    <i class="fas fa-ruler-combined text-primary me-2"></i>
+                                                    <span>إضافة مقاس مخصص</span>
+                                                    <span class="ms-auto">
+                                                        @if($product->enable_custom_size)
+                                                            <i class="fas fa-check text-success"></i>
+                                                        @else
+                                                            <i class="fas fa-times text-danger"></i>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

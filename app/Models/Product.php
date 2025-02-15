@@ -22,12 +22,22 @@ class Product extends Model
     'price',
     'stock',
     'is_available',
-    'category_id'
+    'category_id',
+    'enable_custom_color',
+    'enable_custom_size',
+    'enable_color_selection',
+    'enable_size_selection',
+    'enable_appointments'
   ];
 
   protected $casts = [
     'stock' => 'integer',
-    'is_available' => 'boolean'
+    'is_available' => 'boolean',
+    'enable_custom_color' => 'boolean',
+    'enable_custom_size' => 'boolean',
+    'enable_color_selection' => 'boolean',
+    'enable_size_selection' => 'boolean',
+    'enable_appointments' => 'boolean'
   ];
 
   protected $searchableFields = [
@@ -136,6 +146,31 @@ class Product extends Model
     return $this->images->map(function($image) {
       return Storage::url($image->image_path);
     })->toArray();
+  }
+
+  public function getAllowCustomColorAttribute()
+  {
+    return $this->enable_custom_color;
+  }
+
+  public function getAllowCustomSizeAttribute()
+  {
+    return $this->enable_custom_size;
+  }
+
+  public function getAllowColorSelectionAttribute()
+  {
+    return $this->enable_color_selection;
+  }
+
+  public function getAllowSizeSelectionAttribute()
+  {
+    return $this->enable_size_selection;
+  }
+
+  public function getAllowAppointmentAttribute()
+  {
+    return $this->enable_appointments;
   }
 
   public function toArray()

@@ -11,17 +11,8 @@ class PhoneController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'phone' => [
-                'required',
-                'string',
-                'max:20',
-                'regex:/^(05)[0-9]{8}$/', // Saudi mobile number format
-                'unique:phone_numbers,phone,NULL,id,user_id,' . Auth::id()
-            ],
-            'type' => 'required|in:' . implode(',', array_keys(PhoneNumber::TYPES))
-        ], [
-            'phone.regex' => 'رقم الهاتف يجب أن يكون رقم سعودي صحيح يبدأ ب 05 ويتكون من 10 أرقام',
-            'phone.unique' => 'رقم الهاتف مسجل مسبقاً'
+            'phone' => 'required|string|max:20|unique:phone_numbers,phone,NULL,id,user_id,' . Auth::id(),
+            'type' => 'required|string'
         ]);
 
         $phone = new PhoneNumber();
@@ -39,26 +30,15 @@ class PhoneController extends Controller
         return response()->json([
             'id' => $phone->id,
             'phone' => $phone->phone,
-            'type' => $phone->type,
-            'type_text' => $phone->type_text
+            'type' => $phone->type
         ]);
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'phone' => [
-                'required',
-                'string',
-                'max:20',
-                'regex:/^(05)[0-9]{8}$/', // Saudi mobile number format
-                'unique:phone_numbers,phone,' . $id . ',id,user_id,' . Auth::id()
-            ],
-            'type' => 'required|string|in:' . implode(',', array_keys(PhoneNumber::TYPES))
-        ], [
-            'phone.regex' => 'رقم الهاتف يجب أن يكون رقم سعودي صحيح يبدأ ب 05 ويتكون من 10 أرقام',
-            'phone.unique' => 'رقم الهاتف مسجل مسبقاً',
-            'type.in' => 'نوع الهاتف غير صالح'
+            'phone' => 'required|string|max:20|unique:phone_numbers,phone,' . $id . ',id,user_id,' . Auth::id(),
+            'type' => 'required|string'
         ]);
 
         $phone = PhoneNumber::where('user_id', Auth::id())->findOrFail($id);
@@ -70,9 +50,8 @@ class PhoneController extends Controller
             'message' => 'تم تحديث رقم الهاتف بنجاح',
             'phone' => [
                 'id' => $phone->id,
-                'phone' => $this->formatPhoneNumber($phone->phone),
+                'phone' => $phone->phone,
                 'type' => $phone->type,
-                'type_text' => $phone->type_text,
                 'is_primary' => $phone->is_primary
             ]
         ]);
@@ -82,36 +61,29 @@ class PhoneController extends Controller
     {
         $phone = PhoneNumber::where('user_id', Auth::id())->findOrFail($id);
 
-        // إذا كان هذا الرقم رئيسياً، نقوم بتعيين رقم آخر كرقم رئيسي
         if ($phone->is_primary) {
             $newPrimary = PhoneNumber::where('user_id', Auth::id())
                 ->where('id', '!=', $id)
                 ->first();
 
             if ($newPrimary) {
-                $newPrimary->setAsPrimary();
+                $newPrimary->update(['is_primary' => true]);
             }
         }
 
-        // حذف نهائي للرقم
-        $phone->forceDelete(); // not needed anymore since we removed SoftDeletes, but kept for clarity
+        $phone->delete();
 
         return response()->json(['message' => 'تم حذف رقم الهاتف بنجاح']);
     }
 
-    public function makePrimary(PhoneNumber $phone)
+    public function makePrimary($id)
     {
-        // التأكد من أن الرقم يخص المستخدم الحالي
-        if ($phone->user_id !== auth()->id()) {
-            return response()->json(['message' => 'غير مصرح لك بهذا الإجراء'], 403);
-        }
+        $phone = PhoneNumber::where('user_id', Auth::id())->findOrFail($id);
 
-        // إلغاء تعيين الرقم الرئيسي السابق
-        PhoneNumber::where('user_id', auth()->id())
+        PhoneNumber::where('user_id', Auth::id())
             ->where('is_primary', true)
             ->update(['is_primary' => false]);
 
-        // تعيين الرقم الجديد كرقم رئيسي
         $phone->update(['is_primary' => true]);
 
         return response()->json(['message' => 'تم تعيين الرقم كرقم رئيسي بنجاح']);

@@ -14,6 +14,7 @@ class Package extends Model
         'base_price',
         'duration',
         'num_photos',
+        'themes_count',
         'is_active'
     ];
 

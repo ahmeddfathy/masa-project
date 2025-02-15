@@ -52,12 +52,17 @@ class BookingController extends Controller
             'baby_birth_date' => 'nullable|date',
             'gender' => 'nullable|in:ذكر,أنثى',
             'notes' => 'nullable|string',
-            'addons' => 'nullable|array'
+            'addons' => 'nullable|array',
+            'image_consent' => 'required|in:0,1',
+            'terms_consent' => 'required|accepted'
         ]);
 
         // احتساب السعر الإجمالي
         $package = Package::findOrFail($validated['package_id']);
         $total_amount = $package->base_price;
+
+        // تحويل قيمة terms_consent إلى boolean
+        $terms_consent = $request->has('terms_consent') ? 1 : 0;
 
         // إنشاء الحجز
         $booking = Booking::create([
@@ -72,7 +77,9 @@ class BookingController extends Controller
             'gender' => $validated['gender'],
             'notes' => $validated['notes'],
             'status' => 'pending',
-            'total_amount' => $total_amount
+            'total_amount' => $total_amount,
+            'image_consent' => $validated['image_consent'],
+            'terms_consent' => $terms_consent
         ]);
 
         // إضافة الإضافات إذا وجدت
@@ -126,8 +133,12 @@ class BookingController extends Controller
 
     public function saveFormData(Request $request)
     {
-        // حفظ بيانات النموذج في الجلسة
-        session(['booking_form_data' => $request->all()]);
+        // حفظ بيانات النموذج في الجلسة مع تضمين حقول الموافقة
+        $formData = $request->all();
+        $formData['image_consent'] = $request->input('image_consent', '0');
+        $formData['terms_consent'] = $request->has('terms_consent');
+
+        session(['booking_form_data' => $formData]);
 
         // التوجيه حسب نوع الطلب
         return redirect()->route($request->query('redirect', 'register'));

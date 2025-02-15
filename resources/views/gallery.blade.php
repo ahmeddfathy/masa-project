@@ -34,35 +34,35 @@
 
             <!-- Carousel Items -->
             <div class="carousel-inner">
-                <!-- Outdoor Photo -->
+                <!-- Newborn Photo -->
                 <div class="carousel-item active">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1533227268428-f9ed0900fb3b" class="d-block w-100" alt="خروجات وأنشطة" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba" class="d-block w-100" alt="تصوير المواليد" loading="lazy">
                         <div class="carousel-caption">
-                            <h3>خروجات وأنشطة</h3>
-                            <p>توثيق المغامرات والذكريات الجميلة</p>
+                            <h3>تصوير المواليد</h3>
+                            <p>توثيق أجمل لحظات الطفولة المبكرة</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Family Photo -->
+                <!-- Baby Photo -->
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1609220136736-443140cffec6" class="d-block w-100" alt="جلسة عائلية" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1555252333-9f8e92e65df9" class="d-block w-100" alt="تصوير الرضع" loading="lazy">
                         <div class="carousel-caption">
-                            <h3>لحظات عائلية</h3>
-                            <p>ذكريات لا تنسى</p>
+                            <h3>تصوير الرضع</h3>
+                            <p>ابتسامات وضحكات الأطفال الصغار</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Portrait Photo -->
+                <!-- Toddler Photo -->
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1623091411395-09e79fdbfcf3" class="d-block w-100" alt="بورتريه شخصي" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74" class="d-block w-100" alt="تصوير الأطفال" loading="lazy">
                         <div class="carousel-caption">
-                            <h3>بورتريه احترافي</h3>
-                            <p>صور شخصية مميزة</p>
+                            <h3>تصوير الأطفال</h3>
+                            <p>لحظات اللعب والمرح</p>
                         </div>
                     </div>
                 </div>
@@ -70,21 +70,21 @@
                 <!-- Birthday Photo -->
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce" class="d-block w-100" alt="حفل عيد ميلاد" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce" class="d-block w-100" alt="أعياد ميلاد الأطفال" loading="lazy">
                         <div class="carousel-caption">
-                            <h3>أعياد ميلاد</h3>
-                            <p>لحظات الفرح والسعادة</p>
+                            <h3>أعياد ميلاد الأطفال</h3>
+                            <p>احتفالات مميزة لأطفالنا</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Children Photo -->
+                <!-- Children Group Photo -->
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74" class="d-block w-100" alt="تصوير أطفال" loading="lazy">
+                        <img src="https://images.unsplash.com/photo-1472162072942-cd5147eb3902" class="d-block w-100" alt="تصوير مجموعات الأطفال" loading="lazy">
                         <div class="carousel-caption">
-                            <h3>لحظات الطفولة</h3>
-                            <p>ابتسامات بريئة</p>
+                            <h3>تصوير مجموعات الأطفال</h3>
+                            <p>ذكريات جماعية سعيدة</p>
                         </div>
                     </div>
                 </div>

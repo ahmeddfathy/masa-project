@@ -46,7 +46,7 @@
                         <a class="nav-link active" href="/products">المنتجات</a>
                   </li>
                   <li class="nav-item">
-                        <a class="nav-link" href="/profile">حسابي</a>
+                        <a class="nav-link" href="/user/profile">حسابي</a>
                   </li>
               </ul>
               <div class="nav-buttons">

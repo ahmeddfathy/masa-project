@@ -213,24 +213,24 @@
         font-size: calc(var(--font-size-md) * 0.9);
         margin: 0.4rem;
     }
-    
+
     .gallery-item {
         margin-bottom: 1.5rem;
     }
-    
+
     .gallery-item img {
         height: 300px;
     }
-    
+
     .gallery-info h4 {
         font-size: calc(var(--font-size-lg) * 0.9);
     }
-    
+
     .gallery-info p {
         font-size: calc(var(--font-size-md) * 0.9);
         margin-bottom: 1.5rem;
     }
-    
+
     .gallery-icon {
         width: 50px;
         height: 50px;
@@ -243,7 +243,7 @@
     .gallery-item img {
         height: 250px;
     }
-    
+
     .gallery-filter button {
         padding: 0.7rem 1.5rem;
         font-size: calc(var(--font-size-md) * 0.85);
@@ -253,11 +253,11 @@
     .gallery-info h4 {
         font-size: calc(var(--font-size-lg) * 0.85);
     }
-    
+
     .gallery-info p {
         font-size: calc(var(--font-size-md) * 0.85);
     }
-    
+
     .gallery-icon {
         width: 45px;
         height: 45px;
@@ -453,7 +453,7 @@
     .carousel-image-container {
         height: 60vh;
     }
-    
+
     .carousel-caption h3 {
         font-size: 2rem;
     }
@@ -463,11 +463,11 @@
     .carousel-image-container {
         height: 50vh;
     }
-    
+
     .carousel-caption {
         padding: 2rem;
     }
-    
+
     .carousel-caption h3 {
         font-size: 1.8rem;
     }
@@ -481,15 +481,15 @@
     .carousel-image-container {
         height: 100vh;
     }
-    
+
     .carousel-image-container img {
         object-position: center;
     }
-    
+
     .carousel-caption {
         padding: 1.5rem;
     }
-    
+
     .carousel-caption h3 {
         font-size: 1.5rem;
         margin-bottom: 0.5rem;
@@ -507,7 +507,7 @@
         height: 35vh;
         min-height: 300px;
     }
-    
+
     .carousel-caption {
         padding: 1rem;
     }
@@ -525,7 +525,7 @@
         width: 2rem;
         height: 2rem;
     }
-    
+
     .carousel-indicators button {
         width: 8px;
         height: 8px;

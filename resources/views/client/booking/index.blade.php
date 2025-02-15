@@ -17,7 +17,7 @@
 <body>
     @include('parts.navbar')
 
-    <div class="container py-5">
+    <div class="container py-4">
         <!-- Gallery Carousel -->
         <div id="galleryCarousel" class="carousel slide gallery-carousel animate-fadeInUp" data-bs-ride="carousel">
             <div class="carousel-indicators">
@@ -88,6 +88,7 @@
                                     <ul class="list-unstyled">
                                         <li><i class="fas fa-clock me-2"></i>المدة: {{ $package->duration }} ساعة</li>
                                         <li><i class="fas fa-images me-2"></i>عدد الصور: {{ $package->num_photos }}</li>
+                                        <li><i class="fas fa-palette me-2"></i>عدد الثيمات: {{ $package->themes_count }}</li>
                                         <li><i class="fas fa-tag me-2"></i>السعر: {{ $package->base_price }} درهم</li>
                                     </ul>
                                 </div>
@@ -182,6 +183,27 @@
                     </div>
                 </div>
 
+                <!-- Consent Checkboxes -->
+                <div class="mb-4">
+                    <div class="mb-3">
+                        <label class="form-label">الموافقة على عرض الصور</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-camera"></i></span>
+                            <select name="image_consent" class="form-select" id="imageConsent">
+                                <option value="1" {{ old('image_consent') == '1' ? 'selected' : '' }}>نعم، أوافق على عرض الصور في معرض الاستوديو ومواقع التواصل الاجتماعي</option>
+                                <option value="0" {{ old('image_consent') == '0' ? 'selected' : '' }}>لا، لا أوافق على عرض الصور</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="terms_consent" class="form-check-input" id="termsConsent"
+                               value="1" required {{ old('terms_consent') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="termsConsent">
+                            أوافق على <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">الشروط والسياسات</a> الخاصة بالاستوديو <span class="text-danger">*</span>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Submit Button -->
                 <div class="text-center">
                     @auth
@@ -201,6 +223,37 @@
                     @endauth
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">الشروط والسياسات</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>سياسة عرض الصور:</h6>
+                    <ul>
+                        <li>يحتفظ الاستوديو بحق عرض الصور المختارة في معرض الصور الخاص به.</li>
+                        <li>سيتم استخدام الصور في وسائل التواصل الاجتماعي والمواد التسويقية للاستوديو.</li>
+                        <li>نحن نحترم خصوصيتكم ولن نستخدم الصور بطريقة غير لائقة.</li>
+                    </ul>
+
+                    <h6 class="mt-4">الشروط العامة:</h6>
+                    <ul>
+                        <li>يجب الحضور في الموعد المحدد بدقة.</li>
+                        <li>في حالة الرغبة في إلغاء الحجز، يجب إخطارنا قبل 24 ساعة على الأقل.</li>
+                        <li>سيتم تسليم الصور النهائية خلال أسبوع من تاريخ الجلسة.</li>
+                        <li>يتم دفع 50% من قيمة الحجز مقدماً لتأكيد الموعد.</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                </div>
+            </div>
         </div>
     </div>
 

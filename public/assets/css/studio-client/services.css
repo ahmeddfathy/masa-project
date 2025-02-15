@@ -601,13 +601,7 @@
 }
 
 .hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--primary-color);
-    opacity: 0.9;
+    display: none;
 }
 
 .hero-content {
@@ -615,6 +609,12 @@
     z-index: 2;
     text-align: center;
     animation: fadeIn 1s ease-out;
+}
+
+/* تحسين مقروئية النص */
+.hero-content h1,
+.hero-content p {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Service Cards */

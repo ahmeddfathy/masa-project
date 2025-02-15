@@ -18,10 +18,17 @@ class ReportController extends Controller
   public function index(Request $request)
   {
     $period = $request->get('period', 'month');
+    $startDate = null;
+    $endDate = null;
 
-    $salesReport = $this->reportService->getSalesReport($period);
-    $topProducts = $this->reportService->getTopProducts($period);
-    $appointmentsReport = $this->reportService->getAppointmentsReport($period);
+    if ($period === 'custom') {
+        $startDate = $request->get('start_date');
+        $endDate = $request->get('end_date');
+    }
+
+    $salesReport = $this->reportService->getSalesReport($period, $startDate, $endDate);
+    $topProducts = $this->reportService->getTopProducts($period, $startDate, $endDate);
+    $appointmentsReport = $this->reportService->getAppointmentsReport($startDate, $endDate);
     $inventoryReport = $this->reportService->getInventoryReport();
 
     return view('admin.reports.index', compact(

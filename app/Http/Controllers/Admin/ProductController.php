@@ -51,7 +51,12 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
             'is_primary.*' => 'boolean',
-            'is_available' => 'boolean'
+            'is_available' => 'boolean',
+            'enable_custom_color' => 'boolean',
+            'enable_custom_size' => 'boolean',
+            'enable_color_selection' => 'boolean',
+            'enable_size_selection' => 'boolean',
+            'enable_appointments' => 'boolean',
         ];
 
         // Add color validation rules only if colors are enabled
@@ -75,8 +80,15 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
 
-            $validatedData['slug'] = Str::slug($validatedData['name']);
+            // Set default values for feature flags
+            $validatedData['enable_custom_color'] = $request->has('enable_custom_color');
+            $validatedData['enable_custom_size'] = $request->has('enable_custom_size');
+            $validatedData['enable_color_selection'] = $request->has('enable_color_selection');
+            $validatedData['enable_size_selection'] = $request->has('enable_size_selection');
+            $validatedData['enable_appointments'] = $request->has('enable_appointments');
             $validatedData['is_available'] = $request->has('is_available');
+            $validatedData['slug'] = Str::slug($validatedData['name']);
+
             $product = Product::create($validatedData);
 
             // Store colors if enabled
@@ -103,6 +115,7 @@ class ProductController extends Controller
                 }
             }
 
+            // Handle image uploads
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $index => $image) {
                     $path = $this->uploadFile($image, 'products');
@@ -115,10 +128,11 @@ class ProductController extends Controller
 
             DB::commit();
             return redirect()->route('admin.products.index')
-                ->with('success', 'Product created successfully.');
+                ->with('success', 'تم إضافة المنتج بنجاح');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to create product. ' . $e->getMessage());
+            return back()->with('error', 'فشل إضافة المنتج. ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -143,7 +157,11 @@ class ProductController extends Controller
                 'is_primary' => 'nullable|exists:product_images,id',
                 'is_primary_new.*' => 'nullable|boolean',
                 'remove_images.*' => 'nullable|exists:product_images,id',
-                'is_available' => 'boolean'
+                'enable_custom_color' => 'boolean',
+                'enable_custom_size' => 'boolean',
+                'enable_color_selection' => 'boolean',
+                'enable_size_selection' => 'boolean',
+                'enable_appointments' => 'boolean',
             ];
 
             // Add color validation rules only if colors are enabled
@@ -166,31 +184,21 @@ class ProductController extends Controller
 
             DB::beginTransaction();
 
-            // Generate new slug only if name has changed
-            $newSlug = Str::slug($validated['name']);
-            if ($newSlug !== $product->slug) {
-                // Check if the new slug already exists for another product
-                $slugExists = Product::where('slug', $newSlug)
-                    ->where('id', '!=', $product->id)
-                    ->exists();
-
-                if ($slugExists) {
-                    // Append a unique identifier if slug exists
-                    $newSlug = $newSlug . '-' . uniqid();
-                }
-            }
-
-            // Update basic product information
-            $product->fill([
+            // Update feature flags
+            $product->update([
                 'name' => $validated['name'],
                 'description' => $validated['description'],
                 'price' => $validated['price'],
                 'stock' => $validated['stock'],
                 'category_id' => $validated['category_id'],
                 'is_available' => $request->has('is_available'),
-                'slug' => $newSlug
+                'enable_custom_color' => $request->has('enable_custom_color'),
+                'enable_custom_size' => $request->has('enable_custom_size'),
+                'enable_color_selection' => $request->has('enable_color_selection'),
+                'enable_size_selection' => $request->has('enable_size_selection'),
+                'enable_appointments' => $request->has('enable_appointments'),
+                'slug' => Str::slug($validated['name'])
             ]);
-            $product->save();
 
             // Handle colors
             if ($request->has('has_colors')) {
@@ -284,7 +292,7 @@ class ProductController extends Controller
 
             DB::commit();
             return redirect()->route('admin.products.index')
-                ->with('success', 'تم تحديث المنتج بنجاح.');
+                ->with('success', 'تم تحديث المنتج بنجاح');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()
@@ -324,5 +332,35 @@ class ProductController extends Controller
     {
         $product->load(['category', 'images', 'colors', 'sizes', 'orderItems']);
         return view('admin.products.show', compact('product'));
+    }
+
+    protected function getValidationRules(): array
+    {
+        return [
+            // ... existing validation rules ...
+            'enable_custom_color' => 'boolean',
+            'enable_custom_size' => 'boolean',
+            'enable_color_selection' => 'boolean',
+            'enable_size_selection' => 'boolean',
+            'enable_appointments' => 'boolean',
+        ];
+    }
+
+    protected function prepareForValidation($data)
+    {
+        // Convert checkbox values to boolean
+        $checkboxFields = [
+            'enable_custom_color',
+            'enable_custom_size',
+            'enable_color_selection',
+            'enable_size_selection',
+            'enable_appointments'
+        ];
+
+        foreach ($checkboxFields as $field) {
+            $data[$field] = isset($data[$field]) && $data[$field] === 'on';
+        }
+
+        return $data;
     }
 }

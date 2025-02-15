@@ -319,6 +319,89 @@
                                     </div>
                                 </div>
 
+                                <!-- Product Options -->
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="card-title mb-4">
+                                                <i class="fas fa-cog text-primary me-2"></i>
+                                                خيارات المنتج
+                                            </h5>
+                                            <div class="row g-3">
+                                                <!-- Appointment Option -->
+                                                <div class="col-md-6">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               id="enable_appointments" name="enable_appointments"
+                                                               value="1" {{ $product->enable_appointments ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="enable_appointments">
+                                                            <i class="fas fa-calendar-check me-2"></i>
+                                                            السماح بحجز موعد للمقاسات
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Color Selection Option -->
+                                                <div class="col-md-6">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               id="enable_color_selection" name="enable_color_selection"
+                                                               value="1" {{ $product->enable_color_selection ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="enable_color_selection">
+                                                            <i class="fas fa-palette me-2"></i>
+                                                            السماح باختيار الألوان المحددة
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Custom Color Option -->
+                                                <div class="col-md-6">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               id="enable_custom_color" name="enable_custom_color"
+                                                               value="1" {{ $product->enable_custom_color ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="enable_custom_color">
+                                                            <i class="fas fa-paint-brush me-2"></i>
+                                                            السماح بإضافة لون مخصص
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Size Selection Option -->
+                                                <div class="col-md-6">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               id="enable_size_selection" name="enable_size_selection"
+                                                               value="1" {{ $product->enable_size_selection ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="enable_size_selection">
+                                                            <i class="fas fa-ruler me-2"></i>
+                                                            السماح باختيار المقاسات المحددة
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Custom Size Option -->
+                                                <div class="col-md-6">
+                                                    <div class="form-check form-switch">
+                                                        <input class="form-check-input" type="checkbox"
+                                                               id="enable_custom_size" name="enable_custom_size"
+                                                               value="1" {{ $product->enable_custom_size ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="enable_custom_size">
+                                                            <i class="fas fa-ruler-combined me-2"></i>
+                                                            السماح بإضافة مقاس مخصص
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="alert alert-info mt-3">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                <strong>ملاحظة:</strong> هذه الإعدادات تتحكم في الخيارات المتاحة للعملاء عند طلب هذا المنتج.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Submit Button -->
                                 <div class="col-12">
                                     <div class="card border-0 shadow-sm">

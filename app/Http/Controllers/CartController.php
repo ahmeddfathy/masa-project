@@ -225,10 +225,16 @@ class CartController extends Controller
         ]);
     }
 
-    public function updateQuantity(Request $request, CartItem $cartItem)
+    /**
+     * تحديث كمية منتج في السلة
+     */
+    public function updateItem(Request $request, CartItem $cartItem)
     {
         if (!Auth::check() || $cartItem->cart->user_id !== Auth::id()) {
-            return back()->with('error', 'غير مصرح بهذا الإجراء');
+            return response()->json([
+                'success' => false,
+                'message' => 'غير مصرح بهذا الإجراء'
+            ], 403);
         }
 
         $request->validate([
@@ -244,13 +250,25 @@ class CartController extends Controller
         $cart->total_amount = $cart->items->sum('subtotal');
         $cart->save();
 
-        return back()->with('success', 'تم تحديث الكمية بنجاح');
+        return response()->json([
+            'success' => true,
+            'message' => 'تم تحديث الكمية بنجاح',
+            'item_subtotal' => $cartItem->subtotal,
+            'cart_total' => $cart->total_amount,
+            'cart_count' => $cart->items->sum('quantity')
+        ]);
     }
 
+    /**
+     * حذف منتج من السلة
+     */
     public function removeItem(CartItem $cartItem)
     {
         if (!Auth::check() || $cartItem->cart->user_id !== Auth::id()) {
-            return back()->with('error', 'غير مصرح بهذا الإجراء');
+            return response()->json([
+                'success' => false,
+                'message' => 'غير مصرح بهذا الإجراء'
+            ], 403);
         }
 
         $cart = $cartItem->cart;
@@ -260,6 +278,11 @@ class CartController extends Controller
         $cart->total_amount = $cart->items->sum('subtotal');
         $cart->save();
 
-        return back()->with('success', 'تم حذف المنتج من السلة');
+        return response()->json([
+            'success' => true,
+            'message' => 'تم حذف المنتج من السلة بنجاح',
+            'cart_total' => $cart->total_amount,
+            'cart_count' => $cart->items->sum('quantity')
+        ]);
     }
 }

@@ -21,6 +21,7 @@
                                     <th>السعر الأساسي</th>
                                     <th>المدة</th>
                                     <th>عدد الصور</th>
+                                    <th>عدد الثيمات</th>
                                     <th>الخدمات</th>
                                     <th>الحالة</th>
                                     <th>الإجراءات</th>
@@ -34,6 +35,7 @@
                                         <td>{{ $package->base_price }} درهم</td>
                                         <td>{{ $package->duration }} ساعة</td>
                                         <td>{{ $package->num_photos }}</td>
+                                        <td>{{ $package->themes_count }}</td>
                                         <td>
                                             @foreach($package->services as $service)
                                                 <span class="badge bg-info">{{ $service->name }}</span>

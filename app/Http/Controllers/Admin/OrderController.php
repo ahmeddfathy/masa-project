@@ -62,7 +62,7 @@ class OrderController extends Controller
         $orders = $query->paginate(10);
 
         // Transform orders data
-        $orders->through(function ($order) {
+        $orders->getCollection()->transform(function ($order) {
             return [
                 'id' => $order->id,
                 'uuid' => $order->uuid,
@@ -173,7 +173,7 @@ class OrderController extends Controller
 
   public function updateStatus(Request $request, Order $order)
   {
-    \Log::info('Updating order status - Start', [
+    Log::info('Updating order status - Start', [
         'order_id' => $order->id,
         'current_status' => $order->order_status,
         'new_status' => $request->order_status,
@@ -197,26 +197,43 @@ class OrderController extends Controller
             'order_status' => $validated['order_status']
         ]);
 
-        \Log::info('Update operation result', [
+        Log::info('Update operation result', [
             'updated' => $updated,
             'new_order_data' => $order->fresh()->toArray()
         ]);
 
         DB::commit();
 
-        // Notify the customer about the status change
+        // إضافة تأكيد إرسال الإشعار
         if ($order->user) {
-            $order->user->notify(new OrderStatusUpdated($order));
+            Log::info('Attempting to send notification to user', [
+                'user_id' => $order->user->id,
+                'user_email' => $order->user->email
+            ]);
+
+            $notification = new OrderStatusUpdated($order);
+            $order->user->notify($notification);
+
+            // التحقق من الإشعارات المخزنة
+            $storedNotifications = $order->user->notifications()->where('type', OrderStatusUpdated::class)->get();
+            Log::info('Stored notifications', [
+                'count' => $storedNotifications->count(),
+                'notifications' => $storedNotifications->toArray()
+            ]);
+        } else {
+            Log::warning('No user associated with this order', [
+                'order_id' => $order->id
+            ]);
         }
 
-        return back()->with('success', 'Order status updated successfully.');
+        return back()->with('success', 'تم تحديث حالة الطلب بنجاح.');
     } catch (\Exception $e) {
         DB::rollBack();
-        \Log::error('Error updating order status', [
+        Log::error('Error updating order status', [
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString()
         ]);
-        return back()->with('error', 'Failed to update order status: ' . $e->getMessage());
+        return back()->with('error', 'فشل تحديث حالة الطلب: ' . $e->getMessage());
     }
   }
 

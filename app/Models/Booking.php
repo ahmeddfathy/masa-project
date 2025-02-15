@@ -21,7 +21,9 @@ class Booking extends Model
         'gender',
         'notes',
         'status',
-        'total_amount'
+        'total_amount',
+        'image_consent',
+        'terms_consent'
     ];
 
     protected $casts = [
@@ -29,7 +31,9 @@ class Booking extends Model
         'session_date' => 'date',
         'session_time' => 'datetime',
         'baby_birth_date' => 'date',
-        'total_amount' => 'decimal:2'
+        'total_amount' => 'decimal:2',
+        'image_consent' => 'boolean',
+        'terms_consent' => 'boolean'
     ];
 
     public function user(): BelongsTo

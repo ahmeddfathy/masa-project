@@ -21,7 +21,6 @@
     <!-- Services Header -->
     <section class="hero-section">
         <div class="hero-image" style="background-image: url('https://images.unsplash.com/photo-1533483595632-c5f0e57a1936?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');"></div>
-        <div class="hero-overlay"></div>
         <div class="container">
             <div class="hero-content">
                 <h1 class="text-center text-white mb-3">خدماتنا</h1>

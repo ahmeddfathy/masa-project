@@ -9,13 +9,22 @@ let activeFilters = {
 // Initialize when document is ready
 document.addEventListener('DOMContentLoaded', function() {
     initializeFilters();
-    loadCartItems();
+
+    // تحقق مما إذا كان المستخدم مسجل دخول قبل تحميل السلة
+    if (document.body.classList.contains('user-logged-in')) {
+        loadCartItems();
+    }
 
     // Setup event listeners for both cart buttons
     document.getElementById('closeCart').addEventListener('click', closeCart);
 
     // Cart toggle in navbar
-    document.getElementById('cartToggle').addEventListener('click', function() {
+    document.getElementById('cartToggle')?.addEventListener('click', function() {
+        if (!document.body.classList.contains('user-logged-in')) {
+            showLoginPrompt('{{ route("login") }}');
+            return;
+        }
+
         const cartSidebar = document.getElementById('cartSidebar');
         if (cartSidebar.classList.contains('active')) {
             closeCart();
@@ -25,7 +34,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fixed cart button
-    document.getElementById('fixedCartBtn').addEventListener('click', function() {
+    document.getElementById('fixedCartBtn')?.addEventListener('click', function() {
+        if (!document.body.classList.contains('user-logged-in')) {
+            showLoginPrompt('{{ route("login") }}');
+            return;
+        }
+
         const cartSidebar = document.getElementById('cartSidebar');
         if (cartSidebar.classList.contains('active')) {
             closeCart();

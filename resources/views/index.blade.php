@@ -15,7 +15,6 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/index.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/contact.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}">
 </head>
 <body>

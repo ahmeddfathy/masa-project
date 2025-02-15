@@ -11,13 +11,23 @@ use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
-  public function getSalesReport(string $period = 'month'): array
+  public function getSalesReport(string $period = 'month', ?string $startDate = null, ?string $endDate = null): array
   {
-    $startDate = $this->getStartDate($period);
-    $endDate = now();
+    if ($startDate && $endDate) {
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
+    } else {
+        $endDate = now();
+        $startDate = match ($period) {
+            'today' => Carbon::today(),
+            'week' => Carbon::now()->startOfWeek(),
+            'month' => Carbon::now()->startOfMonth(),
+            'year' => Carbon::now()->startOfYear(),
+            default => Carbon::now()->subMonth(),
+        };
+    }
 
     $salesData = Order::where('order_status', Order::ORDER_STATUS_COMPLETED)
-      ->where('payment_status', Order::PAYMENT_STATUS_PAID)
       ->whereBetween('created_at', [$startDate, $endDate])
       ->select(
         DB::raw('DATE(created_at) as date'),
@@ -41,19 +51,8 @@ class ReportService
       ];
     }
 
-    // Get sales by payment method
-    $salesByPaymentMethod = Order::where('order_status', Order::ORDER_STATUS_COMPLETED)
-      ->where('payment_status', Order::PAYMENT_STATUS_PAID)
-      ->whereBetween('created_at', [$startDate, $endDate])
-      ->select('payment_method', DB::raw('SUM(total_amount) as total'))
-      ->groupBy('payment_method')
-      ->get()
-      ->pluck('total', 'payment_method')
-      ->toArray();
-
     // Add peak hours analysis
     $peakHours = Order::where('order_status', Order::ORDER_STATUS_COMPLETED)
-        ->where('payment_status', Order::PAYMENT_STATUS_PAID)
         ->whereBetween('created_at', [$startDate, $endDate])
         ->select(DB::raw('HOUR(created_at) as hour'), DB::raw('COUNT(*) as count'))
         ->groupBy('hour')
@@ -63,7 +62,6 @@ class ReportService
 
     // Add customer analysis
     $customerAnalysis = Order::where('order_status', Order::ORDER_STATUS_COMPLETED)
-        ->where('payment_status', Order::PAYMENT_STATUS_PAID)
         ->whereBetween('created_at', [$startDate, $endDate])
         ->select('user_id', DB::raw('COUNT(*) as orders'), DB::raw('SUM(total_amount) as total'))
         ->groupBy('user_id')
@@ -76,14 +74,12 @@ class ReportService
     $topProducts = Product::withCount(['orderItems as total_quantity' => function ($query) use ($startDate, $endDate) {
         $query->whereHas('order', function ($q) use ($startDate, $endDate) {
             $q->where('order_status', Order::ORDER_STATUS_COMPLETED)
-                ->where('payment_status', Order::PAYMENT_STATUS_PAID)
                 ->whereBetween('created_at', [$startDate, $endDate]);
         });
     }])
     ->withSum(['orderItems as total_revenue' => function ($query) use ($startDate, $endDate) {
         $query->whereHas('order', function ($q) use ($startDate, $endDate) {
             $q->where('order_status', Order::ORDER_STATUS_COMPLETED)
-                ->where('payment_status', Order::PAYMENT_STATUS_PAID)
                 ->whereBetween('created_at', [$startDate, $endDate]);
         });
     }], 'subtotal')
@@ -93,7 +89,6 @@ class ReportService
 
         $query->whereHas('order', function ($q) use ($previousStart, $previousEnd) {
             $q->where('order_status', Order::ORDER_STATUS_COMPLETED)
-                ->where('payment_status', Order::PAYMENT_STATUS_PAID)
                 ->whereBetween('created_at', [$previousStart, $previousEnd]);
         });
     }], 'subtotal')
@@ -105,9 +100,14 @@ class ReportService
         $previousRevenue = $product->previous_revenue ?? 0;
         $currentRevenue = $product->total_revenue ?? 0;
 
-        $trend = $previousRevenue > 0
-            ? (($currentRevenue - $previousRevenue) / $previousRevenue) * 100
-            : ($currentRevenue > 0 ? 100 : 0);
+        // تحسين حساب الترند
+        if ($previousRevenue == 0 && $currentRevenue == 0) {
+            $trend = 0;
+        } elseif ($previousRevenue == 0) {
+            $trend = 100; // زيادة جديدة
+        } else {
+            $trend = (($currentRevenue - $previousRevenue) / $previousRevenue) * 100;
+        }
 
         return [
             'id' => $product->id,
@@ -123,7 +123,6 @@ class ReportService
       'orders_count' => $salesData->sum('orders_count'),
       'average_order_value' => $salesData->avg('total_sales') ?? 0,
       'daily_data' => $salesByDate,
-      'payment_methods' => $salesByPaymentMethod,
       'growth' => $this->calculateGrowth($startDate, $endDate),
       'peak_hours' => $peakHours,
       'top_customers' => $customerAnalysis,
@@ -131,32 +130,30 @@ class ReportService
     ];
   }
 
-  public function getTopProducts($limit = 5, $startDate = null, $endDate = null)
+  public function getTopProducts($period = 'month', $startDate = null, $endDate = null, $limit = 5)
   {
-    if ($startDate === null) {
-      $startDate = $this->getStartDate('month');
+    if (!$startDate) {
+        $startDate = $this->getStartDate($period);
     }
 
     $query = Product::withCount(['orderItems as total_quantity' => function ($query) use ($startDate, $endDate) {
-      $query->whereHas('order', function ($q) use ($startDate, $endDate) {
-        $q->where('order_status', Order::ORDER_STATUS_COMPLETED)
-          ->where('payment_status', Order::PAYMENT_STATUS_PAID)
-          ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
-          ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
-      });
+        $query->whereHas('order', function ($q) use ($startDate, $endDate) {
+            $q->where('order_status', Order::ORDER_STATUS_COMPLETED)
+                ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+                ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
+        });
     }])
     ->withSum(['orderItems as total_revenue' => function ($query) use ($startDate, $endDate) {
-      $query->whereHas('order', function ($q) use ($startDate, $endDate) {
-        $q->where('order_status', Order::ORDER_STATUS_COMPLETED)
-          ->where('payment_status', Order::PAYMENT_STATUS_PAID)
-          ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
-          ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
-      });
+        $query->whereHas('order', function ($q) use ($startDate, $endDate) {
+            $q->where('order_status', Order::ORDER_STATUS_COMPLETED)
+                ->when($startDate, fn($q) => $q->whereDate('created_at', '>=', $startDate))
+                ->when($endDate, fn($q) => $q->whereDate('created_at', '<=', $endDate));
+        });
     }], 'subtotal');
 
     return $query->orderByDesc('total_quantity')
-      ->limit($limit)
-      ->get();
+        ->limit($limit)
+        ->get();
   }
 
   public function getOrdersReport($startDate = null, $endDate = null)
@@ -191,28 +188,10 @@ class ReportService
 
     $ordersByStatus = array_merge($allStatuses, $ordersByStatus);
 
-    $paymentsByStatus = $query->select('payment_status', DB::raw('count(*) as count'))
-      ->groupBy('payment_status')
-      ->get()
-      ->mapWithKeys(function ($item) {
-        return [$item->payment_status => $item->count];
-      })
-      ->toArray();
-
-    // Initialize all payment statuses with 0 if not present
-    $allPaymentStatuses = [
-      Order::PAYMENT_STATUS_PENDING => 0,
-      Order::PAYMENT_STATUS_PAID => 0,
-      Order::PAYMENT_STATUS_FAILED => 0
-    ];
-
-    $paymentsByStatus = array_merge($allPaymentStatuses, $paymentsByStatus);
-
     return [
       'total_orders' => $totalOrders,
       'total_revenue' => $totalRevenue,
-      'orders_by_status' => $ordersByStatus,
-      'payments_by_status' => $paymentsByStatus
+      'orders_by_status' => $ordersByStatus
     ];
   }
 
@@ -299,21 +278,15 @@ class ReportService
   {
     $currentStartDate = Carbon::parse($startDate);
     $currentEndDate = Carbon::parse($endDate);
-
-    // حساب المدة بين التاريخين
     $periodInDays = $currentStartDate->diffInDays($currentEndDate);
-
-    // حساب الفترة السابقة
     $previousEndDate = $currentStartDate->copy()->subDay();
     $previousStartDate = $previousEndDate->copy()->subDays($periodInDays);
 
     $currentPeriod = Order::where('order_status', Order::ORDER_STATUS_COMPLETED)
-        ->where('payment_status', Order::PAYMENT_STATUS_PAID)
         ->whereBetween('created_at', [$currentStartDate, $currentEndDate])
         ->sum('total_amount');
 
     $previousPeriod = Order::where('order_status', Order::ORDER_STATUS_COMPLETED)
-        ->where('payment_status', Order::PAYMENT_STATUS_PAID)
         ->whereBetween('created_at', [$previousStartDate, $previousEndDate])
         ->sum('total_amount');
 
@@ -324,8 +297,8 @@ class ReportService
     return [
         'percentage' => round($growth, 2),
         'trend' => $growth >= 0 ? 'up' : 'down',
-        'current_amount' => $currentPeriod,
-        'previous_amount' => $previousPeriod
+        'current_amount' => round($currentPeriod, 2),
+        'previous_amount' => round($previousPeriod, 2)
     ];
   }
 }

@@ -45,7 +45,17 @@
     <div class="appointment-container">
         <div class="appointment-card {{ $appointment->service_type === 'custom_design' ? 'custom-design' : '' }}">
             <div class="appointment-header">
-                <h4 class="mb-0">#{{ $appointment->id }}</h4>
+                <div class="d-flex align-items-center gap-3">
+                    <h4 class="mb-0">
+                        <span class="text-muted">رقم الموعد:</span>
+                        {{ $appointment->reference_number }}
+                    </h4>
+                    <button class="btn btn-sm btn-outline-primary"
+                            onclick="navigator.clipboard.writeText('{{ $appointment->reference_number }}')">
+                        <i class="bi bi-clipboard"></i>
+                        نسخ
+                    </button>
+                </div>
                 <span class="appointment-status status-{{ $appointment->status }}">
                     {{ $appointment->status_text }}
                 </span>

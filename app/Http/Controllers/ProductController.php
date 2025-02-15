@@ -108,6 +108,44 @@ class ProductController extends Controller
 
         $product->load(['category', 'images', 'colors', 'sizes']);
 
+        // تحديث الميزات المتاحة في دليل الميزات
+        $availableFeatures = [];
+
+        if ($product->allow_color_selection && $product->colors->isNotEmpty()) {
+            $availableFeatures[] = [
+                'icon' => 'palette',
+                'text' => 'يمكنك اختيار لون من الألوان المتاحة'
+            ];
+        }
+
+        if ($product->allow_custom_color) {
+            $availableFeatures[] = [
+                'icon' => 'paint-brush',
+                'text' => 'يمكنك إضافة لون مخصص حسب رغبتك'
+            ];
+        }
+
+        if ($product->allow_size_selection && $product->sizes->isNotEmpty()) {
+            $availableFeatures[] = [
+                'icon' => 'ruler',
+                'text' => 'يمكنك اختيار مقاس من المقاسات المتاحة'
+            ];
+        }
+
+        if ($product->allow_custom_size) {
+            $availableFeatures[] = [
+                'icon' => 'ruler-combined',
+                'text' => 'يمكنك إضافة مقاس مخصص حسب رغبتك'
+            ];
+        }
+
+        if ($product->allow_appointment) {
+            $availableFeatures[] = [
+                'icon' => 'tape',
+                'text' => 'يمكنك طلب موعد لأخذ المقاسات'
+            ];
+        }
+
         // Get related products from same category (only available ones)
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
@@ -116,7 +154,7 @@ class ProductController extends Controller
             ->take(4)
             ->get();
 
-        return view('products.show', compact('product', 'relatedProducts'));
+        return view('products.show', compact('product', 'relatedProducts', 'availableFeatures'));
     }
 
     public function filter(Request $request)
@@ -210,19 +248,26 @@ class ProductController extends Controller
             'images' => collect($product->images)->map(function($image) {
                 return asset('storage/' . $image->image_path);
             })->toArray(),
-            'colors' => collect($product->colors)->map(function($color) {
+            'colors' => $product->allow_color_selection ? collect($product->colors)->map(function($color) {
                 return [
                     'name' => $color->color,
                     'is_available' => $color->is_available
                 ];
-            })->toArray(),
-            'sizes' => collect($product->sizes)->map(function($size) {
+            })->toArray() : [],
+            'sizes' => $product->allow_size_selection ? collect($product->sizes)->map(function($size) {
                 return [
                     'name' => $size->size,
                     'is_available' => $size->is_available
                 ];
-            })->toArray(),
-            'stock' => $product->stock > 0 ? 'متوفر' : 'غير متوفر'
+            })->toArray() : [],
+            'stock' => $product->stock > 0 ? 'متوفر' : 'غير متوفر',
+            'features' => [
+                'allow_custom_color' => $product->allow_custom_color,
+                'allow_custom_size' => $product->allow_custom_size,
+                'allow_color_selection' => $product->allow_color_selection,
+                'allow_size_selection' => $product->allow_size_selection,
+                'allow_appointment' => $product->allow_appointment
+            ]
         ]);
     }
 

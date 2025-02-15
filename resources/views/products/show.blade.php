@@ -171,6 +171,7 @@
                     </div>
 
                     <!-- Product Features Guide -->
+                    @if(!empty($availableFeatures))
                     <div class="features-guide mb-4">
                         <div class="alert alert-info">
                             <h6 class="alert-heading mb-3">
@@ -178,25 +179,19 @@
                                 ميزات الطلب المتاحة
                             </h6>
                             <ul class="features-list mb-0">
+                                @foreach($availableFeatures as $feature)
                                     <li class="mb-2">
-                                        <i class="fas fa-palette me-2"></i>
-                                        يمكنك اختيار لون من الألوان المتاحة أو إضافة لون مخصص حسب رغبتك
+                                        <i class="fas fa-{{ $feature['icon'] }} me-2"></i>
+                                        {{ $feature['text'] }}
                                     </li>
-
-                                    <li class="mb-2">
-                                        <i class="fas fa-ruler me-2"></i>
-                                        يمكنك اختيار مقاس من المقاسات المتاحة أو إضافة مقاس مخصص حسب رغبتك
-                                    </li>
-                                <li class="mb-2">
-                                    <i class="fas fa-tape me-2"></i>
-                                    يمكنك طلب موعد لأخذ المقاسات إذا كنت غير متأكد من المقاس المناسب
-                                </li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>
+                    @endif
 
                     <!-- Colors Section -->
-                    @if($product->colors && $product->colors->isNotEmpty())
+                    @if($product->allow_color_selection && $product->colors->isNotEmpty())
                         <div class="colors-section mb-4">
                             <h5 class="section-title">
                                 <i class="fas fa-palette me-2"></i>
@@ -221,21 +216,11 @@
                                     </div>
                                 @endforeach
                             </div>
-                            <!-- إضافة حقل لون مخصص -->
-                            <div class="custom-color-input mt-3">
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="checkbox" id="useCustomColor">
-                                    <label class="form-check-label" for="useCustomColor">
-                                        <i class="fas fa-edit me-1"></i>
-                                        إضافة لون مخصص
-                                    </label>
-                                </div>
-                                <div class="input-group d-none" id="customColorGroup">
-                                    <input type="text" class="form-control" id="customColor" placeholder="اكتب اللون المطلوب">
-                                </div>
-                            </div>
                         </div>
-                    @else
+                    @endif
+
+                    <!-- Custom Color Input -->
+                    @if($product->allow_custom_color)
                         <div class="custom-color-section mb-4">
                             <h5 class="section-title">
                                 <i class="fas fa-palette me-2"></i>
@@ -248,59 +233,61 @@
                     @endif
 
                     <!-- Available Sizes Section -->
-                    <div class="available-sizes">
-                        <h4>
-                            <i class="fas fa-ruler"></i>
-                            المقاسات المتاحة
-                        </h4>
-                        <div class="sizes-list">
-                            @foreach($product->sizes as $size)
-                                <div class="size-option {{ $size->is_available ? 'available' : 'disabled' }}"
-                                     onclick="{{ $size->is_available ? 'selectSize(this)' : 'return false' }}"
-                                     data-size="{{ $size->size }}">
-                                    <i class="fas fa-check"></i>
-                                    <span class="size-label">{{ $size->size }}</span>
-                                </div>
-                            @endforeach
+                    @if($product->allow_size_selection && $product->sizes->isNotEmpty())
+                        <div class="available-sizes mb-4">
+                            <h4>
+                                <i class="fas fa-ruler"></i>
+                                المقاسات المتاحة
+                            </h4>
+                            <div class="sizes-list">
+                                @foreach($product->sizes as $size)
+                                    <div class="size-option {{ $size->is_available ? 'available' : 'disabled' }}"
+                                         onclick="{{ $size->is_available ? 'selectSize(this)' : 'return false' }}"
+                                         data-size="{{ $size->size }}">
+                                        <i class="fas fa-check"></i>
+                                        <span class="size-label">{{ $size->size }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
+                    @endif
 
-                        <!-- Custom Size Input -->
-                        <div class="custom-size-input">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="useCustomSize">
-                                <label class="form-check-label" for="useCustomSize">
-                                    <i class="fas fa-edit me-1"></i>
-                                    إضافة مقاس مخصص
-                                </label>
-                            </div>
-                            <div class="input-group d-none" id="customSizeGroup">
-                                <input type="text" class="form-control" id="customSize"
-                                       placeholder="اكتب المقاس المطلوب">
+                    <!-- Custom Size Input -->
+                    @if($product->allow_custom_size)
+                        <div class="custom-size-input mb-4">
+                            <h5 class="section-title">
+                                <i class="fas fa-ruler me-2"></i>
+                                المقاس المطلوب
+                            </h5>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="customSize" placeholder="اكتب المقاس المطلوب">
                             </div>
                         </div>
-                    </div>
+                    @endif
 
                     <!-- Custom Measurements Option -->
-                    <div class="custom-measurements-section mb-4">
-                        @auth
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="needsAppointment">
-                            <label class="form-check-label" for="needsAppointment">
-                                <i class="fas fa-tape me-2"></i>
-                                أحتاج إلى أخذ المقاسات
-                            </label>
-                        </div>
-                        <small class="text-muted d-block mt-2">
-                            <i class="fas fa-info-circle me-1"></i>
-                            اختر هذا الخيار إذا كنت تريد تحديد موعد لأخذ المقاسات الخاصة بك
-                        </small>
-                        @else
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle me-2"></i>
-                                يجب تسجيل الدخول لتتمكن من حجز موعد لأخذ المقاسات
+                    @if($product->allow_appointment)
+                        <div class="custom-measurements-section mb-4">
+                            @auth
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="needsAppointment">
+                                <label class="form-check-label" for="needsAppointment">
+                                    <i class="fas fa-tape me-2"></i>
+                                    أحتاج إلى أخذ المقاسات
+                                </label>
                             </div>
-                        @endauth
-                    </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                اختر هذا الخيار إذا كنت تريد تحديد موعد لأخذ المقاسات الخاصة بك
+                            </small>
+                            @else
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    يجب تسجيل الدخول لتتمكن من حجز موعد لأخذ المقاسات
+                                </div>
+                            @endauth
+                        </div>
+                    @endif
 
                     <!-- Quantity Selector -->
                     @auth
@@ -405,7 +392,18 @@
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         يجب حجز موعد لأخذ المقاسات لإتمام الطلب. إذا أغلقت هذه النافذة بدون حجز موعد، سيتم إلغاء إضافة المنتج للسلة.
                     </div>
-                    <form id="appointmentForm" class="appointment-form">
+
+                    <!-- إضافة معلومات مواعيد العمل -->
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-info-circle me-2"></i>
+                        مواعيد العمل:
+                        <ul class="mb-0">
+                            <li>من السبت إلى الخميس: ١١ صباحاً إلى ٢ ظهراً، و٥ عصراً إلى ١١ مساءً</li>
+                            <li>يوم الجمعة: ٥ عصراً إلى ١١ مساءً</li>
+                        </ul>
+                    </div>
+
+                    <form id="appointmentForm" class="appointment-form" data-url="{{ route('appointments.store') }}">
                         @csrf
                         <input type="hidden" name="service_type" value="new_abaya">
                         <input type="hidden" name="cart_item_id" id="cart_item_id">
@@ -417,15 +415,19 @@
                                 <input type="date" class="form-control form-control-lg" id="appointment_date"
                                        name="appointment_date" min="{{ date('Y-m-d') }}" required>
                             </div>
+                            <div class="invalid-feedback" id="date-error"></div>
                         </div>
 
                         <div class="mb-4">
                             <label for="appointment_time" class="form-label fw-bold">وقت الموعد</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                <input type="time" class="form-control form-control-lg" id="appointment_time"
-                                       name="appointment_time" required>
+                                <select class="form-select form-select-lg" id="appointment_time"
+                                        name="appointment_time" required disabled>
+                                    <option value="">اختر التاريخ أولاً</option>
+                                </select>
                             </div>
+                            <div class="invalid-feedback" id="time-error"></div>
                         </div>
 
                         <div class="mb-4">
@@ -512,4 +514,3 @@
     <script src="{{ asset('assets/js/customer/products-show.js') }}"></script>
 </body>
 </html>
-

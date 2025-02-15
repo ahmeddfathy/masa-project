@@ -417,18 +417,18 @@
                     <div class="booking-card">
                         <div class="booking-header">
                             <div class="date">
-                                <i class="fas fa-calendar me-2"></i>
+                                <i class="fas fa-calendar-alt"></i>
                                 {{ $booking->session_date->format('Y/m/d') }}
                             </div>
                             <div class="time">
-                                <i class="fas fa-clock me-2"></i>
+                                <i class="fas fa-clock"></i>
                                 {{ $booking->session_time->format('H:i') }}
                             </div>
                         </div>
                         <div class="booking-body">
                             <h5>{{ $booking->service->name }}</h5>
                             <p class="package">
-                                <i class="fas fa-box me-2"></i>
+                                <i class="fas fa-box"></i>
                                 {{ $booking->package->name }}
                             </p>
                             <div class="status">
@@ -438,8 +438,9 @@
                             </div>
                         </div>
                         <div class="booking-footer">
-                            <a href="{{ route('client.bookings.show', $booking) }}" class="btn btn-primary btn-sm">
-                                التفاصيل <i class="fas fa-arrow-left me-1"></i>
+                            <a href="{{ route('client.bookings.show', $booking) }}" class="btn">
+                                <i class="fas fa-arrow-left"></i>
+                                التفاصيل
                             </a>
                         </div>
                     </div>

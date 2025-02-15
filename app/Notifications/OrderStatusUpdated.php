@@ -4,12 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 
-class OrderStatusUpdated extends Notification implements ShouldQueue
+class OrderStatusUpdated extends Notification
 {
     use Queueable;
 
@@ -34,10 +33,10 @@ class OrderStatusUpdated extends Notification implements ShouldQueue
         Log::info('Notification channels for user', [
             'user_id' => $notifiable->id,
             'user_email' => $notifiable->email,
-            'channels' => ['mail']
+            'channels' => ['mail', 'database']
         ]);
 
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail($notifiable): MailMessage
@@ -85,6 +84,29 @@ class OrderStatusUpdated extends Notification implements ShouldQueue
             ]);
             throw $e;
         }
+    }
+
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toArray($notifiable): array
+    {
+        return [
+            'order_id' => $this->order->id,
+            'order_number' => $this->order->order_number,
+            'status' => $this->order->order_status,
+            'message' => "تم تحديث حالة الطلب {$this->order->order_number} إلى " . match($this->order->order_status) {
+                'pending' => 'قيد الانتظار',
+                'processing' => 'قيد المعالجة',
+                'completed' => 'مكتمل',
+                'cancelled' => 'ملغي',
+                default => $this->order->order_status
+            },
+            'created_at' => now()->toDateTimeString()
+        ];
     }
 
     /**

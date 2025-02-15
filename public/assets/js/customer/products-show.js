@@ -44,7 +44,7 @@ function selectSize(element) {
     }
 
     // Remove active class from all sizes
-    document.querySelectorAll('.size-item').forEach(item => {
+    document.querySelectorAll('.size-option').forEach(item => {
         item.classList.remove('active');
     });
 
@@ -68,6 +68,9 @@ function updatePageQuantity(change) {
 
 function showAppointmentModal(cartItemId) {
     document.getElementById('cart_item_id').value = cartItemId;
+    document.getElementById('appointmentForm').reset();
+    document.getElementById('addressField').classList.add('d-none');
+    document.getElementById('appointmentErrors').classList.add('d-none');
     const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
     modal.show();
 }
@@ -75,41 +78,87 @@ function showAppointmentModal(cartItemId) {
 function toggleAddress() {
     const location = document.getElementById('location').value;
     const addressField = document.getElementById('addressField');
+    const addressInput = document.getElementById('address');
 
     if (location === 'client_location') {
         addressField.classList.remove('d-none');
-        document.getElementById('address').setAttribute('required', 'required');
+        addressInput.setAttribute('required', 'required');
     } else {
         addressField.classList.add('d-none');
-        document.getElementById('address').removeAttribute('required');
+        addressInput.removeAttribute('required');
+        addressInput.value = '';
     }
 }
 
 function addToCart() {
-    const needsAppointment = document.getElementById('needsAppointment').checked;
+    const needsAppointment = document.getElementById('needsAppointment')?.checked || false;
     const quantity = document.getElementById('quantity').value;
     const errorMessage = document.getElementById('errorMessage');
 
-    // Get color value
-    let colorValue = selectedColor;
-    const customColorInput = document.getElementById('customColor');
-    const useCustomColor = document.getElementById('useCustomColor');
-    if (customColorInput && (!useCustomColor || useCustomColor.checked)) {
-        const customColorValue = customColorInput.value.trim();
-        if (customColorValue) {
-            colorValue = customColorValue;
+    // التحقق من وجود أقسام الألوان والمقاسات
+    const hasColorSelectionEnabled = document.querySelector('.colors-section') !== null;
+    const hasCustomColorEnabled = document.getElementById('customColor') !== null;
+    const hasSizeSelectionEnabled = document.querySelector('.available-sizes') !== null;
+    const hasCustomSizeEnabled = document.getElementById('customSize') !== null;
+
+    // الحصول على قيمة اللون
+    let colorValue = null;
+    if (hasColorSelectionEnabled && selectedColor) {
+        colorValue = selectedColor;
+    } else if (hasCustomColorEnabled) {
+        const customColor = document.getElementById('customColor').value.trim();
+        if (customColor) {
+            colorValue = customColor;
         }
     }
 
-    // Get size value
-    let sizeValue = selectedSize;
-    const customSizeInput = document.getElementById('customSize');
-    const useCustomSize = document.getElementById('useCustomSize');
-    if (customSizeInput && (!useCustomSize || useCustomSize.checked)) {
-        const customSizeValue = customSizeInput.value.trim();
-        if (customSizeValue) {
-            sizeValue = customSizeValue;
+    // الحصول على قيمة المقاس
+    let sizeValue = null;
+    if (hasSizeSelectionEnabled && selectedSize) {
+        sizeValue = selectedSize;
+    } else if (hasCustomSizeEnabled) {
+        const customSize = document.getElementById('customSize').value.trim();
+        if (customSize) {
+            sizeValue = customSize;
         }
+    }
+
+    // التحقق من الحالات المختلفة
+    if (hasColorSelectionEnabled || hasCustomColorEnabled) {
+        if (hasSizeSelectionEnabled || hasCustomSizeEnabled) {
+            // في حالة وجود خيارات الألوان والمقاسات معاً
+            if (!needsAppointment) {
+                if (!colorValue) {
+                    errorMessage.textContent = 'يرجى اختيار لون للمنتج';
+                    errorMessage.classList.remove('d-none');
+                    return;
+                }
+                if (!sizeValue) {
+                    errorMessage.textContent = 'يرجى اختيار مقاس للمنتج';
+                    errorMessage.classList.remove('d-none');
+                    return;
+                }
+            }
+        } else {
+            // في حالة وجود خيارات الألوان فقط
+            if (!needsAppointment && !colorValue) {
+                errorMessage.textContent = 'يرجى اختيار لون للمنتج أو حجز موعد لأخذ المقاسات';
+                errorMessage.classList.remove('d-none');
+                return;
+            }
+        }
+    } else if (hasSizeSelectionEnabled || hasCustomSizeEnabled) {
+        // في حالة وجود خيارات المقاسات فقط
+        if (!needsAppointment && !sizeValue) {
+            errorMessage.textContent = 'يرجى اختيار مقاس للمنتج أو حجز موعد لأخذ المقاسات';
+            errorMessage.classList.remove('d-none');
+            return;
+        }
+    } else if (!needsAppointment) {
+        // في حالة عدم وجود خيارات وعدم حجز موعد
+        errorMessage.textContent = 'يجب حجز موعد لأخذ المقاسات';
+        errorMessage.classList.remove('d-none');
+        return;
     }
 
     // Hide any previous error
@@ -147,18 +196,31 @@ function addToCart() {
             loadCartItems();
 
             // Reset selections
-            selectedColor = null;
-            selectedSize = null;
-            document.querySelectorAll('.color-item, .size-item').forEach(item => {
-                item.classList.remove('active');
-            });
+            if (document.querySelector('.colors-section')) {
+                selectedColor = null;
+                document.querySelectorAll('.color-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
+            if (document.querySelector('.available-sizes')) {
+                selectedSize = null;
+                document.querySelectorAll('.size-option').forEach(item => {
+                    item.classList.remove('active');
+                });
+            }
 
-            // Reset custom inputs if they exist
-            if (customColorInput) customColorInput.value = '';
-            if (customSizeInput) customSizeInput.value = '';
+            // Reset custom inputs
+            if (document.getElementById('customColor')) {
+                document.getElementById('customColor').value = '';
+            }
+            if (document.getElementById('customSize')) {
+                document.getElementById('customSize').value = '';
+            }
 
             document.getElementById('quantity').value = 1;
-            document.getElementById('needsAppointment').checked = false;
+            if (document.getElementById('needsAppointment')) {
+                document.getElementById('needsAppointment').checked = false;
+            }
 
             // If appointment is needed, show modal
             if (data.show_modal) {
@@ -316,16 +378,20 @@ function updateCartQuantity(itemId, change, newValue = null) {
 }
 
 function removeFromCart(button, cartItemId) {
-    // منع السلوك الافتراضي للزر
-    event.preventDefault();
+    // Prevent default button behavior if event is passed
+    if (event) {
+        event.preventDefault();
+    }
 
     // تأكيد الحذف
     if (!confirm('هل أنت متأكد من حذف هذا المنتج من السلة؟')) {
         return;
     }
 
-    const cartItem = button.closest('.cart-item');
-    cartItem.style.opacity = '0.5';
+    const cartItem = button.closest('.cart-item') || document.querySelector(`[data-item-id="${cartItemId}"]`);
+    if (cartItem) {
+        cartItem.style.opacity = '0.5';
+    }
 
     fetch(`/cart/remove/${cartItemId}`, {
         method: 'DELETE',
@@ -337,22 +403,33 @@ function removeFromCart(button, cartItemId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            cartItem.style.opacity = '0';
-            cartItem.style.transform = 'translateX(50px)';
+            if (cartItem) {
+                cartItem.style.opacity = '0';
+                cartItem.style.transform = 'translateX(50px)';
+            }
 
-            setTimeout(() => {
-                // تحديث عرض السلة
-                updateCartDisplay(data);
-                showNotification('تم حذف المنتج من السلة بنجاح', 'success');
-            }, 300);
+            // تحديث عرض السلة
+            updateCartDisplay(data);
+            showNotification('تم حذف المنتج من السلة بنجاح', 'success');
+
+            // If appointment modal is open, close it
+            const appointmentModal = document.getElementById('appointmentModal');
+            if (appointmentModal && bootstrap.Modal.getInstance(appointmentModal)) {
+                appointmentModal.setAttribute('data-allow-close', 'true');
+                bootstrap.Modal.getInstance(appointmentModal).hide();
+            }
         } else {
-            cartItem.style.opacity = '1';
+            if (cartItem) {
+                cartItem.style.opacity = '1';
+            }
             showNotification(data.message || 'حدث خطأ أثناء حذف المنتج', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        cartItem.style.opacity = '1';
+        if (cartItem) {
+            cartItem.style.opacity = '1';
+        }
         showNotification('حدث خطأ أثناء حذف المنتج', 'error');
     });
 }
@@ -385,34 +462,190 @@ function showLoginPrompt(loginUrl) {
     modal.show();
 }
 
+function updateFeatureVisibility(productFeatures) {
+    // التحكم في قسم الألوان
+    const colorsSection = document.querySelector('.colors-section');
+    const customColorSection = document.querySelector('.custom-color-section');
+    const useCustomColorCheckbox = document.getElementById('useCustomColor');
+    const customColorGroup = document.getElementById('customColorGroup');
+
+    if (colorsSection) {
+        colorsSection.style.display = productFeatures.allow_color_selection ? 'block' : 'none';
+    }
+
+    if (customColorSection) {
+        customColorSection.style.display = productFeatures.allow_custom_color ? 'block' : 'none';
+    }
+
+    if (useCustomColorCheckbox && customColorGroup) {
+        useCustomColorCheckbox.closest('.custom-color-input').style.display =
+            productFeatures.allow_custom_color ? 'block' : 'none';
+    }
+
+    // التحكم في قسم المقاسات
+    const sizesSection = document.querySelector('.available-sizes');
+    const customSizeInput = document.querySelector('.custom-size-input');
+    const useCustomSizeCheckbox = document.getElementById('useCustomSize');
+    const customSizeGroup = document.getElementById('customSizeGroup');
+
+    if (sizesSection) {
+        sizesSection.style.display = productFeatures.allow_size_selection ? 'block' : 'none';
+    }
+
+    if (customSizeInput) {
+        customSizeInput.style.display = productFeatures.allow_custom_size ? 'block' : 'none';
+    }
+
+    // التحكم في خيار حجز الموعد
+    const appointmentSection = document.querySelector('.custom-measurements-section');
+    if (appointmentSection) {
+        appointmentSection.style.display = productFeatures.allow_appointment ? 'block' : 'none';
+    }
+}
+
+function toggleCart() {
+    const cartSidebar = document.getElementById('cartSidebar');
+    if (cartSidebar.classList.contains('active')) {
+        closeCart();
+    } else {
+        openCart();
+    }
+}
+
 // Initialize when document is ready
 document.addEventListener('DOMContentLoaded', function() {
     loadCartItems();
 
     // Setup event listeners for both cart buttons
     document.getElementById('closeCart').addEventListener('click', closeCart);
+    document.getElementById('cartToggle').addEventListener('click', toggleCart);
+    document.getElementById('fixedCartBtn').addEventListener('click', toggleCart);
 
-    // Cart toggle in navbar
-    document.getElementById('cartToggle').addEventListener('click', function() {
-        const cartSidebar = document.getElementById('cartSidebar');
-        if (cartSidebar.classList.contains('active')) {
-            closeCart();
-        } else {
-            openCart();
+    // Initialize appointment date handling
+    const appointmentDate = document.getElementById('appointment_date');
+    if (appointmentDate) {
+        const today = new Date();
+        const maxDate = new Date();
+        maxDate.setDate(today.getDate() + 30);
+
+        appointmentDate.min = today.toISOString().split('T')[0];
+        appointmentDate.max = maxDate.toISOString().split('T')[0];
+
+        // Handle date change
+        appointmentDate.addEventListener('change', function() {
+            const timeSelect = document.getElementById('appointment_time');
+            const dateError = document.getElementById('date-error');
+
+            // Reset time select and validation states
+            timeSelect.innerHTML = '<option value="">اختر الوقت المناسب</option>';
+            timeSelect.disabled = true;
+            dateError.textContent = '';
+            this.classList.remove('is-invalid');
+
+            if (!this.value) return;
+
+            // Parse the date correctly for timezone handling
+            const [year, month, day] = this.value.split('-').map(Number);
+            const selectedDate = new Date(year, month - 1, day); // month is 0-based in JavaScript
+            const dayOfWeek = selectedDate.getDay();
+
+            // Arabic day names
+            const arabicDays = {
+                0: 'الأحد',
+                1: 'الإثنين',
+                2: 'الثلاثاء',
+                3: 'الأربعاء',
+                4: 'الخميس',
+                5: 'الجمعة',
+                6: 'السبت'
+            };
+
+            // Check if date is in the past
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selectedDate < today) {
+                this.classList.add('is-invalid');
+                dateError.textContent = 'لا يمكن اختيار تاريخ في الماضي';
+                timeSelect.disabled = true;
+                return;
+            }
+
+            // Define time slots based on day
+            const slots = dayOfWeek === 5 ? // Friday
+                [{ start: '17:00', end: '23:00', label: 'الفترة المسائية' }] :
+                [
+                    { start: '11:00', end: '14:00', label: 'الفترة الصباحية' },
+                    { start: '17:00', end: '23:00', label: 'الفترة المسائية' }
+                ];
+
+            // Add day name to time select
+            timeSelect.innerHTML = `<option value="">اختر الوقت المناسب ليوم ${arabicDays[dayOfWeek]}</option>`;
+
+            // Generate time slots
+            slots.forEach(slot => {
+                const group = document.createElement('optgroup');
+                group.label = slot.label;
+
+                let currentTime = new Date(`2000-01-01T${slot.start}`);
+                const endTime = new Date(`2000-01-01T${slot.end}`);
+
+                // If today, skip past times
+                const isToday = selectedDate.toDateString() === new Date().toDateString();
+                const now = new Date();
+
+                while (currentTime < endTime) {
+                    const option = document.createElement('option');
+                    const hours = currentTime.getHours().toString().padStart(2, '0');
+                    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+                    const timeValue = `${hours}:${minutes}`;
+
+                    // Skip if time is in the past for today
+                    if (isToday) {
+                        const slotTime = new Date(selectedDate);
+                        slotTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                        if (slotTime <= now) {
+                            currentTime.setMinutes(currentTime.getMinutes() + 30);
+                            continue;
+                        }
+                    }
+
+                    // Format time in Arabic
+                    const timeString = new Date(`2000-01-01T${timeValue}`)
+                        .toLocaleTimeString('ar-SA', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: true
+                        });
+
+                    option.value = timeValue;
+                    option.textContent = timeString;
+                    group.appendChild(option);
+
+                    // Add 30 minutes
+                    currentTime.setMinutes(currentTime.getMinutes() + 30);
+                }
+
+                // Only add group if it has options
+                if (group.children.length > 0) {
+                    timeSelect.appendChild(group);
+                }
+            });
+
+            // Enable time select only if there are available slots
+            const hasSlots = timeSelect.querySelectorAll('option').length > 1;
+            timeSelect.disabled = !hasSlots;
+
+            if (!hasSlots && isToday) {
+                dateError.textContent = 'لا توجد مواعيد متاحة اليوم، يرجى اختيار يوم آخر';
+                this.classList.add('is-invalid');
+            }
+        });
+
+        // Trigger change event if date is already selected
+        if (appointmentDate.value) {
+            appointmentDate.dispatchEvent(new Event('change'));
         }
-    });
-
-    // Fixed cart button
-    document.getElementById('fixedCartBtn').addEventListener('click', function() {
-        const cartSidebar = document.getElementById('cartSidebar');
-        if (cartSidebar.classList.contains('active')) {
-            closeCart();
-        } else {
-            openCart();
-        }
-    });
-
-    document.querySelector('.cart-overlay')?.addEventListener('click', closeCart);
+    }
 
     // Custom Color Toggle
     const useCustomColorCheckbox = document.getElementById('useCustomColor');
@@ -465,51 +698,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Initialize appointment date restrictions
-    const appointmentDate = document.getElementById('appointment_date');
-    if (appointmentDate) {
-        const today = new Date();
-        const maxDate = new Date();
-        maxDate.setDate(today.getDate() + 30); // Allow booking up to 30 days in advance
-
-        appointmentDate.min = today.toISOString().split('T')[0];
-        appointmentDate.max = maxDate.toISOString().split('T')[0];
-
-        // Set default time range
-        const appointmentTime = document.getElementById('appointment_time');
-        if (appointmentTime) {
-            appointmentTime.min = '09:00';
-            appointmentTime.max = '21:00';
-        }
-    }
-
     // Setup appointment form
     const appointmentModal = document.getElementById('appointmentModal');
     if (appointmentModal) {
-        const modal = new bootstrap.Modal(appointmentModal, {
-            backdrop: 'static',
-            keyboard: false
-        });
+        const modal = new bootstrap.Modal(appointmentModal);
 
         // Handle cancel button click
         document.getElementById('cancelAppointment').addEventListener('click', function() {
             if (confirm('هل أنت متأكد من إلغاء حجز الموعد؟ سيتم إزالة المنتج من السلة.')) {
                 const cartItemId = document.getElementById('cart_item_id').value;
                 // Remove item from cart
-                removeFromCart(event.target, cartItemId);
-                // Allow modal to be closed
-                appointmentModal.setAttribute('data-allow-close', 'true');
-                // Hide modal using Bootstrap's hide method
-                bootstrap.Modal.getInstance(appointmentModal).hide();
-                // Show notification
-                showNotification('تم إلغاء الموعد وإزالة المنتج من السلة', 'warning');
+                removeFromCart(this, cartItemId);
             }
         });
 
-        // Prevent modal from being closed by clicking outside
+        // Prevent modal from being closed by clicking outside or pressing escape
         appointmentModal.addEventListener('hide.bs.modal', function (event) {
-            // If modal is being closed programmatically after successful appointment, allow it
-            if (event.target.getAttribute('data-allow-close') === 'true') {
+            // If modal is being closed programmatically after successful appointment or cancellation, allow it
+            if (appointmentModal.getAttribute('data-allow-close') === 'true') {
+                appointmentModal.removeAttribute('data-allow-close');
                 return;
             }
             // Otherwise prevent closing
@@ -522,70 +729,168 @@ document.addEventListener('DOMContentLoaded', function() {
             appointmentForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // Show loading state
+                // إظهار حالة التحميل
                 const submitBtn = document.getElementById('submitAppointment');
                 const spinner = submitBtn.querySelector('.spinner-border');
                 submitBtn.disabled = true;
                 spinner.classList.remove('d-none');
 
-                // Clear previous errors
+                // مسح الأخطاء السابقة
                 const errorDiv = document.getElementById('appointmentErrors');
                 errorDiv.classList.add('d-none');
                 errorDiv.textContent = '';
 
+                // تجميع بيانات النموذج
                 const formData = new FormData(this);
+
+                // تنسيق التاريخ والوقت
+                const appointmentDate = formData.get('appointment_date');
+                const appointmentTime = formData.get('appointment_time');
+
+                // التحقق من البيانات
+                if (!appointmentDate || !appointmentTime) {
+                    errorDiv.textContent = 'يرجى تحديد التاريخ والوقت';
+                    errorDiv.classList.remove('d-none');
+                    submitBtn.disabled = false;
+                    spinner.classList.add('d-none');
+                    return;
+                }
+
+                // التحقق من رقم الهاتف
+                const phone = formData.get('phone');
+                if (!phone) {
+                    errorDiv.textContent = 'يرجى إدخال رقم الهاتف';
+                    errorDiv.classList.remove('d-none');
+                    submitBtn.disabled = false;
+                    spinner.classList.add('d-none');
+                    return;
+                }
+
+                // التحقق من الموقع والعنوان
+                const location = formData.get('location');
+                const address = formData.get('address');
+                if (location === 'client_location' && !address) {
+                    errorDiv.textContent = 'يرجى إدخال العنوان';
+                    errorDiv.classList.remove('d-none');
+                    submitBtn.disabled = false;
+                    spinner.classList.add('d-none');
+                    return;
+                }
+
+                // إضافة التوكن CSRF
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                // التأكد من وجود service_type
+                if (!formData.get('service_type')) {
+                    formData.set('service_type', 'new_abaya');
+                }
 
                 fetch('/appointments', {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
                     },
                     credentials: 'same-origin'
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'حدث خطأ أثناء حجز الموعد');
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
-                        // Allow modal to be closed
-                        appointmentModal.setAttribute('data-allow-close', 'true');
+                        // السماح بإغلاق النافذة المنبثقة
+                        document.getElementById('appointmentModal').setAttribute('data-allow-close', 'true');
 
-                        // Hide modal
-                        bootstrap.Modal.getInstance(appointmentModal).hide();
+                        // إخفاء النافذة المنبثقة
+                        bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
 
-                        // Show success message
+                        // عرض رسالة النجاح
                         showNotification(data.message, 'success');
 
-                        // Redirect to appointment details after 2 seconds
+                        // إعادة توجيه المستخدم بعد ثانيتين
                         setTimeout(() => {
                             window.location.href = data.redirect_url || '/appointments';
                         }, 2000);
                     } else {
-                        // Show error message
-                        errorDiv.textContent = data.message;
-                        if (data.errors) {
-                            const errorList = document.createElement('ul');
-                            Object.values(data.errors).forEach(error => {
-                                const li = document.createElement('li');
-                                li.textContent = error[0];
-                                errorList.appendChild(li);
-                            });
-                            errorDiv.appendChild(errorList);
-                        }
-                        errorDiv.classList.remove('d-none');
+                        throw new Error(data.message || 'حدث خطأ أثناء حجز الموعد');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    errorDiv.textContent = 'حدث خطأ أثناء حجز الموعد. الرجاء المحاولة مرة أخرى.';
+                    errorDiv.textContent = error.message;
+                    if (error.errors) {
+                        const errorList = document.createElement('ul');
+                        Object.values(error.errors).forEach(error => {
+                            const li = document.createElement('li');
+                            li.textContent = error[0];
+                            errorList.appendChild(li);
+                        });
+                        errorDiv.appendChild(errorList);
+                    }
                     errorDiv.classList.remove('d-none');
                 })
                 .finally(() => {
-                    // Reset loading state
+                    // إعادة تعيين حالة الزر
                     submitBtn.disabled = false;
                     spinner.classList.add('d-none');
                 });
             });
         }
     }
+
+    // معالجة زر الإلغاء في نافذة حجز المقاسات
+    document.getElementById('cancelAppointment')?.addEventListener('click', function() {
+        if (confirm('هل أنت متأكد من إلغاء حجز الموعد؟ سيتم إزالة المنتج من السلة.')) {
+            const cartItemId = document.getElementById('cart_item_id').value;
+
+            // إزالة المنتج من السلة
+            fetch(`/cart/remove/${cartItemId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // تحديث عدد العناصر في السلة
+                    document.querySelectorAll('.cart-count').forEach(el => {
+                        el.textContent = data.cart_count;
+                    });
+
+                    // إغلاق النافذة المنبثقة
+                    document.getElementById('appointmentModal').setAttribute('data-allow-close', 'true');
+                    bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
+
+                    // تحديث محتوى السلة
+                    loadCartItems();
+
+                    // عرض رسالة نجاح
+                    showNotification('تم إلغاء الموعد وإزالة المنتج من السلة', 'success');
+                } else {
+                    throw new Error(data.message || 'حدث خطأ أثناء إلغاء الموعد');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification(error.message, 'error');
+            });
+        }
+    });
+
+    // تحميل تفاصيل المنتج وتحديث واجهة المستخدم
+    const productId = document.getElementById('product-id').value;
+    fetch(`/products/${productId}/details`)
+        .then(response => response.json())
+        .then(data => {
+            updateFeatureVisibility(data.features);
+        })
+        .catch(error => console.error('Error:', error));
 });
