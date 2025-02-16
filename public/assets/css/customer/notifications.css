@@ -1,51 +1,29 @@
-/* Notifications Page Styles */
 :root {
-    /* Primary Colors (60%) - Pink */
-    --primary-color: #ff69b4;
-    --primary-light: #ffb6c1;
-    --primary-dark: #ff1493;
-
-    /* Secondary Colors (30%) - Light Blue */
-    --secondary-color: #87ceeb;
-    --secondary-dark: #4682b4;
-
-    /* Accent Colors (10%) */
-    --accent-color: #40e0d0;
-    --accent-light: #7fffd4;
-    --accent-dark: #20b2aa;
-
-    /* Neutral Colors */
-    --light-color: #ffffff;
-    --dark-color: #1a1a1a;
-    --gray-100: #f8f9fa;
-    --gray-200: #e9ecef;
-    --gray-300: #dee2e6;
-
-    /* Background and Effects */
+    --primary-color: #FF1493;
+    --primary-light: #FF69B4;
+    --primary-dark: #C71585;
+    --secondary-color: #4169E1;
+    --secondary-light: #6495ED;
+    --secondary-dark: #283593;
+    --accent-color: #00CED1;
+    --accent-light: #40E0D0;
+    --accent-dark: #008B8B;
+    --light-color: #FFFFFF;
+    --dark-color: #0A0A0A;
+    --gray-100: #F8F9FA;
+    --gray-200: #E2E8F0;
+    --gray-300: #CBD5E0;
     --background-color: #F0F4FF;
-    --glass-background: rgba(255, 255, 255, 0.75);
-    --glass-background-dark: rgba(255, 255, 255, 0.65);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.55);
-    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --text-color: #1E2A38;
+    --glass-background: rgba(255, 255, 255, 0.85);
+    --glass-background-dark: rgba(255, 255, 255, 0.95);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.65);
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    --text-color: #1A1A1A;
     --text-light: #2C3E50;
-    --danger-color: #FF4D4D;
-    --success-color: #2ECC71;
-
-    /* خلفية مشرقة وواضحة */
-    --background-color: #F0F4FF;  /* خلفية مشرقة وناعمة */
-
-    /* تأثير زجاجي أكثر وضوحًا */
-    --glass-background: rgba(255, 255, 255, 0.75);
-    --glass-background-dark: rgba(255, 255, 255, 0.65);
-    --glass-border: 1px solid rgba(74, 58, 255, 0.25);
-
-    /* تم إزالة الظل */
-    --card-shadow: none;
-
-    /* درجات لونية أكثر تباينًا */
-    --text-muted: #4A5F6E;        /* رمادي مائل للأزرق أكثر حيوية */
-    --heading-color: #1E2A38;     /* متناسق مع لون النص الرئيسي مع تأكيد */
+    --text-muted: #4A5F6E;
+    --heading-color: #0A0A0A;
+    --danger-color: #FF0000;
+    --success-color: #00B140;
 }
 
 body {
@@ -54,14 +32,12 @@ body {
     font-family: 'Tajawal', sans-serif;
 }
 
-/* Container */
 .notifications-container {
     max-width: 800px;
     margin: 0 auto;
     padding: 0.75rem;
 }
 
-/* Page Title */
 .header-container {
     background: var(--glass-background);
     backdrop-filter: blur(10px);
@@ -92,7 +68,6 @@ body {
     border-radius: 4px;
 }
 
-/* Mark All as Read Button */
 .btn-outline-primary {
     color: var(--primary-color);
     border: 2px solid var(--primary-color);
@@ -112,7 +87,6 @@ body {
     transform: translateY(-3px);
 }
 
-/* Notification Item */
 .notification-item {
     background: var(--glass-background);
     backdrop-filter: blur(8px);
@@ -120,47 +94,46 @@ body {
     border-radius: 20px;
     padding: 1.75rem;
     margin-bottom: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: var(--card-shadow);
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
 }
 
 .notification-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-light);
+    transform: none;
 }
 
 .notification-item.unread {
-    background: rgba(255, 105, 180, 0.05);
+    background: rgba(255, 105, 180, 0.03);
     border: 2px solid var(--primary-color);
-    border-right-width: 4px;
+    border-right: 6px solid var(--primary-color);
 }
 
-/* Notification Icon */
+.notification-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
+    border-radius: 20px 20px 0 0;
+}
+
 .notification-icon {
     width: 60px;
     height: 60px;
-    background: rgba(255, 105, 180, 0.1);
+    background: var(--glass-background);
     border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--primary-color);
     font-size: 1.75rem;
-    border: 2px solid var(--primary-light);
-    transition: all 0.3s ease;
+    border: 2px solid var(--primary-color);
 }
 
-.notification-item:hover .notification-icon {
-    background: var(--primary-color);
-    color: white;
-    transform: scale(1.1);
-}
-
-/* Notification Content */
 .notification-item h5 {
     color: var(--text-color);
     font-weight: 600;
@@ -175,7 +148,6 @@ body {
     font-size: 1rem;
 }
 
-/* Notification Time */
 .notification-time {
     font-size: 0.85rem;
     color: var(--text-light);
@@ -195,7 +167,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Empty State */
 .empty-state {
     text-align: center;
     padding: 4rem 2rem;
@@ -248,7 +219,6 @@ body {
     margin: 0 auto 2rem;
 }
 
-/* Pagination */
 .pagination {
     display: flex;
     justify-content: center;
@@ -273,7 +243,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -289,7 +258,6 @@ body {
     animation: fadeIn 0.5s ease-out;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .notifications-container {
         padding: 1rem 0.5rem;
@@ -321,7 +289,6 @@ body {
     }
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -339,7 +306,6 @@ body {
     background: var(--secondary-color);
 }
 
-/* Mark as Read Button */
 .btn-sm.btn-outline-primary {
     padding: 0.4rem 0.75rem;
     font-size: 0.85rem;
@@ -353,7 +319,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Add shadow to make cards stand out more */
 .notification-item {
     box-shadow: 0 2px 8px rgba(74, 58, 255, 0.05);
 }

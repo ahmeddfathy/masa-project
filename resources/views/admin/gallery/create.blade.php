@@ -86,4 +86,8 @@
     };
 </script>
 @endpush
+
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/admin/gallery.css') }}">
+@endsection
 @endsection

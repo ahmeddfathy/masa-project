@@ -3,10 +3,20 @@
 
 /* Variables */
 :root {
-    --primary-color: #2196f3;
-    --secondary-color: #00bcd4;
-    --text-dark: #1a1a2e;
-    --text-light: #f4f4f4;
+    --primary-color: #FF1493;      /* وردي */
+    --primary-light: #FF69B4;      /* وردي فاتح */
+    --primary-dark: #C71585;       /* وردي غامق */
+    --secondary-color: #4169E1;    /* أزرق ملكي */
+    --secondary-light: #6495ED;    /* أزرق فاتح */
+    --secondary-dark: #283593;     /* أزرق غامق */
+    --accent-color: #40E0D0;       /* تركواز */
+    --background-color: #F0F4FF;   /* خلفية فاتحة */
+    --glass-background: rgba(255, 255, 255, 0.85);
+    --glass-background-dark: rgba(255, 255, 255, 0.95);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.65);
+    --text-color: #1E2A38;
+    --text-light: #2C3E50;
+    --text-muted: #4A5F6E;
     --background-light: #f8f9fa;
     --background-dark: #f1f4f9;
     --primary-gradient: linear-gradient(45deg, #2196f3, #00bcd4);
@@ -31,39 +41,52 @@
 }
 
 body {
-    background: linear-gradient(135deg, var(--background-light) 0%, var(--background-dark) 100%);
-    color: var(--text-dark);
+    background: linear-gradient(135deg, var(--background-color) 0%, #ffffff 100%);
+    color: var(--text-color);
     line-height: 1.6;
-    font-family: 'Cairo', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     min-height: 100vh;
 }
 
 /* Success Card Styles */
 .success-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: var(--border-radius);
-    padding: 3rem;
-    box-shadow: var(--box-shadow);
-    margin-top: 3rem;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--glass-background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
     position: relative;
     overflow: hidden;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* شريط علوي زخرفي */
+.success-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
+    border-radius: 20px 20px 0 0;
 }
 
 .success-icon {
     width: 100px;
     height: 100px;
-    background: var(--primary-gradient);
+    background: var(--glass-background);
+    border: 2px solid var(--primary-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 48px;
-    color: white;
+    color: var(--primary-color);
     margin: 0 auto 2rem;
-    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
 }
 
 .success-card h2 {
@@ -75,7 +98,7 @@ body {
 }
 
 .lead {
-    color: var(--text-dark);
+    color: var(--text-color);
     font-size: 1.2rem;
     margin-bottom: 2rem;
     opacity: 0.9;
@@ -83,12 +106,25 @@ body {
 
 /* Booking Details Styles */
 .booking-details {
-    background: var(--background-light);
-    border-radius: var(--border-radius);
-    padding: 2rem;
+    background: var(--glass-background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 2px solid var(--primary-light);
+    position: relative;
     margin-top: 2rem;
-    text-align: right;
-    border: 2px solid rgba(33, 150, 243, 0.1);
+}
+
+.booking-details::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
+    border-radius: 20px 20px 0 0;
 }
 
 .booking-details h4 {
@@ -106,7 +142,7 @@ body {
 
 .booking-details li {
     margin-bottom: 1rem;
-    color: var(--text-dark);
+    color: var(--text-color);
     font-size: 1.1rem;
     display: flex;
     align-items: center;
@@ -126,14 +162,19 @@ body {
 
 /* Button Styles */
 .btn-primary {
-    background: var(--primary-gradient);
-    color: white;
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
     border: none;
-    border-radius: 12px;
-    padding: 1rem 2.5rem;
+    color: white;
+    padding: 0.8rem 1.8rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+    transform: translateY(-2px);
 }
 
 /* Navbar Styles */

@@ -2,6 +2,10 @@
 
 @section('title', 'تعديل الصورة')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/admin/gallery.css') }}">
+@endsection
+
 @section('content')
 <div class="container-fluid">
             <div class="card">

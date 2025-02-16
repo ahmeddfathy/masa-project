@@ -98,6 +98,14 @@
                             <span class="nav-title">الباقات</span>
                         </a>
                     </div>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.addons.index') }}" class="nav-link {{ request()->routeIs('admin.addons.*') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-puzzle-piece"></i>
+                            <p>
+                                الخدمات الإضافية
+                            </p>
+                        </a>
+                    </li>
                 </div>
 
                 <!-- Bookings Section -->

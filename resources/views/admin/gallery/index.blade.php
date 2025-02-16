@@ -2,6 +2,10 @@
 
 @section('title', 'معرض الصور')
 
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/admin/gallery.css') }}">
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">

@@ -3,10 +3,21 @@
 
 /* Variables */
 :root {
-    --primary-color: #2196f3;
-    --secondary-color: #00bcd4;
+    --primary-color: #FF1493;      /* وردي */
+    --primary-light: #FF69B4;      /* وردي فاتح */
+    --primary-dark: #C71585;       /* وردي غامق */
+    --secondary-color: #4169E1;    /* أزرق ملكي */
+    --secondary-light: #6495ED;    /* أزرق فاتح */
+    --secondary-dark: #283593;     /* أزرق غامق */
+    --accent-color: #40E0D0;       /* تركواز */
+    --background-color: #F0F4FF;   /* خلفية فاتحة */
+    --glass-background: rgba(255, 255, 255, 0.85);
+    --glass-background-dark: rgba(255, 255, 255, 0.95);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.65);
+    --text-color: #1E2A38;
+    --text-light: #2C3E50;
+    --text-muted: #4A5F6E;
     --text-dark: #1a1a2e;
-    --text-light: #f4f4f4;
     --background-light: #f8f9fa;
     --background-dark: #f1f4f9;
     --primary-gradient: linear-gradient(45deg, #2196f3, #00bcd4);
@@ -31,10 +42,10 @@
 }
 
 body {
-    background: linear-gradient(135deg, var(--background-light) 0%, var(--background-dark) 100%);
-    color: var(--text-dark);
+    background: linear-gradient(135deg, var(--background-color) 0%, #ffffff 100%);
+    color: var(--text-color);
     line-height: 1.6;
-    font-family: 'Cairo', sans-serif;
+    font-family: 'Tajawal', sans-serif;
     min-height: 100vh;
 }
 
@@ -84,31 +95,40 @@ body {
 
 /* Booking Card Styles */
 .booking-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
-    margin-bottom: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--glass-background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
     position: relative;
     overflow: hidden;
 }
 
+.booking-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
+    border-radius: 20px 20px 0 0;
+}
+
 .booking-header {
-    background: var(--primary-gradient);
-    color: white;
     padding: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 105, 180, 0.2);
+    background: transparent;
+    color: var(--text-color);
 }
 
 .booking-header h5 {
-    margin: 0;
+    color: var(--heading-color);
     font-weight: 700;
     font-size: 1.3rem;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .booking-body {
@@ -125,56 +145,71 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-.status-badge i {
-    font-size: 1rem;
 }
 
 .status-pending {
-    background: linear-gradient(45deg, #ffd700, #ffa500);
-    color: var(--text-dark);
+    background-color: rgba(255, 165, 0, 0.15);
+    color: #ffa502;
+    border: 1px solid rgba(255, 165, 0, 0.3);
 }
 
 .status-confirmed {
-    background: var(--primary-gradient);
-    color: white;
+    background-color: rgba(46, 213, 115, 0.15);
+    color: #2ed573;
+    border: 1px solid rgba(46, 213, 115, 0.3);
 }
 
 .status-completed {
-    background: linear-gradient(45deg, #4caf50, #45a049);
-    color: white;
+    background-color: rgba(65, 105, 225, 0.15);
+    color: var(--secondary-color);
+    border: 1px solid rgba(65, 105, 225, 0.3);
 }
 
 .status-cancelled {
-    background: linear-gradient(45deg, #ff4444, #cc0000);
-    color: white;
+    background-color: rgba(255, 71, 87, 0.15);
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.3);
 }
 
 /* Button Styles */
 .btn-primary {
-    background: var(--primary-gradient);
-    color: white;
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
     border: none;
-    border-radius: 12px;
-    padding: 1rem 2.5rem;
+    color: white;
+    padding: 0.8rem 1.8rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+    transform: translateY(-2px);
 }
 
 /* Empty State Styles */
 .alert-info {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: var(--border-radius);
-    padding: 3rem 2rem;
+    background: var(--glass-background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 2rem;
     text-align: center;
-    color: var(--primary-color);
-    border: 2px solid rgba(33, 150, 243, 0.1);
-    box-shadow: var(--box-shadow);
-    margin: 2rem 0;
+    border: 2px solid var(--primary-light);
+    position: relative;
+    overflow: hidden;
+}
+
+.alert-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
+    border-radius: 20px 20px 0 0;
 }
 
 .alert-info i {
@@ -201,44 +236,25 @@ body {
 .pagination {
     display: flex;
     justify-content: center;
-    align-items: center;
     gap: 0.5rem;
-    margin: 2rem 0;
+    margin-top: 2rem;
 }
 
-.pagination a,
-.pagination span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--text-dark);
-    font-weight: 600;
-    text-decoration: none;
-    border: 2px solid transparent;
+.page-link {
+    background: var(--glass-background);
+    border: var(--glass-border);
+    color: var(--text-color);
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-.pagination .active {
-    background: var(--primary-gradient);
+.page-link:hover,
+.page-item.active .page-link {
+    background: var(--primary-color);
     color: white;
-    box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
-}
-
-.pagination .disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-
-/* Previous/Next Buttons */
-.pagination .prev,
-.pagination .next {
-    font-size: 1.2rem;
-    padding: 0.5rem 1.2rem;
+    transform: translateY(-2px);
 }
 
 /* Responsive Design */

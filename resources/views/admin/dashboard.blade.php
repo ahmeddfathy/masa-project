@@ -92,7 +92,7 @@
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="stat-card h-100 p-3 bg-white rounded-3 shadow-sm">
             <div class="d-flex align-items-center">
-                <div class="icon-wrapper bg-purple me-3">
+                <div class="icon-wrapper bg-primary me-3">
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <div class="stat-content">
@@ -111,15 +111,15 @@
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="stat-card h-100 p-3 bg-white rounded-3 shadow-sm">
             <div class="d-flex align-items-center">
-                <div class="icon-wrapper bg-pink me-3">
+                <div class="icon-wrapper bg-success me-3">
                     <i class="fas fa-camera"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-value h4 mb-1">{{ $stats['studio_revenue'] }} ريال</div>
+                    <div class="stat-value h4 mb-1">{{ number_format($stats['studio_revenue'] ?? 0) }} ريال</div>
                     <div class="stat-title text-muted">إيرادات الاستوديو</div>
                     <div class="trend small mt-2">
-                        <span class="me-2">اليوم: {{ $stats['today_studio_revenue'] }} ريال</span>
-                        <span>الشهر: {{ $stats['month_studio_revenue'] }} ريال</span>
+                        <span class="me-2">اليوم: {{ number_format($stats['today_studio_revenue'] ?? 0) }} ريال</span>
+                        <span>الشهر: {{ number_format($stats['month_studio_revenue'] ?? 0) }} ريال</span>
                     </div>
                 </div>
             </div>
@@ -177,7 +177,7 @@
             <div class="action-card bg-white rounded-3 shadow-sm p-4 h-100">
                 <div class="d-flex align-items-start">
                     <div class="action-icon bg-gradient-primary me-4">
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-box"></i>
                     </div>
                     <div class="action-content">
                         <h5 class="mb-2 text-dark fw-bold">إضافة منتج</h5>
@@ -195,7 +195,7 @@
             <div class="action-card bg-white rounded-3 shadow-sm p-4 h-100">
                 <div class="d-flex align-items-start">
                     <div class="action-icon bg-gradient-info me-4">
-                        <i class="fas fa-tasks"></i>
+                        <i class="fas fa-shopping-cart"></i>
                     </div>
                     <div class="action-content">
                         <h5 class="mb-2 text-dark fw-bold">إدارة الطلبات</h5>
@@ -212,7 +212,7 @@
             <div class="action-card bg-white rounded-3 shadow-sm p-4 h-100">
                 <div class="d-flex align-items-start">
                     <div class="action-icon bg-gradient-success me-4">
-                        <i class="fas fa-chart-bar"></i>
+                        <i class="fas fa-chart-line"></i>
                     </div>
                     <div class="action-content">
                         <h5 class="mb-2 text-dark fw-bold">تقارير المتجر</h5>
@@ -233,7 +233,7 @@
             <div class="action-card bg-white rounded-3 shadow-sm p-4 h-100">
                 <div class="d-flex align-items-start">
                     <div class="action-icon bg-gradient-purple me-4">
-                        <i class="fas fa-photo-video"></i>
+                        <i class="far fa-images"></i>
                     </div>
                     <div class="action-content">
                         <h5 class="mb-2 text-dark fw-bold">معرض الصور</h5>
@@ -265,7 +265,7 @@
             <div class="action-card bg-white rounded-3 shadow-sm p-4 h-100">
                 <div class="d-flex align-items-start">
                     <div class="action-icon bg-gradient-pink me-4">
-                        <i class="fas fa-gift"></i>
+                        <i class="far fa-star"></i>
                     </div>
                     <div class="action-content">
                         <h5 class="mb-2 text-dark fw-bold">الباقات</h5>
@@ -275,6 +275,25 @@
             </div>
         </a>
     </div>
+
+    <div class="col-12 col-md-6 col-lg-4">
+        <a href="{{ route('admin.addons.index') }}" class="action-card-link">
+            <div class="action-card bg-white rounded-3 shadow-sm p-4 h-100">
+                <div class="d-flex align-items-start">
+                    <div class="action-icon bg-gradient-pink me-4">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <div class="action-content">
+                        <h5 class="mb-2 text-dark fw-bold">الخدمات الإضافية</h5>
+                        <p class="mb-0 text-muted">إدارة الخدمات الإضافية</p>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+
+
 
     <div class="col-12 col-md-6 col-lg-4">
         <a href="{{ route('admin.bookings.calendar') }}" class="action-card-link">

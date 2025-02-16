@@ -121,3 +121,7 @@
     </div>
 </div>
 @endsection
+
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/admin/packages.css') }}">
+@endsection

@@ -1,27 +1,27 @@
 :root {
-    --primary-color: #ff69b4;  
-    --primary-light: #ffb6c1;
-    --primary-dark: #ff1493;
-    --secondary-color: #87ceeb;
-    --secondary-light: #b0e0e6;
-    --secondary-dark: #4682b4;
-    --accent-color: #40e0d0;
-    --accent-light: #7fffd4;
-    --accent-dark: #20b2aa;
-    --light-color: #ffffff;
-    --dark-color: #1a1a1a;
-    --gray-100: #f8f9fa;
-    --gray-200: #e9ecef;
-    --gray-300: #dee2e6;
+    --primary-color: #FF1493;
+    --primary-light: #FF69B4;
+    --primary-dark: #C71585;
+    --secondary-color: #4169E1;
+    --secondary-light: #6495ED;
+    --secondary-dark: #283593;
+    --accent-color: #00CED1;
+    --accent-light: #40E0D0;
+    --accent-dark: #008B8B;
+    --light-color: #FFFFFF;
+    --dark-color: #0A0A0A;
+    --gray-100: #F8F9FA;
+    --gray-200: #E2E8F0;
+    --gray-300: #CBD5E0;
     --background-color: #F0F4FF;
-    --glass-background: rgba(255, 255, 255, 0.75);
-    --glass-background-dark: rgba(255, 255, 255, 0.65);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.55);
-    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --text-color: #1E2A38;
+    --glass-background: rgba(255, 255, 255, 0.85);
+    --glass-background-dark: rgba(255, 255, 255, 0.95);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.65);
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    --text-color: #1A1A1A;
     --text-light: #2C3E50;
-    --danger-color: #FF4D4D;
-    --success-color: #2ECC71;
+    --danger-color: #FF0000;
+    --success-color: #00B140;
 }
 
 body {
@@ -59,125 +59,75 @@ body {
     border-radius: 4px;
 }
 
-/* Cart Item */
+/* Cart Item Card */
 .cart-item {
     background: var(--glass-background);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-radius: 20px;
     padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-}
-
-.cart-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-light);
-}
-
-.cart-item-image {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 15px;
-    border: 1px solid var(--primary-light);
-    background: white;
-    padding: 0.5rem;
-    transition: all 0.3s ease;
-}
-
-.cart-item:hover .cart-item-image {
-    transform: scale(1.05);
-}
-
-.cart-item-details {
-    flex: 1;
-}
-
-.cart-item-title {
-    color: var(--text-color);
-    font-weight: 600;
-    font-size: 1.2rem;
-    margin-bottom: 0.75rem;
-}
-
-.cart-item-meta {
-    font-size: 0.95rem;
-    color: var(--text-light);
     margin-bottom: 1rem;
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
+    position: relative;
+    overflow: hidden;
 }
 
-.cart-item-meta span {
-    background: rgba(255, 105, 180, 0.08);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    margin-left: 0.5rem;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255, 105, 180, 0.15);
-    transition: all 0.3s ease;
+/* شريط علوي زخرفي */
+.cart-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
+    border-radius: 20px 20px 0 0;
 }
 
-.cart-item-meta span:hover {
-    background: rgba(255, 105, 180, 0.12);
-    transform: translateY(-2px);
-}
-
-.cart-item-price {
-    color: var(--primary-color);
-    font-weight: 700;
-    font-size: 1.3rem;
-    background: rgba(255, 105, 180, 0.08);
-    padding: 0.5rem 1.5rem;
+/* صورة المنتج */
+.cart-item .product-image {
+    border: 2px solid var(--primary-color);
     border-radius: 15px;
-    border: 1px solid rgba(255, 105, 180, 0.15);
-    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.cart-item-price:hover {
-    background: rgba(255, 105, 180, 0.12);
-    transform: translateY(-2px);
+/* معلومات المنتج */
+.cart-item .product-info {
+    padding: 0 1rem;
 }
 
-/* Quantity Controls */
-.quantity-control {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: rgba(255, 105, 180, 0.08);
-    padding: 0.5rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 105, 180, 0.15);
-    max-width: fit-content;
-    transition: all 0.3s ease;
+.cart-item .product-title {
+    color: var(--heading-color);
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
 }
 
-.quantity-control:hover {
-    background: rgba(255, 105, 180, 0.12);
-    transform: translateY(-2px);
-}
-
-.quantity-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid var(--primary-light);
-    background: var(--glass-background);
+.cart-item .product-price {
     color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    font-weight: 600;
     font-size: 1.1rem;
 }
 
-.quantity-btn:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: scale(1.1);
+/* كمية المنتج */
+.quantity-control {
+    background: var(--glass-background);
+    border: 2px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: fit-content;
+}
+
+.quantity-btn {
+    color: var(--primary-color);
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    padding: 0 0.5rem;
 }
 
 .quantity-input {
@@ -187,195 +137,89 @@ body {
     background: transparent;
     color: var(--text-color);
     font-weight: 600;
-    font-size: 1.1rem;
 }
 
-/* Cart Summary */
+/* ملخص السلة */
 .cart-summary {
     background: var(--glass-background);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 25px;
-    padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: var(--card-shadow);
-    position: sticky;
-    top: 2rem;
-    transition: all 0.3s ease;
-}
-
-.cart-summary:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-light);
-}
-
-.cart-summary h4 {
-    color: var(--text-color);
-    font-weight: 700;
-    margin-bottom: 2rem;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
     position: relative;
-    padding-bottom: 1rem;
 }
 
-.cart-summary h4::after {
+/* شريط علوي للملخص */
+.cart-summary::before {
     content: '';
     position: absolute;
-    bottom: 0;
+    top: 0;
     right: 0;
-    width: 40%;
-    height: 3px;
-    background: var(--primary-color);
-    border-radius: 2px;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
+    border-radius: 20px 20px 0 0;
 }
 
 .summary-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1.25rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 105, 180, 0.2);
 }
 
-.summary-label {
-    color: var(--text-light);
-    font-size: 1.1rem;
+.summary-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
 }
 
-.summary-value {
-    font-weight: 600;
-    color: var(--text-color);
-    font-size: 1.1rem;
-}
-
-.total-amount {
-    color: var(--primary-color);
-    font-size: 1.5rem;
+.summary-total {
     font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.2rem;
 }
 
-/* Action Buttons */
-.remove-item {
-    color: var(--danger-color);
-    border: none;
-    background: rgba(255, 77, 77, 0.1);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    transition: all 0.3s ease;
-    border: 1px solid rgba(255, 77, 77, 0.2);
-}
-
-.remove-item:hover {
-    background: var(--danger-color);
-    color: white;
-    transform: rotate(90deg) scale(1.1);
-}
-
+/* زر الشراء */
 .checkout-btn {
     width: 100%;
     padding: 1rem;
-    font-size: 1.2rem;
     background: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 15px;
-    margin-top: 1.5rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.checkout-btn:hover {
-    background: var(--primary-dark);
-    transform: translateY(-3px);
-}
-
-/* Continue Shopping */
-.continue-shopping {
-    text-align: center;
-    margin-top: 1.5rem;
-}
-
-.continue-shopping a {
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: rgba(255, 105, 180, 0.08);
     border-radius: 12px;
-    border: 1px solid rgba(255, 105, 180, 0.15);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 1rem;
 }
 
-.continue-shopping a:hover {
-    color: var(--primary-color);
-    transform: translateX(-5px);
-    background: rgba(255, 105, 180, 0.12);
-}
-
-/* Empty Cart */
+/* السلة الفارغة */
 .empty-cart {
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 3rem 2rem;
     background: var(--glass-background);
-    backdrop-filter: blur(8px);
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: var(--card-shadow);
-    transition: all 0.3s ease;
-}
-
-.empty-cart:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary-light);
+    border-radius: 20px;
+    border: 2px solid var(--primary-light);
 }
 
 .empty-cart-icon {
     font-size: 4rem;
     color: var(--primary-color);
-    margin-bottom: 1.5rem;
-    opacity: 0.7;
-    transition: all 0.3s ease;
-}
-
-.empty-cart:hover .empty-cart-icon {
-    opacity: 1;
-    transform: scale(1.1);
+    margin-bottom: 1rem;
 }
 
 .empty-cart h3 {
-    color: var(--text-color);
+    color: var(--heading-color);
     font-weight: 600;
     margin-bottom: 1rem;
 }
 
 .empty-cart p {
-    color: var(--text-light);
-    margin-bottom: 2rem;
-}
-
-.empty-cart .btn {
-    background: var(--primary-color);
-    color: white;
-    padding: 1rem 2.5rem;
-    border-radius: 15px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border: none;
-    font-size: 1.1rem;
-}
-
-.empty-cart .btn:hover {
-    background: var(--primary-dark);
-    transform: translateY(-3px);
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
 }
 
 /* Animations */

@@ -1,32 +1,27 @@
-/* Global Styles */
 :root {
-    /* Primary Colors (60%) - Pink */
-    --primary-color: #ff69b4;  /* وردي */
-    --primary-light: #ffb6c1;  /* وردي فاتح */
-    --primary-dark: #ff1493;   /* وردي غامق */
+    --primary-color: #ff69b4;
+    --primary-light: #ffb6c1;
+    --primary-dark: #ff1493;
 
-    /* Secondary Colors (30%) - Light Blue */
-    --secondary-color: #87ceeb;  /* أزرق فاتح */
-    --secondary-light: #b0e0e6;  /* أزرق فاتح جداً */
-    --secondary-dark: #4682b4;   /* أزرق متوسط */
+    --secondary-color: #87ceeb;
+    --secondary-light: #b0e0e6;
+    --secondary-dark: #4682b4;
 
-    /* Accent Colors (10%) */
-    --accent-color: #40e0d0;     /* تركواز */
-    --accent-light: #7fffd4;     /* تركواز فاتح */
-    --accent-dark: #20b2aa;      /* تركواز غامق */
+    --accent-color: #40e0d0;
+    --accent-light: #7fffd4;
+    --accent-dark: #20b2aa;
 
-    /* Neutral Colors */
     --light-color: #ffffff;
     --dark-color: #1a1a1a;
     --gray-100: #f8f9fa;
     --gray-200: #e9ecef;
     --gray-300: #dee2e6;
 
-    --background-color: #F0F4FF;  /* خلفية فاتحة مائلة للأزرق */
-    --glass-background: rgba(255, 255, 255, 0.75);      /* شفافية عالية للوضوح */
-    --glass-background-dark: rgba(255, 255, 255, 0.65);  /* شفافية معتدلة */
-    --glass-border: 1px solid rgba(74, 58, 255, 0.25); /* حدود خفيفة جداً */
-    --card-shadow: 0 4px 12px rgba(74, 58, 255, 0.08); /* ظل خفيف */
+    --background-color: #F0F4FF;
+    --glass-background: rgba(255, 255, 255, 0.75);
+    --glass-background-dark: rgba(255, 255, 255, 0.65);
+    --glass-border: 1px solid rgba(74, 58, 255, 0.25);
+    --card-shadow: 0 4px 12px rgba(74, 58, 255, 0.08);
     --text-color: #1E2A38;
     --text-light: #2C3E50;
     --danger-color: #DC3545;
