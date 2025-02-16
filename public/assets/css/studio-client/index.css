@@ -101,29 +101,140 @@
 
 /* Services Cards */
 .service-card {
-    background: var(--light-color);
+    background: #ffffff;
     border-radius: 20px;
-    padding: var(--spacing-lg);
-    margin-bottom: var(--spacing-md);
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 3rem 2rem;
+    margin-bottom: 30px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    text-align: center;
+    position: relative;
+    border: 2px solid transparent;
+    overflow: hidden;
+}
+
+.service-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+    opacity: 0;
+    transition: all 0.5s ease;
 }
 
 .service-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(-15px);
+    border-color: var(--primary-color);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+.service-card:hover::after {
+    opacity: 1;
 }
 
 .service-card i {
-    font-size: 3rem;
-    color: var(--icon-primary);
-    margin-bottom: var(--spacing-sm);
-    transition: var(--transition);
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    transition: all 0.5s ease;
+    display: inline-block;
 }
 
 .service-card:hover i {
-    transform: scale(1.1);
-    color: var(--icon-hover);
+    transform: scale(1.15);
+}
+
+.service-card h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--dark-color);
+    transition: all 0.4s ease;
+    position: relative;
+    display: inline-block;
+}
+
+.service-card h3::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-color);
+    transition: all 0.4s ease;
+}
+
+.service-card:hover h3::after {
+    width: 100%;
+}
+
+.service-card p {
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    transition: all 0.4s ease;
+}
+
+.service-card:hover p {
+    color: #333;
+}
+
+/* Services Section Container */
+.services {
+    background-color: #fafafa;
+    padding: 100px 0;
+    position: relative;
+}
+
+.services::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.03) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.services h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--dark-color);
+    text-align: center;
+    margin-bottom: 4rem;
+    position: relative;
+}
+
+.services h2::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+.services h2::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+.services .row {
+    margin-top: 3rem;
 }
 
 /* Featured Gallery Section */
@@ -268,6 +379,27 @@
     .wave-decoration svg {
         height: 100px;
     }
+
+    .service-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .service-card i {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .service-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .service-card p {
+        font-size: 1rem;
+    }
+
+    .services h2 {
+        font-size: 2.5rem;
+    }
 }
 
 @media (max-width: 576px) {
@@ -387,12 +519,19 @@
 .carousel-section {
     position: relative;
     overflow: hidden;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: none;
 }
 
 .carousel,
 .carousel-inner,
-.carousel-item {
-    height: 100%;
+.carousel-item,
+.carousel-image {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 .carousel-image {
@@ -401,6 +540,7 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    border: none;
 }
 
 .carousel-caption {
@@ -409,7 +549,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.1);
     padding: 2rem;
 }
 
@@ -536,49 +676,123 @@
     transform: scale(1.2);
 }
 
+/* Remove top and bottom bars */
+.carousel-section::before,
+.carousel-section::after {
+    display: none;
+}
 
-/* Contact Form Styles */
+/* Contact Section Styles */
 .contact-section {
-    background-color: var(--light-color);
+    background-color: #fafafa;
+    padding: 100px 0;
     position: relative;
-    overflow: hidden;
-    padding: 80px 0;
 }
 
-.contact-section .glass-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+.contact-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.03) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Contact Info Side */
+.contact-info-side {
+    background: white;
+    padding: 40px;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    text-align: center;
+    position: relative;
+    border: 2px solid transparent;
+    overflow: hidden;
 }
 
-.contact-form {
-    direction: rtl;
-    text-align: right;
+.contact-info-item {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
 }
 
-.contact-form .form-control {
-    border: 2px solid rgba(0, 0, 0, 0.08);
-    padding: 12px 16px;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    background-color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
+.contact-info-icon {
+    width: 50px;
+    height: 50px;
+    color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.5s ease;
+}
+
+.contact-info-content h4 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    font-weight: 600;
     color: var(--dark-color);
+}
+
+.contact-info-content p {
+    margin: 0;
+    line-height: 1.6;
+    color: #666;
+}
+
+.social-links-contact {
+    margin-top: 40px;
+}
+
+.social-links-contact a {
+    width: 40px;
+    height: 40px;
+    background: #f8f9fa;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-right: 10px;
+    color: var(--primary-color);
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.social-links-contact a:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-3px);
+}
+
+/* Form Side */
+.contact-form-side {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+}
+
+/* Remove hover effect from form container but keep input hover effects */
+.contact-form .form-control:hover {
+    border-color: var(--primary-color);
 }
 
 .contact-form .form-control:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.15);
-    background-color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.1);
+    background-color: white;
 }
 
 .contact-form .form-label {
     font-weight: 600;
-    color: var(--dark-color);
-    margin-bottom: 8px;
-    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1rem;
 }
 
 .contact-form textarea.form-control {
@@ -587,81 +801,96 @@
 }
 
 .contact-form .btn-primary {
-    padding: 12px 40px;
+    padding: 15px 40px;
     font-weight: 600;
     border-radius: 50px;
     transition: all 0.3s ease;
-    background: var(--gradient-primary);
+    background: var(--primary-color);
     border: none;
     font-size: 1.1rem;
     letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
+    width: 100%;
+    margin-top: 10px;
 }
 
 .contact-form .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.3);
+    background: var(--primary-color);
 }
 
-.contact-form .btn-primary:active {
-    transform: translateY(0);
-}
-
-.contact-form .invalid-feedback {
-    font-size: 0.875rem;
-    color: #dc3545;
-    margin-top: 6px;
-    font-weight: 500;
-}
-
-.contact-form .alert {
-    border-radius: 12px;
+/* تنسيق رسالة النجاح */
+.alert-success {
+    background-color: #e8f5e9;
+    border-color: #c8e6c9;
+    color: #2e7d32;
+    border-radius: 15px;
     padding: 15px 20px;
     margin-bottom: 25px;
-    font-weight: 500;
 }
 
-.contact-form .alert-success {
-    background-color: rgba(25, 135, 84, 0.1);
-    border: 2px solid rgba(25, 135, 84, 0.2);
-    color: #198754;
+/* Responsive Adjustments */
+@media (max-width: 991px) {
+    .contact-info-side {
+        margin-bottom: 30px;
+    }
+
+    .contact-form-side,
+    .contact-info-side {
+        padding: 30px;
+    }
 }
 
-/* Add a decorative element to the contact section */
-.contact-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: var(--gradient-primary);
-    opacity: 0.03;
-    clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+@media (max-width: 576px) {
+    .contact-form-side,
+    .contact-info-side {
+        padding: 20px;
+    }
+
+    .contact-info-item {
+        margin-bottom: 20px;
+    }
+
+    .contact-form .btn-primary {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
 }
 
-/* Add hover effects to form inputs */
-.contact-form .form-control:hover {
-    border-color: rgba(var(--primary-rgb), 0.3);
+/* Remove transition backgrounds */
+.carousel-fade .carousel-item {
+    opacity: 1;
+    transition: none !important;
 }
 
-/* Style the form heading */
-.contact-section h2 {
-    color: var(--dark-color);
-    font-weight: 700;
-    margin-bottom: 2rem;
-    position: relative;
-    display: inline-block;
+.carousel-fade .carousel-item.active,
+.carousel-fade .active.carousel-item-start,
+.carousel-fade .active.carousel-item-end {
+    opacity: 1;
+    transition: none !important;
 }
 
-.contact-section h2::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-primary);
-    border-radius: 2px;
+/* Remove transition effects and make direct image changes */
+.carousel-item {
+    display: none;
+    transition: none !important;
+}
+
+.carousel-item.active {
+    display: block;
+}
+
+/* Ensure clean background during transitions */
+.carousel,
+.carousel-inner,
+.carousel-item {
+    background: none !important;
+    transition: none !important;
+}
+
+.carousel-item.active,
+.carousel-item-next,
+.carousel-item-prev {
+    background: none !important;
+    transition: none !important;
 }

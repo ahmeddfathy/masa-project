@@ -4,19 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حجوزاتي - Lense Soma Studio</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="/assets/css/booking/my-bookings.css" rel="stylesheet">
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/booking/my-bookings.css') }}">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <img src="/images/logo.png" alt="Lense Soma Studio">
-            </a>
-        </div>
-    </nav>
+    @include('parts.navbar')
 
     <!-- Main Content -->
     <div class="container py-5">
@@ -37,23 +36,15 @@
                     @foreach($bookings as $booking)
                         <div class="booking-card">
                             <div class="booking-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">حجز #{{ $booking->id }}</h5>
-                                <span class="status-badge status-{{ $booking->status }}">
-                                    @switch($booking->status)
-                                        @case('pending')
-                                            قيد الانتظار
-                                            @break
-                                        @case('confirmed')
-                                            مؤكد
-                                            @break
-                                        @case('completed')
-                                            مكتمل
-                                            @break
-                                        @case('cancelled')
-                                            ملغي
-                                            @break
-                                    @endswitch
-                                </span>
+                                <div>
+                                    <h5 class="mb-0">حجز #{{ $booking->id }}</h5>
+                                    <small class="text-muted">{{ $booking->created_at->format('Y-m-d H:i') }}</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="badge me-2 bg-{{ $booking->payment_status === 'A' ? 'success' : ($booking->payment_status === 'H' || $booking->payment_status === 'V' ? 'warning' : 'danger') }}">
+                                        {{ $booking->payment_status === 'A' ? 'تم الدفع' : ($booking->payment_status === 'H' ? 'في انتظار الدفع' : ($booking->payment_status === 'V' ? 'قيد التحقق' : 'فشل الدفع')) }}
+                                    </span>
+                                </div>
                             </div>
                             <div class="booking-body">
                                 <div class="row">

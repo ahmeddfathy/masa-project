@@ -118,6 +118,19 @@
         padding: 0.8rem 1.5rem;
         font-size: 1rem;
     }
+
+    /* Fix carousel section */
+    .carousel-section {
+        height: 100vh;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: none !important;
+    }
+
+    .carousel-image {
+        height: 100vh !important;
+        min-height: auto !important;
+    }
 }
 
 /* Medium devices (tablets, 576px and up) */
@@ -136,6 +149,19 @@
     .gallery-filter button {
         padding: 0.6rem 1rem;
     }
+
+    /* Fix carousel section */
+    .carousel-section {
+        height: 100vh;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: none !important;
+    }
+
+    .carousel-image {
+        height: 100vh !important;
+        min-height: auto !important;
+    }
 }
 
 /* Large devices (desktops, 768px and up) */
@@ -147,12 +173,38 @@
     .service-card {
         padding: var(--spacing-md);
     }
+
+    /* Fix carousel section */
+    .carousel-section {
+        height: 100vh;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: none !important;
+    }
+
+    .carousel-image {
+        height: 100vh !important;
+        min-height: auto !important;
+    }
 }
 
 /* Extra large devices (large desktops, 992px and up) */
 @media (min-width: 992px) {
     .navbar-expand-lg .navbar-nav {
         margin-right: auto;
+    }
+
+    /* Fix carousel section */
+    .carousel-section {
+        height: 100vh;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: none !important;
+    }
+
+    .carousel-image {
+        height: 100vh !important;
+        min-height: auto !important;
     }
 }
 
@@ -183,6 +235,29 @@
 
     .curved-section {
         padding-top: 120px;
+    }
+
+    /* Fix carousel background during transitions */
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        background: none !important;
+    }
+
+    .carousel-item.active,
+    .carousel-item-next,
+    .carousel-item-prev {
+        background: none !important;
+    }
+
+    /* Remove any transition backgrounds */
+    .carousel-fade .carousel-item {
+        background: transparent !important;
+    }
+
+    .carousel-fade .active.carousel-item-start,
+    .carousel-fade .active.carousel-item-end {
+        background: transparent !important;
     }
 }
 

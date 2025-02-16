@@ -23,7 +23,10 @@ class Booking extends Model
         'status',
         'total_amount',
         'image_consent',
-        'terms_consent'
+        'terms_consent',
+        'payment_transaction_id',
+        'payment_id',
+        'payment_status'
     ];
 
     protected $casts = [
@@ -56,10 +59,5 @@ class Booking extends Model
         return $this->belongsToMany(PackageAddon::class, 'booking_addons', 'booking_id', 'addon_id')
             ->withPivot('quantity', 'price_at_booking')
             ->withTimestamps();
-    }
-
-    public function payments(): HasMany
-    {
-        return $this->hasMany(Payment::class);
     }
 }

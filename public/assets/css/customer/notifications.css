@@ -1,19 +1,18 @@
 /* Notifications Page Styles */
 :root {
     /* Primary Colors (60%) - Pink */
-    --primary-color: #ff69b4;  /* وردي */
-    --primary-light: #ffb6c1;  /* وردي فاتح */
-    --primary-dark: #ff1493;   /* وردي غامق */
+    --primary-color: #ff69b4;
+    --primary-light: #ffb6c1;
+    --primary-dark: #ff1493;
 
     /* Secondary Colors (30%) - Light Blue */
-    --secondary-color: #87ceeb;  /* أزرق فاتح */
-    --secondary-light: #b0e0e6;  /* أزرق فاتح جداً */
-    --secondary-dark: #4682b4;   /* أزرق متوسط */
+    --secondary-color: #87ceeb;
+    --secondary-dark: #4682b4;
 
     /* Accent Colors (10%) */
-    --accent-color: #40e0d0;     /* تركواز */
-    --accent-light: #7fffd4;     /* تركواز فاتح */
-    --accent-dark: #20b2aa;      /* تركواز غامق */
+    --accent-color: #40e0d0;
+    --accent-light: #7fffd4;
+    --accent-dark: #20b2aa;
 
     /* Neutral Colors */
     --light-color: #ffffff;
@@ -27,7 +26,7 @@
     --glass-background: rgba(255, 255, 255, 0.75);
     --glass-background-dark: rgba(255, 255, 255, 0.65);
     --glass-border: 1px solid rgba(255, 255, 255, 0.55);
-    --card-shadow: none;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --text-color: #1E2A38;
     --text-light: #2C3E50;
     --danger-color: #FF4D4D;
@@ -70,7 +69,7 @@ body {
     border-bottom: 1px solid var(--border-color);
     padding: 2rem 0;
     margin-bottom: 2.5rem;
-    box-shadow: none;
+    box-shadow: var(--card-shadow);
 }
 
 .page-title {
@@ -96,7 +95,7 @@ body {
 /* Mark All as Read Button */
 .btn-outline-primary {
     color: var(--primary-color);
-    border: 2.5px solid var(--primary-color);
+    border: 2px solid var(--primary-color);
     background: var(--glass-background);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -104,14 +103,13 @@ body {
     border-radius: 12px;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(74, 58, 255, 0.05);
+    box-shadow: var(--card-shadow);
 }
 
 .btn-outline-primary:hover {
     background: var(--primary-color);
     color: white;
     transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(74, 58, 255, 0.15);
 }
 
 /* Notification Item */
@@ -122,21 +120,21 @@ body {
     border-radius: 20px;
     padding: 1.75rem;
     margin-bottom: 0.75rem;
-    border: 2px solid rgba(74, 58, 255, 0.2);
-    box-shadow: 0 4px 12px rgba(74, 58, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: var(--card-shadow);
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
 }
 
 .notification-item:hover {
-    border-color: rgba(74, 58, 255, 0.4);
-    transform: translateY(-2px);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-light);
 }
 
 .notification-item.unread {
-    background: rgba(74, 58, 255, 0.05);
-    border-right: 4px solid var(--primary-color);
+    background: rgba(255, 105, 180, 0.05);
     border: 2px solid var(--primary-color);
     border-right-width: 4px;
 }
@@ -145,15 +143,21 @@ body {
 .notification-icon {
     width: 60px;
     height: 60px;
-    background: rgba(74, 58, 255, 0.1);
+    background: rgba(255, 105, 180, 0.1);
     border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--primary-color);
     font-size: 1.75rem;
-    border: 2px solid rgba(108, 92, 231, 0.2);
-    box-shadow: none;
+    border: 2px solid var(--primary-light);
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover .notification-icon {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
 }
 
 /* Notification Content */
@@ -178,17 +182,17 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(74, 58, 255, 0.08);
+    background: rgba(255, 105, 180, 0.08);
     padding: 0.4rem 0.75rem;
     border-radius: 8px;
     width: fit-content;
-    border: 2px solid rgba(74, 58, 255, 0.15);
+    border: 1px solid rgba(255, 105, 180, 0.15);
     transition: all 0.3s ease;
 }
 
 .notification-time:hover {
-    border-color: rgba(74, 58, 255, 0.25);
-    background: rgba(74, 58, 255, 0.1);
+    background: rgba(255, 105, 180, 0.12);
+    transform: translateY(-2px);
 }
 
 /* Empty State */
@@ -198,21 +202,21 @@ body {
     background: var(--glass-background);
     backdrop-filter: blur(8px);
     border-radius: 30px;
-    border: 2px solid rgba(74, 58, 255, 0.15);
-    box-shadow: 0 4px 15px rgba(74, 58, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: var(--card-shadow);
     margin-top: 2rem;
     transition: all 0.3s ease;
 }
 
 .empty-state:hover {
-    border-color: rgba(74, 58, 255, 0.25);
-    transform: translateY(-2px);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .empty-state-icon {
     width: 120px;
     height: 120px;
-    background: rgba(74, 58, 255, 0.08);
+    background: rgba(255, 105, 180, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -220,8 +224,14 @@ body {
     margin: 0 auto 2rem;
     font-size: 3rem;
     color: var(--primary-color);
-    border: 3px solid rgba(74, 58, 255, 0.2);
-    box-shadow: 0 4px 12px rgba(74, 58, 255, 0.08);
+    border: 2px solid var(--primary-light);
+    transition: all 0.3s ease;
+}
+
+.empty-state:hover .empty-state-icon {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
 }
 
 .empty-state h3 {
@@ -261,7 +271,6 @@ body {
     background: var(--primary-color);
     color: white;
     transform: translateY(-2px);
-    box-shadow: none;
 }
 
 /* Animations */
@@ -308,7 +317,7 @@ body {
     .empty-state-icon {
         width: 80px;
         height: 80px;
-        font-size: 3rem;
+        font-size: 2.5rem;
     }
 }
 
@@ -337,11 +346,11 @@ body {
     border-radius: 8px;
     background: var(--glass-background);
     border: 2px solid var(--primary-color);
-    box-shadow: 0 2px 8px rgba(74, 58, 255, 0.05);
+    box-shadow: var(--card-shadow);
 }
 
 .btn-sm.btn-outline-primary:hover {
-    box-shadow: 0 4px 12px rgba(74, 58, 255, 0.12);
+    transform: translateY(-2px);
 }
 
 /* Add shadow to make cards stand out more */

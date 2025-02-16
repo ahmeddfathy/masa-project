@@ -1,28 +1,19 @@
 /* Checkout Page Styles */
 :root {
-    /* Primary Colors (60%) - Pink */
-    --primary-color: #ff69b4;  /* وردي */
-    --primary-light: #ffb6c1;  /* وردي فاتح */
-    --primary-dark: #ff1493;   /* وردي غامق */
-
-    /* Secondary Colors (30%) - Light Blue */
-    --secondary-color: #87ceeb;  /* أزرق فاتح */
-    --secondary-light: #b0e0e6;  /* أزرق فاتح جداً */
-    --secondary-dark: #4682b4;   /* أزرق متوسط */
-
-    /* Accent Colors (10%) */
-    --accent-color: #40e0d0;     /* تركواز */
-    --accent-light: #7fffd4;     /* تركواز فاتح */
-    --accent-dark: #20b2aa;      /* تركواز غامق */
-
-    /* Neutral Colors */
+    --primary-color: #ff69b4;
+    --primary-light: #ffb6c1;
+    --primary-dark: #ff1493;
+    --secondary-color: #87ceeb;
+    --secondary-light: #b0e0e6;
+    --secondary-dark: #4682b4;
+    --accent-color: #40e0d0;
+    --accent-light: #7fffd4;
+    --accent-dark: #20b2aa;
     --light-color: #ffffff;
     --dark-color: #1a1a1a;
     --gray-100: #f8f9fa;
     --gray-200: #e9ecef;
     --gray-300: #dee2e6;
-
-    /* Background and Effects */
     --background-color: #F0F4FF;
     --glass-background: rgba(255, 255, 255, 0.75);
     --glass-background-dark: rgba(255, 255, 255, 0.65);
@@ -34,18 +25,12 @@
     --success-color: #2ECC71;
     --border-color: #E2E8F0;
     --heading-color: #2d3436;
-
-    /* Shadows */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-
-    /* Gradients */
     --gradient-primary: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%);
     --gradient-secondary: linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%);
     --gradient-card: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(249, 250, 251, 0.9) 100%);
-
-    /* Border Radius */
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;

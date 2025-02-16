@@ -86,6 +86,24 @@
                         </div>
                         @endif
 
+                        <!-- معلومات الدفع -->
+                        <div class="col-md-6 mt-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">معلومات الدفع</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>حالة الدفع:</strong> {{ $booking->payment_status }}</p>
+                                    @if($booking->payment_transaction_id)
+                                        <p><strong>رقم المعاملة:</strong> {{ $booking->payment_transaction_id }}</p>
+                                    @endif
+                                    @if($booking->payment_id)
+                                        <p><strong>معرف الدفع:</strong> {{ $booking->payment_id }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- تحديث الحالة -->
                         <div class="col-12 mt-4">
                             <div class="card">

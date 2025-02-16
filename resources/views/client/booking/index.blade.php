@@ -18,6 +18,37 @@
     @include('parts.navbar')
 
     <div class="container py-4">
+        <!-- Error and Success Messages -->
+        @if(session('error') || session('success') || $errors->any())
+        <div class="messages-container mb-4">
+            @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h6 class="alert-heading mb-2"><i class="fas fa-exclamation-triangle me-2"></i>يوجد أخطاء في النموذج:</h6>
+                <ul class="mb-0 ps-3">
+                    @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+        </div>
+        @endif
+
         <!-- Gallery Carousel -->
         <div id="galleryCarousel" class="carousel slide gallery-carousel animate-fadeInUp" data-bs-ride="carousel">
             <div class="carousel-indicators">
@@ -208,25 +239,20 @@
                 <div class="text-center">
                     @auth
                         <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-credit-card me-2"></i>الدفع وتأكيد الحجز
-                            <small class="d-block text-white-50">سيتم تحويلك إلى بوابة الدفع الآمنة</small>
+                            <i class="fas fa-credit-card me-2"></i>متابعة للدفع
+                            <small class="d-block text-white-50">سيتم تحويلك إلى بوابة الدفع الآمنة PayTabs</small>
                         </button>
                         <div class="mt-3">
                             <small class="text-muted">
                                 <i class="fas fa-lock me-1"></i>
-                                جميع المعاملات مؤمنة ومشفرة
+                                جميع المعاملات مؤمنة ومشفرة عبر PayTabs
                             </small>
                         </div>
                     @else
-                        <button type="submit" class="btn btn-primary btn-lg" formaction="{{ route('client.bookings.save-form') }}">
-                            <i class="fas fa-user-plus me-2"></i>تسجيل حساب جديد لإكمال الحجز
-                        </button>
-                        <p class="mt-3 text-muted">
-                            لديك حساب بالفعل؟
-                            <button type="submit" class="btn btn-link text-primary p-0" formaction="{{ route('client.bookings.save-form') }}?redirect=login">
-                                تسجيل الدخول
-                            </button>
-                        </p>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            يرجى <a href="{{ route('login') }}">تسجيل الدخول</a> أو <a href="{{ route('register') }}">إنشاء حساب جديد</a> للمتابعة
+                        </div>
                     @endauth
                 </div>
 

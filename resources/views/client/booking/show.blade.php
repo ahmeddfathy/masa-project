@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تفاصيل الحجز - Lense Soma Studio</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="/assets/css/booking/my-bookings.css" rel="stylesheet">
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/booking.css') }}">
     <style>
         .booking-details {
             background: rgba(255, 255, 255, 0.95);
@@ -153,14 +159,7 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <img src="/images/logo.png" alt="Lense Soma Studio">
-            </a>
-        </div>
-    </nav>
+    @include('parts.navbar')
 
     <div class="container py-4">
         <div class="booking-details">
@@ -173,12 +172,25 @@
                         تاريخ الحجز: {{ $booking->created_at->format('Y/m/d') }}
                     </p>
                 </div>
-                <span class="booking-status badge bg-{{ $booking->status_color }}">
-                    {{ $booking->status_text }}
-                </span>
+                <div class="text-end">
+                    <span class="booking-status badge bg-{{ $booking->status === 'confirmed' ? 'success' : ($booking->status === 'pending' ? 'warning' : 'danger') }}">
+                        {{ $booking->status === 'confirmed' ? 'تم الدفع' : ($booking->status === 'pending' ? 'قيد المعالجة' : 'فشل الدفع') }}
+                    </span>
+                </div>
             </div>
 
             <div class="booking-body">
+                @if($booking->status === 'pending')
+                    <div class="alert alert-warning mb-4">
+                        <i class="fas fa-clock me-2"></i>
+                        الحجز قيد المعالجة. سيتم تحديث حالة الحجز تلقائياً عند اكتمال عملية الدفع.
+                    </div>
+                @elseif($booking->status !== 'confirmed')
+                    <div class="alert alert-danger mb-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        فشلت عملية الدفع. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.
+                    </div>
+                @endif
                 <div class="row">
                     <!-- Session Details -->
                     <div class="col-md-6">

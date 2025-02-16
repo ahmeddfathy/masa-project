@@ -50,48 +50,53 @@
         <div class="container">
             <h2 class="text-center mb-5">فريقنا المحترف</h2>
             <div class="row g-4">
-                <div class="col-lg-4">
+                <!-- مصور محترف -->
+                <div class="col-lg-4 col-md-6">
                     <div class="team-member">
                         <div class="member-img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e" alt="مصور محترف">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e" alt="أحمد السعيد">
                         </div>
-                        <h4>مصور محترف</h4>
+                        <h4>أحمد السعيد</h4>
                         <div class="position">مصور رئيسي</div>
-                        <p>متخصص في تصوير الأطفال والعائلات</p>
+                        <p>خبرة 8 سنوات في تصوير الأطفال والعائلات، حاصل على جوائز عديدة في مجال التصوير الفوتوغرافي</p>
                         <div class="social-links">
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                            <a href="#" aria-label="لينكد إن"><i class="fab fa-linkedin"></i></a>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+
+                <!-- مصورة محترفة -->
+                <div class="col-lg-4 col-md-6">
                     <div class="team-member">
                         <div class="member-img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330" alt="مصورة محترفة">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330" alt="سارة المهندي">
                         </div>
-                        <h4>مصورة محترفة</h4>
+                        <h4>سارة المهندي</h4>
                         <div class="position">مصورة متخصصة</div>
-                        <p>متخصصة في تصوير المواليد والأطفال</p>
+                        <p>متخصصة في تصوير المواليد والأطفال، حاصلة على شهادات معتمدة في تصوير الأطفال حديثي الولادة</p>
                         <div class="social-links">
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                            <a href="#" aria-label="لينكد إن"><i class="fab fa-linkedin"></i></a>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
+
+                <!-- مصور فيديو -->
+                <div class="col-lg-4 col-md-6">
                     <div class="team-member">
                         <div class="member-img-wrapper">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d" alt="مصور فيديو">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d" alt="محمد العتيبي">
                         </div>
-                        <h4>مصور فيديو</h4>
-                        <div class="position">مصور متخصص</div>
-                        <p>متخصص في التصوير والمونتاج للمناسبات العائلية</p>
+                        <h4>محمد العتيبي</h4>
+                        <div class="position">مصور فيديو</div>
+                        <p>متخصص في التصوير السينمائي والمونتاج، خبرة 5 سنوات في توثيق المناسبات العائلية</p>
                         <div class="social-links">
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" aria-label="انستغرام"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="تويتر"><i class="fab fa-twitter"></i></a>
+                            <a href="#" aria-label="لينكد إن"><i class="fab fa-linkedin"></i></a>
                         </div>
                     </div>
                 </div>

@@ -9,14 +9,17 @@ class Payment extends Model
 {
     protected $fillable = [
         'booking_id',
+        'transaction_id',
         'amount',
+        'currency',
+        'status',
         'payment_method',
-        'payment_status',
-        'notes'
+        'response_data'
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2'
+        'amount' => 'decimal:2',
+        'response_data' => 'array'
     ];
 
     public function booking(): BelongsTo

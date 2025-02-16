@@ -168,61 +168,112 @@
     <!-- Contact Form Section -->
     <section class="contact-section py-5" id="contact">
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card glass-card">
-                        <div class="card-body p-5">
-                            <h2 class="text-center mb-4">تواصل معنا</h2>
-
-                            @if(session('success'))
-                                <div class="alert alert-success">
-                                    {{ session('success') }}
-                                </div>
-                            @endif
-
-                            <form action="{{ route('contact.send') }}" method="POST" class="contact-form">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">الاسم</label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                           id="name" name="name" value="{{ old('name') }}" required>
-                                    @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">البريد الإلكتروني</label>
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                           id="email" name="email" value="{{ old('email') }}" required>
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="phone" class="form-label">رقم الهاتف</label>
-                                    <input type="tel" class="form-control @error('phone') is-invalid @enderror"
-                                           id="phone" name="phone" value="{{ old('phone') }}" required>
-                                    @error('phone')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="message" class="form-label">الرسالة</label>
-                                    <textarea class="form-control @error('message') is-invalid @enderror"
-                                              id="message" name="message" rows="5" required>{{ old('message') }}</textarea>
-                                    @error('message')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary px-5">إرسال</button>
-                                </div>
-                            </form>
+            <h2 class="text-center mb-5">تواصل معنا</h2>
+            <div class="row">
+                <!-- Contact Info Side -->
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="contact-info-side">
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h4>موقعنا</h4>
+                                <p>الرياض - حي النخيل - شارع العليا</p>
+                            </div>
                         </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h4>اتصل بنا</h4>
+                                <p>0533445566</p>
+                                <p>0544556677</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h4>ساعات العمل</h4>
+                                <p>السبت - الخميس</p>
+                                <p>9:00 صباحاً - 11:00 مساءً</p>
+                            </div>
+                        </div>
+
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h4>البريد الإلكتروني</h4>
+                                <p>info@somalens.com</p>
+                                <p>support@somalens.com</p>
+                            </div>
+                        </div>
+
+                        <div class="social-links-contact">
+                            <a href="https://wa.me/966533445566" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                            <a href="https://instagram.com/somalens" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://twitter.com/somalens" target="_blank"><i class="fab fa-twitter"></i></a>
+                            <a href="https://snapchat.com/add/somalens" target="_blank"><i class="fab fa-snapchat-ghost"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form Side -->
+                <div class="col-lg-8">
+                    <div class="contact-form-side">
+                        @if(session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        <form action="{{ route('contact.send') }}" method="POST" class="contact-form">
+                            @csrf
+                            <div class="form-group">
+                                <label for="name" class="form-label">الاسم</label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                       id="name" name="name" value="{{ old('name') }}" required>
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email" class="form-label">البريد الإلكتروني</label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                       id="email" name="email" value="{{ old('email') }}" required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone" class="form-label">رقم الجوال</label>
+                                <input type="tel" class="form-control @error('phone') is-invalid @enderror"
+                                       id="phone" name="phone" value="{{ old('phone') }}" required>
+                                @error('phone')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message" class="form-label">الرسالة</label>
+                                <textarea class="form-control @error('message') is-invalid @enderror"
+                                          id="message" name="message" rows="5" required>{{ old('message') }}</textarea>
+                                @error('message')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">إرسال الرسالة</button>
+                        </form>
                     </div>
                 </div>
             </div>

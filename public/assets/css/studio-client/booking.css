@@ -38,7 +38,8 @@
 }
 
 .carousel-item {
-    height: 500px;
+    height: auto;
+    max-height: 600px;
     position: relative;
 }
 
@@ -54,8 +55,9 @@
 
 .carousel-item img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    height: auto;
+    max-height: 600px;
+    object-fit: contain;
     transition: transform 0.8s ease;
 }
 
@@ -387,7 +389,12 @@
     }
 
     .carousel-item {
-        height: 400px;
+        height: auto;
+        max-height: 400px;
+    }
+
+    .carousel-item img {
+        max-height: 400px;
     }
 
     .carousel-caption {
@@ -422,7 +429,12 @@
     }
 
     .carousel-item {
-        height: 300px;
+        height: auto;
+        max-height: 300px;
+    }
+
+    .carousel-item img {
+        max-height: 300px;
     }
 
     .carousel-caption {

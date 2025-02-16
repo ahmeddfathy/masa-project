@@ -11,7 +11,6 @@ use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class BookingController extends Controller
@@ -21,18 +20,13 @@ class BookingController extends Controller
         $services = Service::where('is_active', true)->get();
         $packages = Package::where('is_active', true)->get();
         $addons = PackageAddon::where('is_active', true)->get();
-
-        // جلب صور الجاليري
         $gallery_images = Gallery::latest()->take(5)->get();
 
-        // استرجاع البيانات المحفوظة من الجلسة إذا وجدت
         $oldFormData = session('booking_form_data', []);
         if (!empty($oldFormData)) {
-            // نقل البيانات المحفوظة إلى old() helper
             foreach ($oldFormData as $key => $value) {
                 session()->flash("_old_input.{$key}", $value);
             }
-            // حذف البيانات من الجلسة بعد استخدامها
             session()->forget('booking_form_data');
         }
 
@@ -60,11 +54,9 @@ class BookingController extends Controller
             'terms_consent' => 'required|accepted'
         ]);
 
-        // احتساب السعر الإجمالي
         $package = Package::findOrFail($validated['package_id']);
         $total_amount = $package->base_price;
 
-        // حساب سعر الإضافات
         $addons = [];
         if (!empty($validated['addons'])) {
             foreach ($validated['addons'] as $addonData) {
@@ -81,217 +73,247 @@ class BookingController extends Controller
             }
         }
 
-        // حفظ بيانات الحجز في الجلسة
+        $payment_id = 'PAY-' . strtoupper(Str::random(8)) . '-' . time();
+
         $bookingData = array_merge($validated, [
             'user_id' => Auth::id(),
             'total_amount' => $total_amount,
-            'addons' => $addons
+            'addons' => $addons,
+            'payment_id' => $payment_id
         ]);
         session(['pending_booking' => $bookingData]);
 
-        // إعداد بيانات الدفع
         $user = Auth::user();
         $paymentData = [
             "profile_id" => config('services.paytabs.profile_id'),
             "tran_type" => "sale",
             "tran_class" => "ecom",
-            "cart_id" => "PRE-BOOKING-" . Str::random(12),
-            "cart_description" => "حجز جلسة تصوير - " . $package->name,
+            "cart_id" => $payment_id,
+            "cart_description" => "Photography Session - " . $package->name,
             "cart_currency" => config('services.paytabs.currency'),
             "cart_amount" => $total_amount,
             "callback" => route('client.bookings.payment.callback'),
             "return" => route('client.bookings.payment.return'),
-
             "customer_details" => [
                 "name" => $user->name,
                 "email" => $user->email,
                 "phone" => $user->phone,
-                "street1" => "عنوان العميل",
-                "city" => "المدينة",
-                "state" => "المحافظة",
+                "street1" => "Client Address",
+                "city" => "City",
+                "state" => "State",
                 "country" => "EG",
                 "zip" => "00000"
             ],
-
             "hide_shipping" => true,
             "framed" => true,
             "is_sandbox" => config('services.paytabs.is_sandbox'),
             "is_hosted" => true
         ];
 
-        $response = Http::withHeaders([
-            'Authorization' => config('services.paytabs.server_key'),
-            'Content-Type' => 'application/json'
-        ])->post('https://secure-egypt.paytabs.com/payment/request', $paymentData);
+        $maxRetries = 3;
+        $attempt = 1;
+        $lastError = null;
 
-        if ($response->successful() && isset($response['redirect_url'])) {
-            // حفظ رقم المعاملة في الجلسة
-            session(['payment_transaction_id' => $response['tran_ref'] ?? null]);
-            return redirect($response['redirect_url']);
+        while ($attempt <= $maxRetries) {
+            try {
+                $response = Http::timeout(30)
+                    ->withHeaders([
+                        'Authorization' => config('services.paytabs.server_key'),
+                        'Content-Type' => 'application/json'
+                    ])
+                    ->withOptions([
+                        'verify' => !app()->environment('local'),
+                        'connect_timeout' => 30
+                    ])
+                    ->post('https://secure-egypt.paytabs.com/payment/request', $paymentData);
+
+                if ($response->successful() && isset($response['redirect_url'])) {
+                    session(['payment_transaction_id' => $response['tran_ref'] ?? null]);
+                    return redirect($response['redirect_url']);
+                }
+
+                if ($response->failed()) {
+                    $lastError = [
+                        'status' => $response->status(),
+                        'body' => $response->json() ?? $response->body(),
+                    ];
+                }
+            } catch (\Exception $e) {
+                $lastError = [
+                    'message' => $e->getMessage(),
+                    'type' => get_class($e)
+                ];
+            }
+
+            if ($attempt < $maxRetries) {
+                sleep(pow(2, $attempt - 1));
+            }
+            $attempt++;
         }
 
+        session(['booking_form_data' => $request->all()]);
         return redirect()->route('client.bookings.create')
-            ->with('error', 'حدث خطأ في عملية الدفع، يرجى المحاولة مرة أخرى');
+            ->with('error', 'Payment gateway connection failed. Please try again later or contact support.');
     }
 
     public function paymentCallback(Request $request)
     {
-        // طباعة كل البيانات القادمة من PayTabs
-        Log::info('====== بداية بيانات الدفع ======');
-        Log::info('كل البيانات:', $request->all());
-        Log::info('حالة الدفع: ' . $request->input('respStatus'));
-        Log::info('رسالة الدفع: ' . $request->input('respMessage'));
-        Log::info('رقم المعاملة: ' . ($request->input('tran_ref') ?? $request->input('tranRef')));
-        Log::info('رقم الطلب: ' . $request->input('cart_id'));
-        Log::info('المبلغ: ' . $request->input('cart_amount'));
-        Log::info('العملة: ' . $request->input('cart_currency'));
-        Log::info('====== نهاية بيانات الدفع ======');
+        $paymentData = $this->extractPaymentData($request);
 
-        // التحقق من وجود بيانات الحجز في الجلسة
+        if ($paymentData['tranRef']) {
+            $paymentData = $this->queryPayTabsStatus($paymentData);
+        }
+
         $bookingData = session('pending_booking');
         if (!$bookingData) {
-            Log::error('No booking data in session');
-            dd([
-                'payment_data' => $request->all(),
-                'session_data' => session()->all()
-            ]);
             return redirect()->route('client.bookings.create')
-                ->with('error', 'حدث خطأ في عملية الدفع - لم يتم العثور على بيانات الحجز');
+                ->with('error', 'Payment error - No booking data found');
         }
 
-        // التحقق من حالة الدفع
-        $paymentStatus = $request->input('respStatus');
-        $paymentMessage = $request->input('respMessage');
-        $tranRef = $request->input('tran_ref') ?? $request->input('tranRef');
+        $existingBooking = $this->findExistingBooking($paymentData);
+        if ($existingBooking) {
+            return $this->handleExistingBooking($existingBooking, $paymentData);
+        }
 
-        Log::info('Payment Status Details', [
-            'status' => $paymentStatus,
-            'message' => $paymentMessage,
-            'tran_ref' => $tranRef,
-            'payment_result' => $request->input('payment_result'),
-            'response_code' => $request->input('resp_code'),
-            'response_status' => $request->input('resp_status'),
-            'card_brand' => $request->input('card_brand'),
-            'card_scheme' => $request->input('card_scheme'),
-            'payment_info' => $request->input('payment_info')
-        ]);
+        if (!$paymentData['isSuccessful'] && !$paymentData['isPending']) {
+            return $this->handleFailedPayment($paymentData);
+        }
 
-        // حالات الدفع الناجح
-        $successStatuses = ['A', 'H', 'P', 'V'];
+        return $this->createNewBooking($bookingData, $paymentData);
+    }
 
-        if (in_array($paymentStatus, $successStatuses)) {
-            try {
-                // طباعة بيانات الحجز قبل إنشائه
-                Log::info('====== بيانات الحجز قبل الإنشاء ======');
-                Log::info('بيانات الحجز:', $bookingData);
-                Log::info('====== نهاية بيانات الحجز ======');
+    private function extractPaymentData(Request $request)
+    {
+        $paymentData = [
+            'status' => $request->input('respStatus') ?? $request->input('status'),
+            'tranRef' => $request->input('tran_ref') ?? session('payment_transaction_id'),
+            'paymentId' => $request->input('payment_id') ?? session('pending_booking.payment_id'),
+            'message' => $request->input('respMessage') ?? $request->input('message'),
+            'amount' => null,
+            'currency' => 'EGP'
+        ];
 
-                // التحقق من عدم وجود حجز سابق بنفس رقم المعاملة
-                if ($tranRef) {
-                    $existingBooking = Booking::where('payment_transaction_id', $tranRef)->first();
-                    if ($existingBooking) {
-                        Log::info('Booking already exists', [
-                            'booking_id' => $existingBooking->id,
-                            'payment_data' => $request->all()
-                        ]);
-                        return redirect()->route('client.bookings.success', $existingBooking)
-                            ->with('success', 'تم الدفع وتأكيد الحجز بنجاح!');
-                    }
-                }
+        return $paymentData;
+    }
 
-                // تحويل terms_consent إلى boolean
-                $terms_consent = $bookingData['terms_consent'] ?? 1;
-
-                // إنشاء الحجز بعد نجاح الدفع
-                $booking = Booking::create([
-                    'user_id' => $bookingData['user_id'],
-                    'service_id' => $bookingData['service_id'],
-                    'package_id' => $bookingData['package_id'],
-                    'booking_date' => now(),
-                    'session_date' => $bookingData['session_date'],
-                    'session_time' => $bookingData['session_time'],
-                    'baby_name' => $bookingData['baby_name'],
-                    'baby_birth_date' => $bookingData['baby_birth_date'],
-                    'gender' => $bookingData['gender'],
-                    'notes' => $bookingData['notes'],
-                    'status' => 'confirmed',
-                    'total_amount' => $bookingData['total_amount'],
-                    'image_consent' => $bookingData['image_consent'],
-                    'terms_consent' => $terms_consent,
-                    'payment_transaction_id' => $tranRef
+    private function queryPayTabsStatus(array $paymentData)
+    {
+        try {
+            $response = Http::timeout(30)
+                ->withHeaders([
+                    'Authorization' => config('services.paytabs.server_key'),
+                    'Content-Type' => 'application/json'
+                ])
+                ->post('https://secure-egypt.paytabs.com/payment/query', [
+                    'profile_id' => config('services.paytabs.profile_id'),
+                    'tran_ref' => $paymentData['tranRef']
                 ]);
 
-                // إضافة الإضافات
-                if (!empty($bookingData['addons'])) {
-                    foreach ($bookingData['addons'] as $addon) {
-                        $booking->addons()->attach($addon['id'], [
-                            'quantity' => $addon['quantity'],
-                            'price_at_booking' => $addon['price']
-                        ]);
-                    }
-                }
-
-                // طباعة بيانات الحجز بعد إنشائه
-                Log::info('====== بيانات الحجز بعد الإنشاء ======');
-                Log::info('تم إنشاء الحجز بنجاح:', [
-                    'booking_id' => $booking->id,
-                    'payment_status' => $paymentStatus,
-                    'payment_message' => $paymentMessage,
-                    'booking_details' => $booking->toArray(),
-                    'payment_details' => $request->all()
-                ]);
-                Log::info('====== نهاية بيانات الحجز ======');
-
-                // مسح بيانات الجلسة
-                session()->forget(['pending_booking', 'payment_transaction_id']);
-
-                return redirect()->route('client.bookings.success', $booking)
-                    ->with('success', 'تم الدفع وتأكيد الحجز بنجاح!');
-            } catch (\Exception $e) {
-                Log::error('Error creating booking after payment', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
-                    'booking_data' => $bookingData,
-                    'payment_data' => $request->all()
-                ]);
-
-                // طباعة الخطأ بالتفصيل
-                dd([
-                    'error' => $e->getMessage(),
-                    'booking_data' => $bookingData,
-                    'payment_data' => $request->all()
-                ]);
-
-                return redirect()->route('client.bookings.create')
-                    ->with('error', 'تم الدفع بنجاح ولكن حدث خطأ في تسجيل الحجز. سيتم التواصل معك قريباً.');
+            if ($response->successful()) {
+                $result = $response->json();
+                $paymentData['status'] = $result['payment_result']['response_status'] ?? $paymentData['status'];
+                $paymentData['message'] = $result['payment_result']['response_message'] ?? $paymentData['message'];
+                $paymentData['amount'] = $result['tran_total'] ?? null;
+                $paymentData['currency'] = $result['tran_currency'] ?? 'EGP';
             }
+        } catch (\Exception $e) {
+            // Silent catch - no logging needed for query failures
         }
 
-        // في حالة فشل الدفع
-        Log::warning('Payment failed', [
-            'status' => $paymentStatus,
-            'message' => $paymentMessage,
-            'tran_ref' => $tranRef,
-            'full_response' => $request->all()
-        ]);
+        $paymentData['isSuccessful'] = in_array($paymentData['status'], [
+            'A', 'H', 'P', 'V', 'success', 'SUCCESS', '1', 1, 'CAPTURED',
+            '100', 'Authorised', 'Captured', 'Approved'
+        ], true);
 
-        // طباعة بيانات الفشل
-        dd([
-            'payment_status' => $paymentStatus,
-            'payment_message' => $paymentMessage,
-            'transaction_ref' => $tranRef,
-            'all_payment_data' => $request->all(),
-            'session_data' => session()->all()
-        ]);
+        $paymentData['isPending'] = in_array($paymentData['status'], [
+            'PENDING', 'pending', 'H', 'P', '2', 'PROCESSING'
+        ], true);
 
+        return $paymentData;
+    }
+
+    private function findExistingBooking(array $paymentData)
+    {
+        if (!$paymentData['tranRef'] && !$paymentData['paymentId']) {
+            return null;
+        }
+
+        return Booking::where(function($query) use ($paymentData) {
+            if ($paymentData['tranRef']) {
+                $query->where('payment_transaction_id', $paymentData['tranRef']);
+            }
+            if ($paymentData['paymentId']) {
+                $query->orWhere('payment_id', $paymentData['paymentId']);
+            }
+        })->first();
+    }
+
+    private function handleExistingBooking(Booking $booking, array $paymentData)
+    {
+        if ($paymentData['isSuccessful'] && $booking->status !== 'confirmed') {
+            $booking->update([
+                'status' => 'confirmed',
+                'payment_status' => $paymentData['status']
+            ]);
+        }
+
+        return redirect()->route('client.bookings.success', $booking)
+            ->with('success', 'Payment confirmed successfully!');
+    }
+
+    private function handleFailedPayment(array $paymentData)
+    {
         session()->forget(['pending_booking', 'payment_transaction_id']);
         return redirect()->route('client.bookings.create')
-            ->with('error', 'فشلت عملية الدفع: ' . ($paymentMessage ?: 'حدث خطأ غير متوقع'));
+            ->with('error', 'Payment failed: ' . ($paymentData['message'] ?: 'Unknown error'));
+    }
+
+    private function createNewBooking(array $bookingData, array $paymentData)
+    {
+        try {
+            // تنظيف البيانات قبل الإنشاء
+            $bookingData = array_merge($bookingData, [
+                'payment_transaction_id' => $paymentData['tranRef'],
+                'payment_id' => $paymentData['paymentId'],
+                'payment_status' => $paymentData['status'],
+                'status' => $paymentData['isSuccessful'] ? 'confirmed' :
+                    ($paymentData['isPending'] ? 'pending' : 'failed'),
+                'booking_date' => now()
+            ]);
+
+            // إزالة البيانات غير المطلوبة من مصفوفة الإدخال
+            $addons = $bookingData['addons'] ?? [];
+            unset($bookingData['addons']);
+
+            // إنشاء الحجز
+            $booking = Booking::create($bookingData);
+
+            if (!empty($addons)) {
+                foreach ($addons as $addon) {
+                    $booking->addons()->attach($addon['id'], [
+                        'quantity' => $addon['quantity'],
+                        'price_at_booking' => $addon['price']
+                    ]);
+                }
+            }
+
+            session()->forget(['pending_booking', 'payment_transaction_id']);
+
+            $message = $paymentData['isSuccessful'] ?
+                'Payment confirmed successfully!' :
+                'Booking created, verifying payment status...';
+
+            return redirect()->route('client.bookings.success', $booking)
+                ->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->route('client.bookings.create')
+                ->with('error', 'عذراً، حدث خطأ أثناء إنشاء الحجز. الرجاء الاتصال بالدعم الفني.');
+        }
     }
 
     public function paymentReturn(Request $request)
     {
-        // نفس منطق الـ callback
         return $this->paymentCallback($request);
     }
 
@@ -302,7 +324,7 @@ class BookingController extends Controller
 
     public function myBookings()
     {
-        $bookings = Auth::user()->bookings()
+        $bookings = Booking::where('user_id', Auth::id())
             ->with(['service', 'package', 'addons'])
             ->latest()
             ->paginate(10);
@@ -311,7 +333,6 @@ class BookingController extends Controller
 
     public function show(Booking $booking)
     {
-        // التحقق من أن الحجز يخص المستخدم الحالي
         if ($booking->user_id !== Auth::id()) {
             abort(403);
         }
@@ -322,14 +343,12 @@ class BookingController extends Controller
 
     public function saveFormData(Request $request)
     {
-        // حفظ بيانات النموذج في الجلسة مع تضمين حقول الموافقة
         $formData = $request->all();
         $formData['image_consent'] = $request->input('image_consent', '0');
         $formData['terms_consent'] = $request->has('terms_consent');
 
         session(['booking_form_data' => $formData]);
 
-        // التوجيه حسب نوع الطلب
         return redirect()->route($request->query('redirect', 'register'));
     }
 }
