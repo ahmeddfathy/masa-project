@@ -30,7 +30,8 @@ use App\Http\Controllers\Admin\{
     PackageAddonController,
     BookingController as AdminBookingController,
     GalleryController,
-    StudioReportsController
+    StudioReportsController,
+    SettingController
 };
 
 // Client Booking Controller
@@ -244,13 +245,17 @@ Route::get('/client/book', [App\Http\Controllers\Client\BookingController::class
 Route::post('/client/book/save-form', [App\Http\Controllers\Client\BookingController::class, 'saveFormData'])->name('client.bookings.save-form');
 
 // Protected Routes (Require Authentication)
-Route::middleware(['auth'])->name('client.')->prefix('client')->group(function () {
+Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
     // Protected Booking Routes
     Route::prefix('bookings')->name('bookings.')->group(function () {
         Route::post('/store', [App\Http\Controllers\Client\BookingController::class, 'store'])->name('store');
         Route::get('/success/{booking}', [App\Http\Controllers\Client\BookingController::class, 'success'])->name('success');
         Route::get('/my', [App\Http\Controllers\Client\BookingController::class, 'myBookings'])->name('my');
         Route::get('/{booking}', [App\Http\Controllers\Client\BookingController::class, 'show'])->name('show');
+
+        // تحديث مسار المواعيد المتاحة ليدعم كلا الطريقتين
+        Route::post('/available-slots', [App\Http\Controllers\Client\BookingController::class, 'getAvailableTimeSlots'])
+            ->name('available-slots');
     });
 
     // إضافة مسار جديد للحصول على الإضافات
@@ -264,3 +269,12 @@ Route::prefix('client/bookings/payment')->name('client.bookings.payment.')->grou
     Route::post('callback', [BookingController::class, 'paymentCallback'])->name('callback');
     Route::get('return', [BookingController::class, 'paymentReturn'])->name('return');
 });
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings.index');
+    Route::post('/admin/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+});
+
+Route::post('/client/bookings/available-slots', [App\Http\Controllers\Client\BookingController::class, 'getAvailableTimeSlots'])
+    ->name('client.bookings.available-slots')
+    ->middleware('web');

@@ -141,6 +141,18 @@
                         </a>
                     </div>
                 </div>
+
+                <!-- Settings Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">الإعدادات</div>
+                    <div class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+                           href="{{ route('admin.settings.index') }}">
+                            <i class="fas fa-cog"></i>
+                            <span>إعدادات الحجز</span>
+                        </a>
+                    </div>
+                </div>
             </nav>
         </aside>
 

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
-  public function getSalesReport(string $period = 'month', ?string $startDate = null, ?string $endDate = null): array
+  public function getSalesReport(string $period = 'month', ?string $startDate = null, ?string $endDate = null, ?string $paymentMethod = null): array
   {
     if ($startDate && $endDate) {
         $startDate = Carbon::parse($startDate)->startOfDay();
@@ -118,12 +118,57 @@ class ReportService
         ];
     });
 
+    $totalSales = $salesData->sum('total_sales');
+    $ordersCount = $salesData->sum('orders_count');
+    $averageOrderValue = $salesData->avg('total_sales') ?? 0;
+
+    $growth = $this->calculateGrowth($startDate, $endDate);
+    $trend = $growth['trend'];
+    $percentage = $growth['percentage'];
+    $currentAmount = $growth['current_amount'];
+    $previousAmount = $growth['previous_amount'];
+
+    $dailyData = $salesByDate;
+
+    $cardPayments = 0;
+    $cashPayments = 0;
+    $otherPayments = 0;
+
+    $paymentMethods = Order::where('order_status', Order::ORDER_STATUS_COMPLETED)
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->select('payment_method', DB::raw('SUM(total_amount) as total'))
+        ->groupBy('payment_method')
+        ->get()
+        ->mapWithKeys(function ($item) {
+            return [$item->payment_method => $item->total];
+        });
+
+    if ($paymentMethod) {
+        $cardPayments = $paymentMethods[$paymentMethod] ?? 0;
+        $cashPayments = $paymentMethods['cash'] ?? 0;
+        $otherPayments = $paymentMethods['other'] ?? 0;
+    } else {
+        $cardPayments = $paymentMethods['card'] ?? 0;
+        $cashPayments = $paymentMethods['cash'] ?? 0;
+        $otherPayments = $paymentMethods['other'] ?? 0;
+    }
+
     return [
-      'total_sales' => $salesData->sum('total_sales'),
-      'orders_count' => $salesData->sum('orders_count'),
-      'average_order_value' => $salesData->avg('total_sales') ?? 0,
-      'daily_data' => $salesByDate,
-      'growth' => $this->calculateGrowth($startDate, $endDate),
+      'total_sales' => $totalSales,
+      'orders_count' => $ordersCount,
+      'average_order_value' => $averageOrderValue,
+      'growth' => [
+          'trend' => $trend,
+          'percentage' => $percentage,
+          'current_amount' => $currentAmount,
+          'previous_amount' => $previousAmount,
+      ],
+      'daily_data' => $dailyData,
+      'payment_methods' => [
+          'card' => $cardPayments,
+          'cash' => $cashPayments,
+          'other' => $otherPayments,
+      ],
       'peak_hours' => $peakHours,
       'top_customers' => $customerAnalysis,
       'top_products' => $topProducts

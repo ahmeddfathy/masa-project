@@ -58,22 +58,6 @@ class Product extends Model
     'all_images'
   ];
 
-  protected static function boot()
-  {
-    parent::boot();
-
-    static::creating(function ($product) {
-      $product->slug = Str::slug($product->name);
-
-      // Ensure unique slug
-      $count = 1;
-      while (static::where('slug', $product->slug)->exists()) {
-        $product->slug = Str::slug($product->name) . '-' . $count;
-        $count++;
-      }
-    });
-  }
-
   public function getRouteKeyName()
   {
     return 'slug';

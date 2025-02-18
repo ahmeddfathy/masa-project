@@ -8,42 +8,36 @@
     font-family: 'Cairo', sans-serif;
 }
 
-/* Global Styles */
 :root {
-    /* Primary Colors (60%) - Pink */
-    --primary-color: #ff69b4;  /* وردي */
-    --primary-light: #ffb6c1;  /* وردي فاتح */
-    --primary-dark: #ff1493;   /* وردي غامق */
+    --primary-color: #FF1493;
+    --primary-light: #FF69B4;
+    --primary-dark: #C71585;
 
-    /* Secondary Colors (30%) - Light Blue */
-    --secondary-color: #87ceeb;  /* أزرق فاتح */
-    --secondary-light: #b0e0e6;  /* أزرق فاتح جداً */
-    --secondary-dark: #4682b4;   /* أزرق متوسط */
+    --secondary-color: #4169E1;
+    --secondary-light: #6495ED;
+    --secondary-dark: #283593;
 
-    /* Accent Colors (10%) */
-    --accent-color: #40e0d0;     /* تركواز */
-    --accent-light: #7fffd4;     /* تركواز فاتح */
-    --accent-dark: #20b2aa;      /* تركواز غامق */
+    --accent-color: #00CED1;
+    --accent-light: #40E0D0;
+    --accent-dark: #008B8B;
 
-    /* Neutral Colors */
-    --light-color: #ffffff;
-    --dark-color: #1a1a1a;
-    --gray-100: #f8f9fa;
-    --gray-200: #e9ecef;
-    --gray-300: #dee2e6;
+    --light-color: #FFFFFF;
+    --dark-color: #0A0A0A;
+    --gray-100: #F8F9FA;
+    --gray-200: #E2E8F0;
+    --gray-300: #CBD5E0;
 
-    /* Background and Effects */
     --background-color: #F0F4FF;
-    --glass-background: rgba(255, 255, 255, 0.75);
-    --glass-background-dark: rgba(255, 255, 255, 0.65);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.55);
+    --glass-background: rgba(255, 255, 255, 0.85);
+    --glass-background-dark: rgba(255, 255, 255, 0.95);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.65);
     --card-shadow: none;
     --text-color: #1E2A38;
     --text-light: #2C3E50;
-    --danger-color: #FF4D4D;
-    --success-color: #2ECC71;
-    --warning-color: #F39C12;
-    --info-color: #3498DB;
+    --danger-color: #FF3333;
+    --success-color: #00CC66;
+    --warning-color: #FF9900;
+    --info-color: #0099FF;
 }
 
 body {

@@ -246,7 +246,19 @@ body {
 
 /* Section Cards */
 .section-card {
+    background: var(--glass-background);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1.5rem;
     height: 100%;
+    border: 2px solid rgba(74, 58, 255, 0.08);
+    transition: all 0.3s ease;
+}
+
+.section-card:hover {
+    border-color: rgba(74, 58, 255, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
 .section-card h2 {
@@ -287,46 +299,145 @@ body {
 }
 
 /* Appointment Cards */
-.appointments-grid {
+.appointments-grid,
+.bookings-grid {
     display: grid;
-    gap: 1.5rem;
+    gap: 1.25rem;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-.appointment-card {
+.appointment-card,
+.booking-card {
+    background: var(--glass-background);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-radius: 15px;
     padding: 1.5rem;
-    border: 2px solid rgba(74, 58, 255, 0.15);
-    transition: none;
+    border: 2px solid rgba(74, 58, 255, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.appointment-header {
+.appointment-card::before,
+.booking-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    opacity: 0.7;
+}
+
+.appointment-card:hover,
+.booking-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(74, 58, 255, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.appointment-header,
+.booking-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(74, 58, 255, 0.08);
+}
+
+.appointment-header .date,
+.appointment-header .time,
+.booking-header .date,
+.booking-header .time {
+    display: flex;
+    align-items: center;
     color: var(--text-muted);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
-.appointment-body h5 {
-    margin-bottom: 1rem;
+.appointment-header i,
+.booking-header i {
+    margin-left: 0.5rem;
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+.appointment-body,
+.booking-body {
+    margin-bottom: 1.5rem;
+}
+
+.appointment-body h5,
+.booking-body h5 {
     color: var(--heading-color);
     font-weight: 700;
+    margin-bottom: 1rem;
     font-size: 1.1rem;
     letter-spacing: -0.3px;
 }
 
-.appointment-body .location {
+.appointment-body .location,
+.booking-body .package {
+    display: flex;
+    align-items: center;
     color: var(--text-muted);
-    margin-bottom: 1rem;
     font-size: 0.95rem;
-    font-weight: 500;
+    margin-bottom: 1rem;
 }
 
-.appointment-footer {
-    margin-top: 1.5rem;
-    text-align: end;
+.appointment-body .location i,
+.booking-body .package i {
+    color: var(--secondary-color);
+    margin-left: 0.5rem;
+    font-size: 1rem;
+}
+
+.appointment-body .status,
+.booking-body .status {
+    display: inline-block;
+}
+
+.appointment-body .status .badge,
+.booking-body .status .badge {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 50px;
+}
+
+.appointment-footer,
+.booking-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.appointment-footer .btn,
+.booking-footer .btn {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.9rem;
+    border-radius: 50px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.appointment-footer .btn:hover,
+.booking-footer .btn:hover {
+    background: var(--secondary-color);
+    transform: translateX(-3px);
+}
+
+.appointment-footer .btn i,
+.booking-footer .btn i {
+    font-size: 0.8rem;
 }
 
 /* Badges */
@@ -446,20 +557,24 @@ body {
 /* Empty States */
 .empty-state {
     text-align: center;
-    padding: 3rem 0;
+    padding: 2.5rem 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    border: 2px dashed rgba(74, 58, 255, 0.15);
 }
 
 .empty-state i {
-    font-size: 3rem;
+    font-size: 2.5rem;
     color: var(--text-muted);
     margin-bottom: 1rem;
-    opacity: 0.7;
+    opacity: 0.5;
 }
 
 .empty-state p {
     color: var(--text-muted);
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 500;
+    margin: 0;
 }
 
 /* Responsive Styles */
@@ -536,7 +651,8 @@ body {
         font-size: 1.3rem;
     }
 
-    .appointments-grid {
+    .appointments-grid,
+    .bookings-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
@@ -552,6 +668,26 @@ body {
 
     .modal-dialog {
         margin: 0.5rem;
+    }
+
+    .appointment-card,
+    .booking-card {
+        padding: 1.25rem;
+    }
+
+    .appointment-header,
+    .booking-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 2rem;
     }
 }
 
@@ -590,7 +726,8 @@ body {
         font-size: 1.2rem;
     }
 
-    .appointment-card {
+    .appointment-card,
+    .booking-card {
         padding: 1rem;
     }
 
@@ -1043,141 +1180,24 @@ body {
     font-weight: 700;
 }
 
-/* Studio Bookings Grid */
-.bookings-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-}
-
-.booking-card {
-    background: var(--glass-background);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 15px;
-    padding: 1.5rem;
-    border: 2px solid rgba(74, 58, 255, 0.15);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.booking-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-}
-
-.booking-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.booking-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(74, 58, 255, 0.1);
-}
-
-.booking-header .date,
-.booking-header .time {
-    display: flex;
-    align-items: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.booking-header i {
-    margin-left: 0.5rem;
-    color: var(--primary-color);
-}
-
-.booking-body {
-    margin-bottom: 1.5rem;
-}
-
-.booking-body h5 {
-    color: var(--heading-color);
-    font-weight: 700;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-}
-
-.booking-body .package {
-    display: flex;
-    align-items: center;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    margin-bottom: 1rem;
-}
-
-.booking-body .package i {
-    color: var(--secondary-color);
-    margin-left: 0.5rem;
-}
-
-.booking-body .status {
-    display: inline-block;
-}
-
-.booking-body .status .badge {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border-radius: 50px;
-}
-
-.booking-footer {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.booking-footer .btn {
-    padding: 0.5rem 1.25rem;
-    font-size: 0.9rem;
-    border-radius: 50px;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    transition: all 0.3s ease;
-}
-
-.booking-footer .btn:hover {
-    background: var(--secondary-color);
-    transform: translateX(-3px);
-}
-
-.booking-footer .btn i {
-    margin-right: 0.5rem;
-    font-size: 0.8rem;
-}
-
 /* Status Badge Colors */
 .badge.bg-pending {
-    background-color: #ffa502 !important;
-    color: #1e1e2d;
+    background: linear-gradient(45deg, #ffa502, #ff6b6b) !important;
+    color: white;
 }
 
 .badge.bg-confirmed {
-    background-color: #2ed573 !important;
+    background: linear-gradient(45deg, #2ed573, #7bed9f) !important;
     color: white;
 }
 
 .badge.bg-cancelled {
-    background-color: #ff4757 !important;
+    background: linear-gradient(45deg, #ff4757, #ff6b81) !important;
     color: white;
 }
 
 .badge.bg-completed {
-    background-color: #1e90ff !important;
+    background: linear-gradient(45deg, #1e90ff, #70a1ff) !important;
     color: white;
 }
 

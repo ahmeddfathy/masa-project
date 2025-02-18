@@ -1,25 +1,14 @@
 /* Variables */
 :root {
-    --primary-color: #FF1493;      /* وردي */
-    --primary-light: #FF69B4;      /* وردي فاتح */
-    --primary-dark: #C71585;       /* وردي غامق */
-    --secondary-color: #4169E1;    /* أزرق ملكي */
-    --secondary-light: #6495ED;    /* أزرق فاتح */
-    --secondary-dark: #283593;     /* أزرق غامق */
-    --accent-color: #40E0D0;       /* تركواز */
-    --background-color: #F0F4FF;   /* خلفية فاتحة */
-    --glass-background: rgba(255, 255, 255, 0.85);
-    --glass-background-dark: rgba(255, 255, 255, 0.95);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.65);
-    --text-color: #1E2A38;
-    --text-light: #2C3E50;
-    --text-muted: #4A5F6E;
-    --box-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
+    --primary-color: #2196f3;
+    --secondary-color: #00bcd4;
     --text-dark: #1a1a2e;
+    --text-light: #f4f4f4;
     --background-light: #f8f9fa;
     --background-dark: #f1f4f9;
     --primary-gradient: linear-gradient(45deg, #2196f3, #00bcd4);
     --secondary-gradient: linear-gradient(45deg, #00bcd4, #2196f3);
+    --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
     --border-radius: 15px;
     --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --select-border: #e2e8f0;
@@ -42,15 +31,14 @@
 .gallery-carousel {
     margin-top: 1rem;
     margin-bottom: 4rem;
-    border-radius: 20px;
+    border-radius: var(--border-radius);
     overflow: hidden;
     box-shadow: var(--box-shadow);
     position: relative;
 }
 
 .carousel-item {
-    height: auto;
-    max-height: 600px;
+    height: 500px;
     position: relative;
 }
 
@@ -66,9 +54,8 @@
 
 .carousel-item img {
     width: 100%;
-    height: auto;
-    max-height: 600px;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
     transition: transform 0.8s ease;
 }
 
@@ -77,11 +64,10 @@
 }
 
 .carousel-caption {
-    background: var(--glass-background);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 20px;
-    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
     bottom: 3rem;
     max-width: 80%;
     margin: 0 auto;
@@ -89,7 +75,6 @@
     left: 10%;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     color: #333;
-    border: 2px solid var(--primary-light);
 }
 
 .carousel-caption h5 {
@@ -138,28 +123,25 @@
 
 /* Booking Form */
 .booking-form {
-    background: var(--glass-background);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 20px;
-    padding: 2rem;
-    border: 2px solid var(--primary-light);
-    box-shadow: var(--box-shadow);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 3rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
     overflow: hidden;
-    margin-bottom: 2rem;
 }
 
-/* شريط علوي زخرفي */
 .booking-form::before {
     content: '';
     position: absolute;
     top: 0;
-    right: 0;
     left: 0;
-    height: 4px;
-    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
-    border-radius: 20px 20px 0 0;
+    right: 0;
+    height: 5px;
+    background: var(--primary-gradient);
 }
 
 .booking-form h2 {
@@ -186,9 +168,12 @@
 
 /* Form Controls */
 .form-label {
-    color: var(--text-color);
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
 }
 
 .form-label i {
@@ -221,53 +206,61 @@
 
 .form-control,
 .form-select {
-    background: var(--glass-background);
-    border: 2px solid var(--primary-light);
+    border: 2px solid #eef2f7;
     border-radius: 12px;
     padding: 0.8rem 1rem;
-    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
 }
 
 .form-control:focus,
 .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(255, 20, 147, 0.1);
+    border-color: #2196f3;
+    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+    background: #ffffff;
 }
 
 /* Package Cards */
 .package-card {
-    background: var(--glass-background);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: white;
     border-radius: 20px;
-    padding: 1.5rem;
-    border: 2px solid var(--primary-light);
-    box-shadow: var(--box-shadow);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid rgba(33, 150, 243, 0.1);
+    transition: var(--transition);
     position: relative;
+    cursor: pointer;
     overflow: hidden;
-    margin-bottom: 1rem;
 }
 
 .package-card::before {
     content: '';
     position: absolute;
     top: 0;
-    right: 0;
     left: 0;
+    right: 0;
     height: 4px;
-    background: linear-gradient(to left, var(--primary-color), var(--primary-light));
-    border-radius: 20px 20px 0 0;
+    background: var(--primary-gradient);
+    transform: scaleX(0);
+    transition: var(--transition);
+}
+
+.package-card:hover::before,
+.package-card.selected::before {
+    transform: scaleX(1);
 }
 
 .package-card:hover {
     transform: translateY(-5px);
-    border-color: var(--primary-color);
+    border-color: #2196f3;
     box-shadow: 0 10px 30px rgba(33, 150, 243, 0.1);
 }
 
 .package-card.selected {
     border-color: var(--primary-color);
-    background: var(--glass-background-dark);
+    background: rgba(33, 150, 243, 0.05);
+    box-shadow: 0 10px 30px rgba(33, 150, 243, 0.1);
 }
 
 .package-card h5 {
@@ -331,19 +324,44 @@
 
 /* Submit Button */
 .btn-primary {
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
-    border: none;
+    background: var(--primary-gradient);
     color: white;
-    padding: 0.8rem 1.8rem;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2.5rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    border-radius: 50px;
-    transition: all 0.3s ease;
+    transition: var(--transition);
+    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--secondary-gradient);
+    opacity: 0;
+    transition: var(--transition);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(33, 150, 243, 0.4);
+}
+
+.btn-primary:hover::before {
+    opacity: 1;
+}
+
+.btn-primary i {
+    margin-left: 0.5rem;
+    position: relative;
+    z-index: 1;
 }
 
 /* Animations */
@@ -365,16 +383,11 @@
 /* Responsive Design */
 @media (max-width: 768px) {
     .booking-form {
-        padding: 1.5rem;
+        padding: 2rem;
     }
 
     .carousel-item {
-        height: auto;
-        max-height: 400px;
-    }
-
-    .carousel-item img {
-        max-height: 400px;
+        height: 400px;
     }
 
     .carousel-caption {
@@ -395,11 +408,7 @@
     }
 
     .package-card {
-        padding: 1.25rem;
-    }
-
-    .btn-primary {
-        width: 100%;
+        padding: 1.5rem;
     }
 }
 
@@ -413,12 +422,7 @@
     }
 
     .carousel-item {
-        height: auto;
-        max-height: 300px;
-    }
-
-    .carousel-item img {
-        max-height: 300px;
+        height: 300px;
     }
 
     .carousel-caption {
@@ -438,10 +442,10 @@
 
 /* تحديث خلفية الصفحة */
 body {
-    background: linear-gradient(135deg, var(--background-color) 0%, #ffffff 100%);
-    color: var(--text-color);
+    background: linear-gradient(135deg, var(--background-light) 0%, var(--background-dark) 100%);
+    color: var(--text-dark);
     line-height: 1.6;
-    font-family: 'Tajawal', sans-serif;
+    font-family: 'Cairo', sans-serif;
     min-height: 100vh;
 }
 

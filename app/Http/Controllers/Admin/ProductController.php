@@ -8,6 +8,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 
 class ProductController extends Controller
@@ -45,6 +46,7 @@ class ProductController extends Controller
         // Basic validation rules that are always required
         $rules = [
             'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:products,slug',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
@@ -87,7 +89,6 @@ class ProductController extends Controller
             $validatedData['enable_size_selection'] = $request->has('enable_size_selection');
             $validatedData['enable_appointments'] = $request->has('enable_appointments');
             $validatedData['is_available'] = $request->has('is_available');
-            $validatedData['slug'] = Str::slug($validatedData['name']);
 
             $product = Product::create($validatedData);
 
@@ -149,6 +150,12 @@ class ProductController extends Controller
             // Basic validation rules
             $rules = [
                 'name' => 'required|string|max:255',
+                'slug' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('products')->ignore($product->id)
+                ],
                 'description' => 'required|string',
                 'price' => 'required|numeric|min:0',
                 'stock' => 'required|integer|min:0',
@@ -184,9 +191,9 @@ class ProductController extends Controller
 
             DB::beginTransaction();
 
-            // Update feature flags
             $product->update([
                 'name' => $validated['name'],
+                'slug' => $validated['slug'],
                 'description' => $validated['description'],
                 'price' => $validated['price'],
                 'stock' => $validated['stock'],
@@ -197,7 +204,6 @@ class ProductController extends Controller
                 'enable_color_selection' => $request->has('enable_color_selection'),
                 'enable_size_selection' => $request->has('enable_size_selection'),
                 'enable_appointments' => $request->has('enable_appointments'),
-                'slug' => Str::slug($validated['name'])
             ]);
 
             // Handle colors
@@ -294,6 +300,12 @@ class ProductController extends Controller
             return redirect()->route('admin.products.index')
                 ->with('success', 'تم تحديث المنتج بنجاح');
         } catch (\Exception $e) {
+            \Log::error('Product update error: ' . $e->getMessage(), [
+                'product_id' => $product->id,
+                'request_data' => $request->all(),
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+
             DB::rollBack();
             return back()->withInput()
                 ->with('error', 'فشل تحديث المنتج. ' . $e->getMessage());

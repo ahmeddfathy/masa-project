@@ -9,19 +9,7 @@
 
 @section('content')
 <div class="container py-4">
-  @if (session('success'))
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  @endif
-
-  @if (session('error'))
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  @endif
+  <div id="alerts-container"></div>
 
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="page-title mb-0">سلة التسوق</h2>
@@ -33,7 +21,7 @@
     <div class="row">
       <div class="col-lg-8">
         @foreach($cart_items as $item)
-        <div class="cart-item d-flex gap-3">
+        <div class="cart-item d-flex gap-3" data-item-id="{{ $item->id }}">
           @php
           // Get any available image for the product, not just primary
           $productImage = $item->product->images->first();
@@ -56,31 +44,23 @@
                   @endif
                 </div>
               </div>
-              <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="remove-item">
-                  <i class="bi bi-x-circle"></i>
-                </button>
-              </form>
+              <button type="button" class="remove-item" onclick="removeCartItem({{ $item->id }})">
+                <i class="bi bi-x-circle"></i>
+              </button>
             </div>
             <div class="d-flex justify-content-between align-items-center mt-3">
               <div class="quantity-control">
-                <form action="{{ route('cart.update', $item->id) }}" method="POST" class="d-inline update-quantity-form">
-                  @csrf
-                  @method('PATCH')
-                  <button type="button" class="quantity-btn increase">
-                    <i class="bi bi-plus"></i>
-                  </button>
-                  <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
-                  class="quantity-input" >
-                  <button type="button" class="quantity-btn decrease">
-                    <i class="bi bi-dash"></i>
-                  </button>
-                </form>
+                <button type="button" class="quantity-btn decrease" onclick="updateQuantity({{ $item->id }}, -1)">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <input type="number" value="{{ $item->quantity }}" min="1" class="quantity-input"
+                       onchange="updateQuantity({{ $item->id }}, 0, this.value)">
+                <button type="button" class="quantity-btn increase" onclick="updateQuantity({{ $item->id }}, 1)">
+                  <i class="bi bi-plus"></i>
+                </button>
               </div>
-              <div class="cart-item-price">
-                {{ $item->product->price * $item->quantity }} ريال
+              <div class="cart-item-price" id="price-{{ $item->id }}">
+                {{ number_format($item->product->price * $item->quantity, 2) }} ريال
               </div>
             </div>
           </div>
@@ -93,11 +73,11 @@
           <h4 class="mb-4">ملخص الطلب</h4>
           <div class="summary-item">
             <span class="summary-label">إجمالي المنتجات</span>
-            <span class="summary-value">{{ $subtotal }} ريال</span>
+            <span class="summary-value" id="subtotal">{{ number_format($subtotal, 2) }} ريال</span>
           </div>
           <div class="summary-item">
             <span class="summary-label">الإجمالي الكلي</span>
-            <span class="total-amount">{{ $total }} ريال</span>
+            <span class="total-amount" id="total">{{ number_format($total, 2) }} ريال</span>
           </div>
           <a href="{{ route('checkout.index') }}" class="btn btn-primary checkout-btn">
             متابعة الشراء
@@ -129,35 +109,134 @@
 
 @section('scripts')
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // التحكم في الكمية
-    document.querySelectorAll('.quantity-control').forEach(control => {
-      const input = control.querySelector('.quantity-input');
-      const form = control.querySelector('.update-quantity-form');
-      const decreaseBtn = control.querySelector('.decrease');
-      const increaseBtn = control.querySelector('.increase');
+function showAlert(message, type = 'success') {
+    const alertsContainer = document.getElementById('alerts-container');
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    alertsContainer.appendChild(alert);
 
-      decreaseBtn.addEventListener('click', () => {
-        const currentValue = parseInt(input.value);
-        if (currentValue > 1) {
-          input.value = currentValue - 1;
-          form.submit();
-        }
-      });
-
-      increaseBtn.addEventListener('click', () => {
-        input.value = parseInt(input.value) + 1;
-        form.submit();
-      });
-    });
-
-    // إخفاء رسائل التنبيه تلقائياً
+    // Auto-hide after 3 seconds
     setTimeout(() => {
-      document.querySelectorAll('.alert').forEach(alert => {
         const bsAlert = new bootstrap.Alert(alert);
         bsAlert.close();
-      });
     }, 3000);
-  });
+}
+
+function updateQuantity(itemId, change, newValue = null) {
+    const input = document.querySelector(`[data-item-id="${itemId}"] .quantity-input`);
+    const currentValue = parseInt(input.value);
+    let quantity = newValue !== null ? parseInt(newValue) : currentValue + change;
+
+    if (quantity < 1) return;
+
+    const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
+    cartItem.style.opacity = '0.5';
+
+    fetch(`/cart/items/${itemId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // تحديث الكمية
+            input.value = quantity;
+
+            // تحديث السعر الفرعي للمنتج
+            document.getElementById(`price-${itemId}`).textContent =
+                new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR' })
+                    .format(data.item_subtotal)
+                    .replace('SAR', 'ريال');
+
+            // تحديث إجمالي السلة
+            document.getElementById('total').textContent =
+                new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR' })
+                    .format(data.cart_total)
+                    .replace('SAR', 'ريال');
+
+            showAlert('تم تحديث الكمية بنجاح');
+        } else {
+            input.value = currentValue;
+            showAlert(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        input.value = currentValue;
+        showAlert('حدث خطأ أثناء تحديث الكمية', 'danger');
+    })
+    .finally(() => {
+        cartItem.style.opacity = '1';
+    });
+}
+
+function removeCartItem(itemId) {
+    if (!confirm('هل أنت متأكد من حذف هذا المنتج من السلة؟')) {
+        return;
+    }
+
+    const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
+    cartItem.style.opacity = '0.5';
+
+    fetch(`/cart/items/${itemId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // تأثير حذف المنتج
+            cartItem.style.transform = 'translateX(100px)';
+            cartItem.style.opacity = '0';
+
+            setTimeout(() => {
+                cartItem.remove();
+
+                // تحديث إجمالي السلة
+                document.getElementById('total').textContent =
+                    new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR' })
+                        .format(data.cart_total)
+                        .replace('SAR', 'ريال');
+
+                // إذا أصبحت السلة فارغة
+                if (data.cart_count === 0) {
+                    location.reload();
+                }
+            }, 300);
+
+            showAlert('تم حذف المنتج من السلة بنجاح');
+        } else {
+            cartItem.style.opacity = '1';
+            showAlert(data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        cartItem.style.opacity = '1';
+        showAlert('حدث خطأ أثناء حذف المنتج', 'danger');
+    });
+}
+
+// إخفاء رسائل التنبيه تلقائياً عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 3000);
+});
 </script>
 @endsection

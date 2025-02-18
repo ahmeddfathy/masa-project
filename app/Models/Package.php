@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Package extends Model
 {
@@ -33,8 +34,8 @@ class Package extends Model
         return $this->hasMany(Booking::class);
     }
 
-    public function addons()
+    public function addons(): BelongsToMany
     {
-        return $this->hasMany(PackageAddon::class);
+        return $this->belongsToMany(PackageAddon::class, 'package_addon_pivot');
     }
 }

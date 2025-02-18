@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>حجز جلسة تصوير - عدسة سوما</title>
     <!-- Bootstrap RTL CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
@@ -52,7 +53,7 @@
         <!-- Gallery Carousel -->
         <div id="galleryCarousel" class="carousel slide gallery-carousel animate-fadeInUp" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                @foreach($gallery_images as $key => $image)
+                @foreach($galleryImages as $key => $image)
                 <button type="button" data-bs-target="#galleryCarousel" data-bs-slide-to="{{ $key }}"
                         class="{{ $key === 0 ? 'active' : '' }}" aria-current="{{ $key === 0 ? 'true' : 'false' }}"
                         aria-label="Slide {{ $key + 1 }}"></button>
@@ -60,7 +61,7 @@
             </div>
 
             <div class="carousel-inner">
-                @foreach($gallery_images as $key => $image)
+                @foreach($galleryImages as $key => $image)
                 <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
                     <img src="{{ Storage::url($image->image_url) }}" class="d-block w-100" alt="{{ $image->caption }}">
                     @if($image->caption)
@@ -117,7 +118,7 @@
                                     <h5>{{ $package->name }}</h5>
                                     <p class="text-muted">{{ $package->description }}</p>
                                     <ul class="list-unstyled">
-                                        <li><i class="fas fa-clock me-2"></i>المدة: {{ $package->duration }} ساعة</li>
+                                        <li><i class="fas fa-clock me-2"></i>المدة: <span class="duration-value">{{ $package->duration }}</span> ساعة</li>
                                         <li><i class="fas fa-images me-2"></i>عدد الصور: {{ $package->num_photos }}</li>
                                         <li><i class="fas fa-palette me-2"></i>عدد الثيمات: {{ $package->themes_count }}</li>
                                         <li><i class="fas fa-tag me-2"></i>السعر: {{ $package->base_price }} درهم</li>
@@ -162,15 +163,28 @@
                         <label class="form-label">تاريخ الجلسة</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                            <input type="date" name="session_date" class="form-control" required value="{{ old('session_date') }}">
+                            <input type="date" name="session_date" class="form-control" required
+                                   min="{{ date('Y-m-d') }}"
+                                   max="{{ date('Y-m-d', strtotime('+30 days')) }}"
+                                   value="{{ old('session_date') }}">
                         </div>
+                        <small class="text-muted mt-1">
+                            <i class="fas fa-info-circle"></i>
+                            يمكنك اختيار موعد خلال الـ 30 يوم القادمة
+                        </small>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">وقت الجلسة</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                            <input type="time" name="session_time" class="form-control" required value="{{ old('session_time') }}">
+                            <select name="session_time" class="form-select" required id="sessionTime" disabled>
+                                <option value="">يرجى اختيار الباقة والتاريخ أولاً</option>
+                            </select>
                         </div>
+                        <small class="text-muted mt-1" id="timeNote">
+                            <i class="fas fa-info-circle"></i>
+                            سيتم عرض المواعيد المتاحة بعد اختيار الباقة والتاريخ
+                        </small>
                     </div>
                 </div>
 
@@ -325,18 +339,279 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Package Selection
-            document.querySelectorAll('.package-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    const radio = this.querySelector('input[type="radio"]');
-                    if (radio) {
-                        radio.checked = true;
+            // Store all data with proper JSON encoding
+            const allServices = JSON.parse('{!! addslashes(json_encode($services)) !!}');
+            const allPackages = JSON.parse('{!! addslashes(json_encode($packages)) !!}');
+            const allAddons = JSON.parse('{!! addslashes(json_encode($addons)) !!}');
+            const currentBookings = JSON.parse('{!! addslashes(json_encode($currentBookings)) !!}');
+
+            // Get DOM elements
+            const serviceSelect = document.querySelector('select[name="service_id"]');
+            const packagesContainer = document.querySelector('.row:has(.package-card)');
+            const addonsSection = document.getElementById('addons-section');
+
+            // Hide packages and addons initially
+            packagesContainer.style.display = 'none';
+            addonsSection.style.display = 'none';
+
+            function updateAvailableTimes(packageDuration) {
+                const sessionTimeSelect = document.getElementById('sessionTime');
+                const sessionDateInput = document.querySelector('input[name="session_date"]');
+                const timeNote = document.getElementById('timeNote');
+                const selectedPackageRadio = document.querySelector('.package-select:checked');
+
+                // التحقق من وجود جميع العناصر المطلوبة
+                if (!sessionTimeSelect || !sessionDateInput || !timeNote || !selectedPackageRadio) {
+                    console.error('Required elements not found');
+                    return;
+                }
+
+                // التحقق من وجود قيم صالحة
+                if (!packageDuration || !sessionDateInput.value || !selectedPackageRadio.value) {
+                    sessionTimeSelect.disabled = true;
+                    sessionTimeSelect.innerHTML = '<option value="">يرجى اختيار الباقة والتاريخ أولاً</option>';
+                    timeNote.innerHTML = `
+                        <i class="fas fa-info-circle"></i>
+                        يرجى اختيار الباقة والتاريخ أولاً
+                    `;
+                    return;
+                }
+
+                // عرض حالة التحميل
+                sessionTimeSelect.disabled = true;
+                sessionTimeSelect.innerHTML = '<option value="">جاري تحميل المواعيد المتاحة...</option>';
+                timeNote.innerHTML = `
+                    <i class="fas fa-spinner fa-spin"></i>
+                    جاري التحقق من المواعيد المتاحة...
+                `;
+
+                // تنسيق التاريخ
+                const formattedDate = sessionDateInput.value.split('T')[0];
+
+                // التحقق من وجود CSRF token
+                const tokenElement = document.querySelector('meta[name="csrf-token"]');
+                if (!tokenElement) {
+                    console.error('CSRF token not found');
+                    timeNote.innerHTML = `
+                        <i class="fas fa-exclamation-circle text-danger"></i>
+                        حدث خطأ في النظام. يرجى تحديث الصفحة والمحاولة مرة أخرى
+                    `;
+                    return;
+                }
+
+                const token = tokenElement.getAttribute('content');
+
+                // تجهيز البيانات
+                const requestData = {
+                    date: formattedDate,
+                    package_id: selectedPackageRadio.value
+                };
+
+                // تنفيذ الطلب
+                fetch('/client/bookings/available-slots', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(async response => {
+                    const responseText = await response.text();
+                    console.log('Raw response:', responseText);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}, response: ${responseText}`);
                     }
-                    document.querySelectorAll('.package-card').forEach(c => {
-                        c.classList.remove('selected');
-                    });
-                    this.classList.add('selected');
+
+                    try {
+                        return JSON.parse(responseText);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        throw new Error('Invalid JSON response');
+                    }
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+
+                    sessionTimeSelect.innerHTML = '';
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'اختر الوقت المناسب';
+                    sessionTimeSelect.appendChild(defaultOption);
+
+                    if (data.status === 'success' && data.slots && data.slots.length > 0) {
+                        data.slots.forEach(slot => {
+                            const option = document.createElement('option');
+                            option.value = slot.time;
+                            option.textContent = `${slot.formatted_time} (${slot.time} - ${slot.end_time})`;
+                            sessionTimeSelect.appendChild(option);
+                        });
+
+                        sessionTimeSelect.disabled = false;
+                        timeNote.innerHTML = `
+                            <i class="fas fa-info-circle"></i>
+                            المواعيد المتاحة تأخذ في الاعتبار مدة الجلسة (${packageDuration} ساعة)
+                        `;
+                    } else {
+                        sessionTimeSelect.disabled = true;
+                        timeNote.innerHTML = `
+                            <i class="fas fa-exclamation-circle text-danger"></i>
+                            ${data.message || 'لا توجد مواعيد متاحة في هذا اليوم'}
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error details:', error);
+                    sessionTimeSelect.disabled = true;
+                    sessionTimeSelect.innerHTML = '<option value="">حدث خطأ أثناء تحميل المواعيد</option>';
+                    timeNote.innerHTML = `
+                        <i class="fas fa-exclamation-circle text-danger"></i>
+                        حدث خطأ أثناء تحميل المواعيد المتاحة. يرجى المحاولة مرة أخرى
+                    `;
                 });
+            }
+
+            // Handle package selection
+            function handlePackageSelection(packageId) {
+                const sessionTimeSelect = document.getElementById('sessionTime');
+                const sessionDateInput = document.querySelector('input[name="session_date"]');
+
+                if (!packageId) {
+                    addonsSection.style.display = 'none';
+                    sessionTimeSelect.disabled = true;
+                    sessionTimeSelect.innerHTML = '<option value="">يرجى اختيار الباقة أولاً</option>';
+                    return;
+                }
+
+                // Find selected package
+                const selectedPackage = allPackages.find(pkg => pkg.id == packageId);
+                if (!selectedPackage) {
+                    addonsSection.style.display = 'none';
+                    sessionTimeSelect.disabled = true;
+                    return;
+                }
+
+                // Enable time selection if date is selected
+                if (sessionDateInput.value) {
+                    sessionTimeSelect.disabled = false;
+                    updateAvailableTimes(selectedPackage.duration);
+                }
+
+                // Add date change listener for this package
+                sessionDateInput.addEventListener('change', function() {
+                    if (this.value) {
+                        sessionTimeSelect.disabled = false;
+                        updateAvailableTimes(selectedPackage.duration);
+                    } else {
+                        sessionTimeSelect.disabled = true;
+                        sessionTimeSelect.innerHTML = '<option value="">يرجى اختيار التاريخ أولاً</option>';
+                    }
+                });
+
+                // Update addons display
+                if (selectedPackage.addons && selectedPackage.addons.length) {
+                    const addonsContainer = addonsSection.querySelector('.row');
+                    addonsContainer.innerHTML = selectedPackage.addons.map(addon => `
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="addons[${addon.id}][id]"
+                                               value="${addon.id}"
+                                               class="form-check-input"
+                                               id="addon-${addon.id}">
+                                        <input type="hidden" name="addons[${addon.id}][quantity]" value="1">
+                                        <label class="form-check-label" for="addon-${addon.id}">
+                                            <h6>${addon.name}</h6>
+                                            <p class="text-muted small mb-2">${addon.description}</p>
+                                            <span class="badge bg-primary">${addon.price} درهم</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    addonsSection.style.display = 'block';
+                }
+            }
+
+            // Handle service selection
+            serviceSelect.addEventListener('change', function() {
+                const selectedServiceId = this.value;
+                if (!selectedServiceId) {
+                    packagesContainer.style.display = 'none';
+                    addonsSection.style.display = 'none';
+                    return;
+                }
+
+                // Filter packages for selected service
+                const servicePackages = allPackages.filter(pkg =>
+                    pkg.service_ids.includes(parseInt(selectedServiceId))
+                );
+
+                // Update packages display
+                packagesContainer.innerHTML = servicePackages.map(pkg => `
+                    <div class="col-md-6">
+                        <div class="package-card">
+                            <input type="radio" name="package_id" value="${pkg.id}"
+                                   class="form-check-input package-select" required>
+                            <h5>${pkg.name}</h5>
+                            <p class="text-muted">${pkg.description}</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-clock me-2"></i>المدة: ${pkg.duration} ساعة</li>
+                                <li><i class="fas fa-images me-2"></i>عدد الصور: ${pkg.num_photos}</li>
+                                <li><i class="fas fa-palette me-2"></i>عدد الثيمات: ${pkg.themes_count}</li>
+                                <li><i class="fas fa-tag me-2"></i>السعر: ${pkg.base_price} درهم</li>
+                            </ul>
+                        </div>
+                    </div>
+                `).join('');
+
+                packagesContainer.style.display = 'flex';
+                addonsSection.style.display = 'none';
+
+                // Reattach package selection event listeners
+                attachPackageListeners();
+            });
+
+            function attachPackageListeners() {
+                document.querySelectorAll('.package-card').forEach(card => {
+                    card.addEventListener('click', function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio) {
+                            radio.checked = true;
+                            handlePackageSelection(radio.value);
+                        }
+                        document.querySelectorAll('.package-card').forEach(c => {
+                            c.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                    });
+                });
+            }
+
+            // Check if a package is already selected (e.g. after form validation error)
+            const selectedPackageRadio = document.querySelector('.package-select:checked');
+            if (selectedPackageRadio) {
+                handlePackageSelection(selectedPackageRadio.value);
+                selectedPackageRadio.closest('.package-card').classList.add('selected');
+            }
+
+            // Add date change listener
+            document.querySelector('input[name="session_date"]').addEventListener('change', function() {
+                const selectedPackageRadio = document.querySelector('.package-select:checked');
+                if (selectedPackageRadio) {
+                    const packageDuration = parseFloat(selectedPackageRadio.closest('.package-card').querySelector('.duration-value').textContent);
+                    if (this.value) {
+                        document.getElementById('sessionTime').disabled = false;
+                        updateAvailableTimes(packageDuration);
+                    } else {
+                        document.getElementById('sessionTime').disabled = true;
+                    }
+                }
             });
 
             // Form Animation

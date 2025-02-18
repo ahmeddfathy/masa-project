@@ -34,7 +34,6 @@
                     <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
                         <li><a class="dropdown-item {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">معرض الصور</a></li>
                         <li><a class="dropdown-item {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">من نحن</a></li>
-                        <li><a class="dropdown-item" href="#contact">اتصل بنا</a></li>
                     </ul>
                 </li>
 

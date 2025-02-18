@@ -122,6 +122,17 @@
                                                     <label class="form-check-label" for="isAvailable">متاح للبيع</label>
                                                 </div>
                                             </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">الرابط المختصر (Slug)</label>
+                                                <input type="text" name="slug"
+                                                       class="form-control shadow-sm @error('slug') is-invalid @enderror"
+                                                       value="{{ old('slug', $product->slug) }}">
+                                                @error('slug')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                                <div class="form-text">يجب أن يكون فريداً ولا يمكن تكراره مع منتج آخر</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

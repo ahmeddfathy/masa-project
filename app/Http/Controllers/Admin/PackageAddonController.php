@@ -11,7 +11,7 @@ class PackageAddonController extends Controller
 {
     public function index()
     {
-        $addons = PackageAddon::with('package')->latest()->paginate(10);
+        $addons = PackageAddon::with('packages')->latest()->paginate(10);
         return view('admin.addons.index', compact('addons'));
     }
 
@@ -28,10 +28,18 @@ class PackageAddonController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'is_active' => 'boolean',
-            'package_id' => 'required|exists:packages,id'
+            'package_ids' => 'required|array',
+            'package_ids.*' => 'exists:packages,id'
         ]);
 
-        PackageAddon::create($validated);
+        $addon = PackageAddon::create([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'is_active' => $validated['is_active'] ?? false,
+        ]);
+
+        $addon->packages()->attach($validated['package_ids']);
 
         return redirect()->route('admin.addons.index')
             ->with('success', 'تم إضافة الإضافة بنجاح');
@@ -50,10 +58,18 @@ class PackageAddonController extends Controller
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'is_active' => 'boolean',
-            'package_id' => 'required|exists:packages,id'
+            'package_ids' => 'required|array',
+            'package_ids.*' => 'exists:packages,id'
         ]);
 
-        $addon->update($validated);
+        $addon->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'is_active' => $validated['is_active'] ?? false,
+        ]);
+
+        $addon->packages()->sync($validated['package_ids']);
 
         return redirect()->route('admin.addons.index')
             ->with('success', 'تم تحديث الإضافة بنجاح');

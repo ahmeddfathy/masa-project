@@ -18,7 +18,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>الاسم</th>
-                                    <th>الباقة</th>
+                                    <th>الباقات</th>
                                     <th>الوصف</th>
                                     <th>السعر</th>
                                     <th>الحالة</th>
@@ -30,7 +30,11 @@
                                     <tr>
                                         <td>{{ $addon->id }}</td>
                                         <td>{{ $addon->name }}</td>
-                                        <td>{{ $addon->package->name }}</td>
+                                        <td>
+                                            @foreach($addon->packages as $package)
+                                                <span class="badge bg-info me-1">{{ $package->name }}</span>
+                                            @endforeach
+                                        </td>
                                         <td>{{ Str::limit($addon->description, 50) }}</td>
                                         <td>{{ $addon->price }} درهم</td>
                                         <td>
@@ -56,7 +60,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">لا توجد إضافات</td>
+                                        <td colspan="7" class="text-center">لا توجد إضافات</td>
                                     </tr>
                                 @endforelse
                             </tbody>
