@@ -442,24 +442,73 @@
                     defaultOption.textContent = 'اختر الوقت المناسب';
                     sessionTimeSelect.appendChild(defaultOption);
 
-                    if (data.status === 'success' && data.slots && data.slots.length > 0) {
-                        data.slots.forEach(slot => {
-                            const option = document.createElement('option');
-                            option.value = slot.time;
-                            option.textContent = `${slot.formatted_time} (${slot.time} - ${slot.end_time})`;
-                            sessionTimeSelect.appendChild(option);
-                        });
+                    if (data.status === 'success') {
+                        // التحقق من وجود مواعيد متاحة في يوم آخر
+                        if (data.slots && typeof data.slots === 'object' && data.slots.next_available_date) {
+                            sessionTimeSelect.disabled = true;
+                            const alertMessage = `لا تتوفر مواعيد في هذا اليوم. أقرب موعد متاح هو يوم ${data.slots.next_available_formatted_date}`;
 
-                        sessionTimeSelect.disabled = false;
-                        timeNote.innerHTML = `
-                            <i class="fas fa-info-circle"></i>
-                            المواعيد المتاحة تأخذ في الاعتبار مدة الجلسة (${packageDuration} ساعة)
-                        `;
+                            // إضافة alert للإشعار
+                            const alertDiv = document.createElement('div');
+                            alertDiv.className = 'alert alert-warning alert-dismissible fade show mt-2';
+                            alertDiv.innerHTML = `
+                                <i class="fas fa-info-circle me-2"></i>
+                                ${alertMessage}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <div class="mt-2">
+                                    <button onclick="selectDate('${data.slots.next_available_date}')" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        اختيار هذا اليوم
+                                    </button>
+                                </div>
+                            `;
+
+                            // إضافة الـ alert قبل حقل اختيار الوقت
+                            const timeContainer = sessionTimeSelect.closest('.col-md-6');
+                            if (timeContainer.querySelector('.alert')) {
+                                timeContainer.querySelector('.alert').remove();
+                            }
+                            timeContainer.insertBefore(alertDiv, timeContainer.firstChild);
+
+                            timeNote.innerHTML = `
+                                <i class="fas fa-exclamation-circle text-warning"></i>
+                                يرجى اختيار اليوم المقترح لعرض المواعيد المتاحة
+                            `;
+                            return;
+                        }
+
+                        // عرض المواعيد المتاحة في اليوم المحدد
+                        if (Array.isArray(data.slots) && data.slots.length > 0) {
+                            data.slots.forEach(slot => {
+                                const option = document.createElement('option');
+                                option.value = slot.time;
+                                option.textContent = `${slot.formatted_time} (${slot.time} - ${slot.end_time})`;
+                                sessionTimeSelect.appendChild(option);
+                            });
+
+                            sessionTimeSelect.disabled = false;
+                            timeNote.innerHTML = `
+                                <i class="fas fa-info-circle"></i>
+                                المواعيد المتاحة تأخذ في الاعتبار مدة الجلسة (${packageDuration} ساعة)
+                            `;
+
+                            // إزالة أي alert سابق
+                            const timeContainer = sessionTimeSelect.closest('.col-md-6');
+                            if (timeContainer.querySelector('.alert')) {
+                                timeContainer.querySelector('.alert').remove();
+                            }
+                        } else {
+                            sessionTimeSelect.disabled = true;
+                            timeNote.innerHTML = `
+                                <i class="fas fa-exclamation-circle text-danger"></i>
+                                لا توجد مواعيد متاحة في هذا اليوم
+                            `;
+                        }
                     } else {
                         sessionTimeSelect.disabled = true;
                         timeNote.innerHTML = `
                             <i class="fas fa-exclamation-circle text-danger"></i>
-                            ${data.message || 'لا توجد مواعيد متاحة في هذا اليوم'}
+                            ${data.message || 'حدث خطأ أثناء تحميل المواعيد المتاحة'}
                         `;
                     }
                 })
@@ -623,6 +672,13 @@
                     this.closest('.input-group')?.classList.remove('focused');
                 });
             });
+
+            // إضافة دالة selectDate في نهاية الـ DOMContentLoaded
+            function selectDate(date) {
+                const dateInput = document.querySelector('input[name="session_date"]');
+                dateInput.value = date;
+                dateInput.dispatchEvent(new Event('change'));
+            }
         });
     </script>
 </body>
