@@ -88,33 +88,37 @@ class AppointmentConfirmed extends Notification
                 throw new \Exception('Missing required appointment data');
             }
 
-            Log::info('Attempting to send appointment confirmation email', [
-                'to_email' => $notifiable->email,
-                'user_name' => $notifiable->name,
-                'appointment_id' => $this->appointmentId
-            ]);
+            $serviceTypes = [
+                'new_abaya' => '👗 عباية جديدة',
+                'alteration' => '✂️ تعديل',
+                'repair' => '🧵 إصلاح',
+                'custom_design' => '✨ تصميم خاص'
+            ];
+
+            $serviceText = $serviceTypes[$this->serviceType] ?? ucfirst($this->serviceType);
 
             return (new MailMessage)
-                ->subject('تأكيد الموعد')
-                ->greeting("مرحباً {$notifiable->name}!")
+                ->subject('📅 تأكيد الموعد - ' . $this->appointment->reference_number)
+                ->greeting("✨ مرحباً {$notifiable->name}!")
                 ->line('تم تأكيد موعدك بنجاح!')
-                ->line("التاريخ: {$this->appointmentDate}")
-                ->line("الوقت: {$this->appointmentTime}")
-                ->line("الخدمة: " . ucfirst($this->serviceType))
-                ->action('عرض الموعد', route('appointments.show', $this->appointmentId))
-                ->line('شكراً لاختيارك خدماتنا!');
+                ->line('━━━━━━━━━━━━━━━━━━━━━━')
+                ->line("🔖 رقم المرجع: {$this->appointment->reference_number}")
+                ->line("📅 التاريخ: {$this->appointmentDate}")
+                ->line("⏰ الوقت: {$this->appointmentTime}")
+                ->line("💫 الخدمة: {$serviceText}")
+                ->line('━━━━━━━━━━━━━━━━━━━━━━')
+                ->line("📍 الموقع: {$this->appointment->location_text}")
+                ->when($this->appointment->address, function ($mail) {
+                    return $mail->line("العنوان: {$this->appointment->address}");
+                })
+                ->line('━━━━━━━━━━━━━━━━━━━━━━')
+                ->action('👉 تفاصيل الموعد', route('appointments.show', $this->appointment->reference_number))
+                ->line('🙏 شكراً لاختيارك خدماتنا!')
+                ->line('📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.');
         } catch (Throwable $e) {
             Log::error('Error preparing appointment confirmation email', [
                 'error' => $e->getMessage(),
-                'error_trace' => $e->getTraceAsString(),
-                'appointment_id' => $this->appointmentId ?? null,
-                'user_id' => $notifiable->id ?? null,
-                'user_email' => $notifiable->email ?? null,
-                'appointment_data' => [
-                    'date' => $this->appointmentDate,
-                    'time' => $this->appointmentTime,
-                    'service' => $this->serviceType
-                ]
+                'appointment_reference' => $this->appointment->reference_number
             ]);
             throw $e;
         }
@@ -127,7 +131,7 @@ class AppointmentConfirmed extends Notification
                 'title' => 'تأكيد الموعد',
                 'message' => "تم تأكيد موعدك بتاريخ {$this->appointmentDate} الساعة {$this->appointmentTime}",
                 'type' => 'appointment_confirmed',
-                'appointment_id' => $this->appointmentId
+                'reference_number' => $this->appointment->reference_number
             ];
         } catch (Throwable $e) {
             Log::error('Error in toArray method', [

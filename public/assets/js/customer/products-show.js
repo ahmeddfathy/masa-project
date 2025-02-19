@@ -67,12 +67,41 @@ function updatePageQuantity(change) {
 }
 
 function showAppointmentModal(cartItemId) {
-    document.getElementById('cart_item_id').value = cartItemId;
-    document.getElementById('appointmentForm').reset();
-    document.getElementById('addressField').classList.add('d-none');
-    document.getElementById('appointmentErrors').classList.add('d-none');
-    const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
-    modal.show();
+    // التحقق من حالة العنصر قبل عرض النافذة
+    fetch(`/cart/items/${cartItemId}/check-appointment`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.needs_appointment) {
+                document.getElementById('cart_item_id').value = cartItemId;
+                document.getElementById('appointmentForm').reset();
+                document.getElementById('addressField').classList.add('d-none');
+                document.getElementById('appointmentErrors').classList.add('d-none');
+
+                const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
+                modal.show();
+            } else {
+                // إذا كان العنصر لا يحتاج لموعد، نزيل المعرف من URL
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.delete('pending_appointment');
+                window.history.replaceState({}, '', currentUrl);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('حدث خطأ أثناء التحقق من حالة الموعد', 'error');
+        });
+}
+
+function closeAppointmentModal() {
+    // إزالة معرف العنصر من الـ URL
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.delete('pending_appointment');
+    window.history.replaceState({}, '', currentUrl);
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('appointmentModal'));
+    if (modal) {
+        modal.hide();
+    }
 }
 
 function toggleAddress() {
@@ -260,9 +289,9 @@ function showNotification(message, type = 'success') {
 function updateCartDisplay(data) {
     const cartItems = document.getElementById('cartItems');
     const cartTotal = document.getElementById('cartTotal');
+    const cartCountElements = document.querySelectorAll('.cart-count');
 
     // تحديث عدد العناصر في كل أزرار السلة
-    const cartCountElements = document.querySelectorAll('.cart-count');
     cartCountElements.forEach(element => {
         element.textContent = data.count;
     });
@@ -270,53 +299,65 @@ function updateCartDisplay(data) {
     // تحديث الإجمالي
     cartTotal.textContent = data.total + ' ر.س';
 
-    // تأثير التلاشي عند التحديث
-    cartItems.style.opacity = '0';
-    setTimeout(() => {
-        cartItems.innerHTML = '';
+    // تحديث قائمة العناصر
+    cartItems.innerHTML = '';
 
-        if (data.items.length === 0) {
-            cartItems.innerHTML = `
-                <div class="cart-empty text-center p-4">
-                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
-                    <p class="mb-3">السلة فارغة</p>
-                    <a href="/products" class="btn btn-primary">تصفح المنتجات</a>
-                </div>
-            `;
-        } else {
-            data.items.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.className = 'cart-item';
-                itemElement.dataset.itemId = item.id;
-                itemElement.innerHTML = `
-                    <div class="cart-item-inner p-3 border-bottom">
-                        <button class="remove-btn btn btn-link text-danger" onclick="removeFromCart(this, ${item.id})">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <div class="d-flex gap-3">
-                            <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                            <div class="cart-item-details flex-grow-1">
-                                <h5 class="cart-item-title mb-2">${item.name}</h5>
-                                <div class="cart-item-price mb-2">${item.price} ر.س</div>
-                                <div class="quantity-controls d-flex align-items-center gap-2">
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateCartQuantity(${item.id}, -1)">-</button>
-                                    <input type="number" value="${item.quantity}" min="1"
-                                        onchange="updateCartQuantity(${item.id}, 0, this.value)"
-                                        class="form-control form-control-sm quantity-input">
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="updateCartQuantity(${item.id}, 1)">+</button>
-                                </div>
-                                <div class="cart-item-subtotal mt-2 text-primary">
-                                    الإجمالي: ${item.subtotal} ر.س
-                                </div>
-                            </div>
+    if (!data.items || data.items.length === 0) {
+        cartItems.innerHTML = `
+            <div class="cart-empty text-center p-4">
+                <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                <p class="mb-3">السلة فارغة</p>
+                <a href="/products" class="btn btn-primary">تصفح المنتجات</a>
+            </div>
+        `;
+        return;
+    }
+
+    data.items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'cart-item';
+        itemElement.dataset.itemId = item.id;
+
+        // تحضير معلومات إضافية
+        const additionalInfo = [];
+        if (item.color) additionalInfo.push(`اللون: ${item.color}`);
+        if (item.size) additionalInfo.push(`المقاس: ${item.size}`);
+        if (item.needs_appointment) {
+            additionalInfo.push(item.has_appointment ?
+                '<span class="text-success"><i class="fas fa-check-circle"></i> تم حجز موعد</span>' :
+                '<span class="text-warning"><i class="fas fa-clock"></i> بانتظار حجز موعد</span>');
+        }
+
+        itemElement.innerHTML = `
+            <div class="cart-item-inner p-3 border-bottom">
+                <button class="remove-btn btn btn-link text-danger" onclick="removeFromCart(this, ${item.id})">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="d-flex gap-3">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-details flex-grow-1">
+                        <h5 class="cart-item-title mb-2">${item.name}</h5>
+                        <div class="cart-item-info mb-2">
+                            ${additionalInfo.length > 0 ?
+                                `<small class="text-muted">${additionalInfo.join(' | ')}</small>` : ''}
+                        </div>
+                        <div class="cart-item-price mb-2">${item.price} ر.س</div>
+                        <div class="quantity-controls d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="updateCartQuantity(${item.id}, -1)">-</button>
+                            <input type="number" value="${item.quantity}" min="1"
+                                onchange="updateCartQuantity(${item.id}, 0, this.value)"
+                                class="form-control form-control-sm quantity-input">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="updateCartQuantity(${item.id}, 1)">+</button>
+                        </div>
+                        <div class="cart-item-subtotal mt-2 text-primary">
+                            الإجمالي: ${item.subtotal} ر.س
                         </div>
                     </div>
-                `;
-                cartItems.appendChild(itemElement);
-            });
-        }
-        cartItems.style.opacity = '1';
-    }, 300);
+                </div>
+            </div>
+        `;
+        cartItems.appendChild(itemElement);
+    });
 }
 
 function updateCartQuantity(itemId, change, newValue = null) {
@@ -703,119 +744,43 @@ document.addEventListener('DOMContentLoaded', function() {
     if (appointmentModal) {
         const modal = new bootstrap.Modal(appointmentModal);
 
-        // Handle cancel button click
-        document.getElementById('cancelAppointment').addEventListener('click', function() {
-            if (confirm('هل أنت متأكد من إلغاء حجز الموعد؟ سيتم إزالة المنتج من السلة.')) {
-                const cartItemId = document.getElementById('cart_item_id').value;
-                // Remove item from cart
-                removeFromCart(this, cartItemId);
-            }
-        });
-
-        // Prevent modal from being closed by clicking outside or pressing escape
-        appointmentModal.addEventListener('hide.bs.modal', function (event) {
-            // If modal is being closed programmatically after successful appointment or cancellation, allow it
-            if (appointmentModal.getAttribute('data-allow-close') === 'true') {
-                appointmentModal.removeAttribute('data-allow-close');
-                return;
-            }
-            // Otherwise prevent closing
-            event.preventDefault();
-        });
-
         // Handle appointment form submission
         const appointmentForm = document.getElementById('appointmentForm');
         if (appointmentForm) {
             appointmentForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                // إظهار حالة التحميل
                 const submitBtn = document.getElementById('submitAppointment');
                 const spinner = submitBtn.querySelector('.spinner-border');
+                const errorDiv = document.getElementById('appointmentErrors');
+
+                // تعطيل زر الإرسال وإظهار مؤشر التحميل
                 submitBtn.disabled = true;
                 spinner.classList.remove('d-none');
-
-                // مسح الأخطاء السابقة
-                const errorDiv = document.getElementById('appointmentErrors');
                 errorDiv.classList.add('d-none');
-                errorDiv.textContent = '';
-
-                // تجميع بيانات النموذج
-                const formData = new FormData(this);
-
-                // تنسيق التاريخ والوقت
-                const appointmentDate = formData.get('appointment_date');
-                const appointmentTime = formData.get('appointment_time');
-
-                // التحقق من البيانات
-                if (!appointmentDate || !appointmentTime) {
-                    errorDiv.textContent = 'يرجى تحديد التاريخ والوقت';
-                    errorDiv.classList.remove('d-none');
-                    submitBtn.disabled = false;
-                    spinner.classList.add('d-none');
-                    return;
-                }
-
-                // التحقق من رقم الهاتف
-                const phone = formData.get('phone');
-                if (!phone) {
-                    errorDiv.textContent = 'يرجى إدخال رقم الهاتف';
-                    errorDiv.classList.remove('d-none');
-                    submitBtn.disabled = false;
-                    spinner.classList.add('d-none');
-                    return;
-                }
-
-                // التحقق من الموقع والعنوان
-                const location = formData.get('location');
-                const address = formData.get('address');
-                if (location === 'client_location' && !address) {
-                    errorDiv.textContent = 'يرجى إدخال العنوان';
-                    errorDiv.classList.remove('d-none');
-                    submitBtn.disabled = false;
-                    spinner.classList.add('d-none');
-                    return;
-                }
-
-                // إضافة التوكن CSRF
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-
-                // التأكد من وجود service_type
-                if (!formData.get('service_type')) {
-                    formData.set('service_type', 'new_abaya');
-                }
 
                 fetch('/appointments', {
                     method: 'POST',
-                    body: formData,
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                         'Accept': 'application/json'
                     },
-                    credentials: 'same-origin'
+                    body: JSON.stringify(Object.fromEntries(new FormData(appointmentForm)))
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(data => {
-                            throw new Error(data.message || 'حدث خطأ أثناء حجز الموعد');
-                        });
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // السماح بإغلاق النافذة المنبثقة
-                        document.getElementById('appointmentModal').setAttribute('data-allow-close', 'true');
-
-                        // إخفاء النافذة المنبثقة
-                        bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
-
                         // عرض رسالة النجاح
                         showNotification(data.message, 'success');
 
-                        // إعادة توجيه المستخدم بعد ثانيتين
+                        // التحقق مما إذا كان المستخدم قادم من صفحة السلة
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const redirectUrl = urlParams.has('pending_appointment') ?
+                            '/cart' :
+                            (data.redirect_url || '/appointments');
+
                         setTimeout(() => {
-                            window.location.href = data.redirect_url || '/appointments';
+                            window.location.href = redirectUrl;
                         }, 2000);
                     } else {
                         throw new Error(data.message || 'حدث خطأ أثناء حجز الموعد');
@@ -865,15 +830,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         el.textContent = data.cart_count;
                     });
 
-                    // إغلاق النافذة المنبثقة
-                    document.getElementById('appointmentModal').setAttribute('data-allow-close', 'true');
-                    bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
-
-                    // تحديث محتوى السلة
-                    loadCartItems();
-
                     // عرض رسالة نجاح
                     showNotification('تم إلغاء الموعد وإزالة المنتج من السلة', 'success');
+
+                    // التحقق مما إذا كان المستخدم قادم من صفحة السلة
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.has('pending_appointment')) {
+                        // إعادة توجيه المستخدم إلى صفحة السلة
+                        window.location.href = '/cart';
+                    } else {
+                        // إغلاق النافذة المنبثقة وتحديث محتوى السلة
+                        bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
+                        loadCartItems();
+                    }
                 } else {
                     throw new Error(data.message || 'حدث خطأ أثناء إلغاء الموعد');
                 }
@@ -893,4 +862,12 @@ document.addEventListener('DOMContentLoaded', function() {
             updateFeatureVisibility(data.features);
         })
         .catch(error => console.error('Error:', error));
+
+    // إضافة استعادة حالة النافذة المنبثقة عند تحميل الصفحة
+    const urlParams = new URLSearchParams(window.location.search);
+    const pendingAppointment = urlParams.get('pending_appointment');
+
+    if (pendingAppointment) {
+        showAppointmentModal(pendingAppointment);
+    }
 });

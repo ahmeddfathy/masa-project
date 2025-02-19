@@ -24,6 +24,10 @@ class Order extends Model
     const ORDER_STATUS_PROCESSING = 'processing';
     const ORDER_STATUS_COMPLETED = 'completed';
     const ORDER_STATUS_CANCELLED = 'cancelled';
+    const ORDER_STATUS_OUT_FOR_DELIVERY = 'out_for_delivery';
+    const ORDER_STATUS_ON_THE_WAY = 'on_the_way';
+    const ORDER_STATUS_DELIVERED = 'delivered';
+    const ORDER_STATUS_RETURNED = 'returned';
 
     protected $fillable = [
         'user_id',
@@ -34,6 +38,7 @@ class Order extends Model
         'payment_status',
         'order_status',
         'notes',
+        'policy_agreement',
         'uuid',
         'order_number',
     ];
@@ -96,6 +101,27 @@ class Order extends Model
     public function isPaymentFailed(): bool
     {
         return $this->payment_status === self::PAYMENT_STATUS_FAILED;
+    }
+
+    // Helper methods for new status checks
+    public function isOutForDelivery(): bool
+    {
+        return $this->order_status === self::ORDER_STATUS_OUT_FOR_DELIVERY;
+    }
+
+    public function isOnTheWay(): bool
+    {
+        return $this->order_status === self::ORDER_STATUS_ON_THE_WAY;
+    }
+
+    public function isDelivered(): bool
+    {
+        return $this->order_status === self::ORDER_STATUS_DELIVERED;
+    }
+
+    public function isReturned(): bool
+    {
+        return $this->order_status === self::ORDER_STATUS_RETURNED;
     }
 
     // Add this method to use uuid in routes

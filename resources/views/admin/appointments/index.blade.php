@@ -33,8 +33,21 @@
                                         </select>
                                     </div>
 
-                                    <!-- Date Filter -->
+                                    <!-- Service Type Filter -->
                                     <div class="col-md-3">
+                                        <label for="service_type" class="form-label">
+                                            <i class="fas fa-briefcase me-1 text-primary"></i>
+                                            نوع الخدمة
+                                        </label>
+                                        <select name="service_type" id="service_type" class="form-select shadow-sm">
+                                            <option value="">كل الخدمات</option>
+                                            <option value="custom_design" {{ request('service_type') == 'custom_design' ? 'selected' : '' }}>تصميم مخصص</option>
+                                            <!-- يمكنك إضافة المزيد من الخدمات هنا -->
+                                        </select>
+                                    </div>
+
+                                    <!-- Date Filter -->
+                                    <div class="col-md-2">
                                         <label for="date" class="form-label">
                                             <i class="fas fa-calendar me-1 text-primary"></i>
                                             التاريخ
@@ -42,23 +55,44 @@
                                         <input type="date" class="form-control shadow-sm" id="date" name="date" value="{{ request('date') }}">
                                     </div>
 
+                                    <!-- Reference Number Filter -->
+                                    <div class="col-md-2">
+                                        <label for="reference" class="form-label">
+                                            <i class="fas fa-hashtag me-1 text-primary"></i>
+                                            رقم المرجع
+                                        </label>
+                                        <input type="text"
+                                               class="form-control shadow-sm"
+                                               id="reference"
+                                               name="reference"
+                                               placeholder="AB1234"
+                                               value="{{ request('reference') }}"
+                                               maxlength="6">
+                                    </div>
+
                                     <!-- Search Filter -->
-                                    <div class="col-md-4">
+                                    <div class="col-md-2">
                                         <label for="search" class="form-label">
                                             <i class="fas fa-search me-1 text-primary"></i>
                                             بحث
                                         </label>
                                         <input type="text" class="form-control shadow-sm" id="search" name="search"
-                                               placeholder="ابحث باسم العميل أو البريد الإلكتروني..."
+                                               placeholder="ابحث باسم العميل..."
                                                value="{{ request('search') }}">
                                     </div>
 
-                                    <!-- Filter Button -->
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary w-100 shadow-sm">
-                                            <i class="fas fa-filter me-2"></i>
+                                    <!-- Filter Buttons -->
+                                    <div class="col-md-2 d-flex align-items-end gap-2">
+                                        <button type="submit" class="btn btn-primary flex-grow-1 shadow-sm">
+                                            <i class="fas fa-filter me-1"></i>
                                             تصفية
                                         </button>
+                                        @if(request()->hasAny(['status', 'date', 'search', 'service_type', 'reference']))
+                                        <a href="{{ route('admin.appointments.index') }}" class="btn btn-secondary shadow-sm">
+                                            <i class="fas fa-times me-1"></i>
+                                            مسح
+                                        </a>
+                                        @endif
                                     </div>
                                 </form>
                             </div>
@@ -162,15 +196,15 @@
                                                 </td>
                                                 <td class="pe-4">
                                                     <div class="d-flex flex-column gap-2">
-                                                        <a href="{{ route('admin.appointments.show', $appointment) }}"
+                                                        <a href="{{ route('admin.appointments.show', $appointment->reference_number) }}"
                                                            class="btn btn-sm btn-light-primary">
                                                             <i class="fas fa-eye me-1"></i>
                                                             عرض التفاصيل
                                                         </a>
                                                         @if($appointment->status == 'pending')
-                                                        <form action="{{ route('admin.appointments.updateStatus', $appointment) }}" method="POST">
+                                                        <form action="{{ route('admin.appointments.update-status', $appointment->reference_number) }}" method="POST">
                                                             @csrf
-                                                            @method('PUT')
+                                                            @method('PATCH')
                                                             <input type="hidden" name="status" value="approved">
                                                             <button type="submit" class="btn btn-sm btn-light-success w-100">
                                                                 <i class="fas fa-check me-1"></i>
@@ -197,7 +231,57 @@
                                 </div>
                                 @if($appointments->hasPages())
                                 <div class="pagination-container px-4 py-3 border-top">
-                                    {{ $appointments->links() }}
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="pagination-info text-muted">
+                                            عرض {{ $appointments->firstItem() }} إلى {{ $appointments->lastItem() }} من {{ $appointments->total() }} موعد
+                                        </div>
+                                        <nav>
+                                            <ul class="pagination mb-0">
+                                                {{-- Previous Page Link --}}
+                                                @if ($appointments->onFirstPage())
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link">
+                                                            <i class="fas fa-chevron-right"></i>
+                                                        </span>
+                                                    </li>
+                                                @else
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="{{ $appointments->previousPageUrl() }}">
+                                                            <i class="fas fa-chevron-right"></i>
+                                                        </a>
+                                                    </li>
+                                                @endif
+
+                                                {{-- Pagination Elements --}}
+                                                @foreach ($appointments->onEachSide(1)->links()->elements[0] as $page => $url)
+                                                    @if ($page == $appointments->currentPage())
+                                                        <li class="page-item active">
+                                                            <span class="page-link">{{ $page }}</span>
+                                                        </li>
+                                                    @else
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                                        </li>
+                                                    @endif
+                                                @endforeach
+
+                                                {{-- Next Page Link --}}
+                                                @if ($appointments->hasMorePages())
+                                                    <li class="page-item">
+                                                        <a class="page-link" href="{{ $appointments->nextPageUrl() }}">
+                                                            <i class="fas fa-chevron-left"></i>
+                                                        </a>
+                                                    </li>
+                                                @else
+                                                    <li class="page-item disabled">
+                                                        <span class="page-link">
+                                                            <i class="fas fa-chevron-left"></i>
+                                                        </span>
+                                                    </li>
+                                                @endif
+                                            </ul>
+                                        </nav>
+                                    </div>
                                 </div>
                                 @endif
                             </div>

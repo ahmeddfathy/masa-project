@@ -109,6 +109,8 @@ class AppointmentController extends Controller
     public function show(Appointment $appointment)
     {
         $this->authorizeAccess($appointment);
+
+        // نحذف أي معالجة إضافية لنوع الخدمة أو سجل الموعد
         return view('appointments.show', compact('appointment'));
     }
 

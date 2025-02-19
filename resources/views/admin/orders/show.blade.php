@@ -123,7 +123,11 @@
                                                             onchange="this.form.submit()" form="update-status-form">
                                                         <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
                                                         <option value="processing" {{ $order->order_status === 'processing' ? 'selected' : '' }}>قيد المعالجة</option>
+                                                        <option value="out_for_delivery" {{ $order->order_status === 'out_for_delivery' ? 'selected' : '' }}>جاري التوصيل</option>
+                                                        <option value="on_the_way" {{ $order->order_status === 'on_the_way' ? 'selected' : '' }}>في الطريق</option>
+                                                        <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>تم التوصيل</option>
                                                         <option value="completed" {{ $order->order_status === 'completed' ? 'selected' : '' }}>مكتمل</option>
+                                                        <option value="returned" {{ $order->order_status === 'returned' ? 'selected' : '' }}>مرتجع</option>
                                                         <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>ملغي</option>
                                                     </select>
                                                     <span class="badge bg-{{ $order->status_color }}-subtle text-{{ $order->status_color }} rounded-pill">
@@ -296,10 +300,21 @@
                                                             @if($item->appointment)
                                                                 <div class="appointment-card">
                                                                     <div class="appointment-header">
-                                                                        <span class="appointment-date">
-                                                                            <i class="fas fa-calendar-alt text-info me-2"></i>
-                                                                            {{ $item->appointment->appointment_date->format('Y/m/d') }}
-                                                                        </span>
+                                                                        <div class="appointment-datetime">
+                                                                            <div class="mb-1">
+                                                                                <i class="fas fa-hashtag text-info me-2"></i>
+                                                                                <span class="text-muted">رقم المرجع:</span>
+                                                                                <span class="fw-bold">{{ $item->appointment->reference_number }}</span>
+                                                                            </div>
+                                                                            <div class="mb-1">
+                                                                                <i class="fas fa-calendar-alt text-info me-2"></i>
+                                                                                {{ $item->appointment->appointment_date->format('Y/m/d') }}
+                                                                            </div>
+                                                                            <div>
+                                                                                <i class="fas fa-clock text-info me-2"></i>
+                                                                                {{ $item->appointment->appointment_time->format('h:i A') }}
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                     <div class="appointment-status mt-2">
                                                                         @if($item->appointment->status === 'approved')

@@ -177,15 +177,8 @@ class AvailabilityService
                 ->filter()
                 ->values();
 
-            // إنشاء مصفوفة لتتبع عدد الحجوزات في كل ساعة
-            $timeSlots = [];
-            $currentSlot = $studioStart->copy();
-            while ($currentSlot <= $studioEnd) {
-                $timeSlots[$currentSlot->format('H:i')] = 0;
-                $currentSlot->addHour();
-            }
-
-            // حساب عدد الحجوزات المتزامنة في كل ساعة
+            // تحويل الحجوزات الموجودة إلى مصفوفة للتحقق السريع
+            $bookedSlots = [];
             foreach ($existingBookings as $booking) {
                 $start = Carbon::createFromFormat('H:i', $booking['start_time']);
                 $end = Carbon::createFromFormat('H:i', $booking['end_time']);
@@ -193,9 +186,10 @@ class AvailabilityService
                 $current = $start->copy();
                 while ($current < $end) {
                     $timeKey = $current->format('H:i');
-                    if (isset($timeSlots[$timeKey])) {
-                        $timeSlots[$timeKey]++;
+                    if (!isset($bookedSlots[$timeKey])) {
+                        $bookedSlots[$timeKey] = 0;
                     }
+                    $bookedSlots[$timeKey]++;
                     $current->addHour();
                 }
             }
@@ -203,7 +197,7 @@ class AvailabilityService
             $availableSlots = [];
             $currentTime = $studioStart->copy();
 
-            // حساب المواعيد المتاحة بناءً على مدة الجلسة
+            // حساب المواعيد المتاحة
             while ($currentTime->copy()->addHours($duration) <= $studioEnd) {
                 $timeString = $currentTime->format('H:i');
                 $endTimeString = $currentTime->copy()->addHours($duration)->format('H:i');
@@ -211,10 +205,13 @@ class AvailabilityService
                 // التحقق من توفر المساحة في كل ساعة للحجز الجديد
                 $hasSpace = true;
                 $checkTime = $currentTime->copy();
-                while ($checkTime->format('H:i') < $endTimeString) {
+
+                while ($checkTime < $currentTime->copy()->addHours($duration)) {
                     $timeKey = $checkTime->format('H:i');
-                    if (isset($timeSlots[$timeKey]) && $timeSlots[$timeKey] >= $maxConcurrentBookings) {
+                    if (isset($bookedSlots[$timeKey]) && $bookedSlots[$timeKey] >= $maxConcurrentBookings) {
                         $hasSpace = false;
+                        // تحريك الوقت الحالي إلى أقرب ساعة متاحة
+                        $currentTime = $checkTime->copy()->addHour();
                         break;
                     }
                     $checkTime->addHour();
@@ -226,10 +223,9 @@ class AvailabilityService
                         'end_time' => $endTimeString,
                         'formatted_time' => $this->formatTimeInArabic($timeString)
                     ];
+                    // تحريك الوقت بمقدار ساعة واحدة للبحث عن الموعد التالي المتاح
+                    $currentTime->addHour();
                 }
-
-                // تحريك الوقت بمقدار مدة الجلسة
-                $currentTime->addHours($duration);
             }
 
             if (empty($availableSlots)) {

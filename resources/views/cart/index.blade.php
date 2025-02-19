@@ -5,6 +5,21 @@
 @section('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <link rel="stylesheet" href="{{ asset('assets/css/customer/cart.css') }}">
+<style>
+  .appointment-alert {
+    border-right: 4px solid #ffc107;
+    background-color: #fff8e1;
+  }
+
+  .alert-warning {
+    border-right: 4px solid #ffc107;
+  }
+
+  .alert-warning .alert-heading {
+    color: #856404;
+    font-size: 1.1rem;
+  }
+</style>
 @endsection
 
 @section('content')
@@ -21,6 +36,9 @@
     <div class="row">
       <div class="col-lg-8">
         @foreach($cart_items as $item)
+        @php
+          $needsAppointment = $item->needs_appointment && !$item->appointment()->exists();
+        @endphp
         <div class="cart-item d-flex gap-3" data-item-id="{{ $item->id }}">
           @php
           // Get any available image for the product, not just primary
@@ -41,6 +59,17 @@
                   @endif
                   @if($item->color)
                   <span>اللون: {{ $item->color }}</span>
+                  @endif
+                  @if($needsAppointment)
+                  <div class="alert alert-warning mt-2 mb-0 appointment-alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>مطلوب حجز موعد:</strong> يرجى الضغط على الزر أدناه لحجز موعد لأخذ المقاسات
+                    <a href="{{ route('products.show', $item->product) }}?pending_appointment={{ $item->id }}"
+                       class="btn btn-warning ms-2 mt-2 d-block">
+                      <i class="bi bi-calendar-plus me-1"></i>
+                      اضغط هنا لحجز موعد
+                    </a>
+                  </div>
                   @endif
                 </div>
               </div>
@@ -69,6 +98,33 @@
       </div>
 
       <div class="col-lg-4">
+        @php
+          $hasItemsNeedingAppointment = $cart_items->contains(function($item) {
+              return $item->needs_appointment && !$item->appointment()->exists();
+          });
+        @endphp
+        @if($hasItemsNeedingAppointment)
+          <div class="alert alert-warning mb-4">
+            <h5 class="alert-heading d-flex align-items-center">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              تنبيه هام
+            </h5>
+            <p class="mb-0">يوجد منتجات تحتاج لحجز موعد لأخذ المقاسات. يرجى حجز المواعيد أولاً قبل متابعة الشراء</p>
+            <button class="btn btn-warning mt-3" onclick="scrollToAppointmentItem()">
+              <i class="bi bi-arrow-down me-1"></i>
+              عرض المنتج المطلوب له موعد
+            </button>
+          </div>
+          <script>
+            function scrollToAppointmentItem() {
+              const appointmentAlert = document.querySelector('.appointment-alert');
+              if (appointmentAlert) {
+                appointmentAlert.scrollIntoView({ behavior: 'smooth' });
+                appointmentAlert.querySelector('.btn-warning').focus();
+              }
+            }
+          </script>
+        @endif
         <div class="cart-summary">
           <h4 class="mb-4">ملخص الطلب</h4>
           <div class="summary-item">
@@ -79,9 +135,15 @@
             <span class="summary-label">الإجمالي الكلي</span>
             <span class="total-amount" id="total">{{ number_format($total, 2) }} ريال</span>
           </div>
-          <a href="{{ route('checkout.index') }}" class="btn btn-primary checkout-btn">
-            متابعة الشراء
-          </a>
+          @if($hasItemsNeedingAppointment)
+            <button class="btn btn-primary checkout-btn w-100" disabled>
+              متابعة الشراء
+            </button>
+          @else
+            <a href="{{ route('checkout.index') }}" class="btn btn-primary checkout-btn w-100">
+              متابعة الشراء
+            </a>
+          @endif
           <div class="continue-shopping mt-3">
             <a href="{{ route('products.index') }}">
               <i class="bi bi-arrow-right"></i>
@@ -105,9 +167,11 @@
     @endif
   </div>
 </div>
+
 @endsection
 
 @section('scripts')
+<script src="{{ asset('assets/js/customer/products-show.js') }}"></script>
 <script>
 function showAlert(message, type = 'success') {
     const alertsContainer = document.getElementById('alerts-container');
@@ -118,12 +182,6 @@ function showAlert(message, type = 'success') {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
     alertsContainer.appendChild(alert);
-
-    // Auto-hide after 3 seconds
-    setTimeout(() => {
-        const bsAlert = new bootstrap.Alert(alert);
-        bsAlert.close();
-    }, 3000);
 }
 
 function updateQuantity(itemId, change, newValue = null) {
@@ -228,15 +286,5 @@ function removeCartItem(itemId) {
         showAlert('حدث خطأ أثناء حذف المنتج', 'danger');
     });
 }
-
-// إخفاء رسائل التنبيه تلقائياً عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        });
-    }, 3000);
-});
 </script>
 @endsection

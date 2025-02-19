@@ -85,6 +85,10 @@ class OrderController extends Controller
                     Order::ORDER_STATUS_PROCESSING => 'قيد المعالجة',
                     Order::ORDER_STATUS_PENDING => 'معلق',
                     Order::ORDER_STATUS_CANCELLED => 'ملغي',
+                    Order::ORDER_STATUS_OUT_FOR_DELIVERY => 'جاري التوصيل',
+                    Order::ORDER_STATUS_ON_THE_WAY => 'في الطريق',
+                    Order::ORDER_STATUS_DELIVERED => 'تم التوصيل',
+                    Order::ORDER_STATUS_RETURNED => 'مرتجع',
                     default => 'غير معروف'
                 },
                 'status_color' => match($order->order_status) {
@@ -92,6 +96,10 @@ class OrderController extends Controller
                     Order::ORDER_STATUS_PROCESSING => 'info',
                     Order::ORDER_STATUS_PENDING => 'warning',
                     Order::ORDER_STATUS_CANCELLED => 'danger',
+                    Order::ORDER_STATUS_OUT_FOR_DELIVERY => 'primary',
+                    Order::ORDER_STATUS_ON_THE_WAY => 'info',
+                    Order::ORDER_STATUS_DELIVERED => 'success',
+                    Order::ORDER_STATUS_RETURNED => 'danger',
                     default => 'secondary'
                 },
                 'payment_status' => $order->payment_status,
@@ -114,9 +122,13 @@ class OrderController extends Controller
 
         // Get available statuses for filtering
         $orderStatuses = [
-            Order::ORDER_STATUS_PENDING => 'معلق',
+            Order::ORDER_STATUS_PENDING => 'قيد الانتظار',
             Order::ORDER_STATUS_PROCESSING => 'قيد المعالجة',
+            Order::ORDER_STATUS_OUT_FOR_DELIVERY => 'جاري التوصيل',
+            Order::ORDER_STATUS_ON_THE_WAY => 'في الطريق',
+            Order::ORDER_STATUS_DELIVERED => 'تم التوصيل',
             Order::ORDER_STATUS_COMPLETED => 'مكتمل',
+            Order::ORDER_STATUS_RETURNED => 'مرتجع',
             Order::ORDER_STATUS_CANCELLED => 'ملغي'
         ];
 
@@ -173,14 +185,6 @@ class OrderController extends Controller
 
   public function updateStatus(Request $request, Order $order)
   {
-    Log::info('Updating order status - Start', [
-        'order_id' => $order->id,
-        'current_status' => $order->order_status,
-        'new_status' => $request->order_status,
-        'request_data' => $request->all(),
-        'order_data' => $order->toArray()
-    ]);
-
     try {
         $validated = $request->validate([
             'order_status' => ['required', 'string', 'in:' . implode(',', [
@@ -188,42 +192,47 @@ class OrderController extends Controller
                 Order::ORDER_STATUS_PROCESSING,
                 Order::ORDER_STATUS_COMPLETED,
                 Order::ORDER_STATUS_CANCELLED,
+                Order::ORDER_STATUS_OUT_FOR_DELIVERY,
+                Order::ORDER_STATUS_ON_THE_WAY,
+                Order::ORDER_STATUS_DELIVERED,
+                Order::ORDER_STATUS_RETURNED,
             ])],
         ]);
 
         DB::beginTransaction();
 
-        $updated = $order->update([
-            'order_status' => $validated['order_status']
-        ]);
+        $oldStatus = $order->order_status;
+        $newStatus = $validated['order_status'];
 
-        Log::info('Update operation result', [
-            'updated' => $updated,
-            'new_order_data' => $order->fresh()->toArray()
+        // تحديث المخزون عند اكتمال الطلب أو التوصيل
+        if (($newStatus === Order::ORDER_STATUS_COMPLETED || $newStatus === Order::ORDER_STATUS_DELIVERED)
+            && !in_array($oldStatus, [Order::ORDER_STATUS_COMPLETED, Order::ORDER_STATUS_DELIVERED])) {
+            foreach ($order->items as $item) {
+                $product = $item->product;
+                if ($product->stock < $item->quantity) {
+                    DB::rollBack();
+                    return back()->with('error', "المخزون غير كافي للمنتج: {$product->name}");
+                }
+                $product->decrement('stock', $item->quantity);
+            }
+        }
+
+        // إعادة المخزون عند تغيير حالة الطلب من مكتمل/تم التوصيل إلى أي حالة أخرى
+        if (in_array($oldStatus, [Order::ORDER_STATUS_COMPLETED, Order::ORDER_STATUS_DELIVERED])
+            && !in_array($newStatus, [Order::ORDER_STATUS_COMPLETED, Order::ORDER_STATUS_DELIVERED])) {
+            foreach ($order->items as $item) {
+                $item->product->increment('stock', $item->quantity);
+            }
+        }
+
+        $order->update([
+            'order_status' => $validated['order_status']
         ]);
 
         DB::commit();
 
-        // إضافة تأكيد إرسال الإشعار
         if ($order->user) {
-            Log::info('Attempting to send notification to user', [
-                'user_id' => $order->user->id,
-                'user_email' => $order->user->email
-            ]);
-
-            $notification = new OrderStatusUpdated($order);
-            $order->user->notify($notification);
-
-            // التحقق من الإشعارات المخزنة
-            $storedNotifications = $order->user->notifications()->where('type', OrderStatusUpdated::class)->get();
-            Log::info('Stored notifications', [
-                'count' => $storedNotifications->count(),
-                'notifications' => $storedNotifications->toArray()
-            ]);
-        } else {
-            Log::warning('No user associated with this order', [
-                'order_id' => $order->id
-            ]);
+            $order->user->notify(new OrderStatusUpdated($order));
         }
 
         return back()->with('success', 'تم تحديث حالة الطلب بنجاح.');

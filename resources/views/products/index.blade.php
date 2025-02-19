@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/customer/products.css') }}">
 </head>
-<body>
+<body class="{{ auth()->check() ? 'user-logged-in' : '' }}">
     <!-- Fixed Buttons Group -->
     <div class="fixed-buttons-group">
         <button class="fixed-cart-btn" id="fixedCartBtn">
@@ -46,7 +46,7 @@
                         <a class="nav-link active" href="/products">المنتجات</a>
                   </li>
                   <li class="nav-item">
-                        <a class="nav-link" href="/user/profile">حسابي</a>
+                        <a class="nav-link" href="/profile">حسابي</a>
                   </li>
               </ul>
               <div class="nav-buttons">
@@ -188,9 +188,14 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <div class="cart-items" id="cartItems">
-            <!-- Cart items will be dynamically added here -->
+
+        <!-- Cart Items Container with Scroll -->
+        <div class="cart-items-container">
+            <div class="cart-items" id="cartItems">
+                <!-- Cart items will be dynamically added here -->
+            </div>
         </div>
+
         <div class="cart-footer">
             <div class="cart-total">
                 <span>الإجمالي:</span>

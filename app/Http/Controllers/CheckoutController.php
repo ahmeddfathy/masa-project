@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CheckoutException;
 use App\Models\Appointment;
-use App\Models\CartItem;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use App\Notifications\OrderCreated;
@@ -99,7 +99,11 @@ class CheckoutController extends Controller
       $validated = $request->validate([
         'shipping_address' => ['required', 'string', 'max:500'],
         'phone' => ['required', 'string', 'max:20', 'regex:/^([0-9\s\-\+\(\)]*)$/'],
-        'notes' => ['nullable', 'string', 'max:1000']
+        'notes' => ['nullable', 'string', 'max:1000'],
+        'policy_agreement' => ['required', 'accepted']
+      ], [
+        'policy_agreement.required' => 'يجب الموافقة على سياسة الشركة وشروط الخدمة',
+        'policy_agreement.accepted' => 'يجب الموافقة على سياسة الشركة وشروط الخدمة'
       ]);
 
       return DB::transaction(function () use ($request, $validated, $cart) {
@@ -126,7 +130,8 @@ class CheckoutController extends Controller
           'payment_method' => 'cash',
           'payment_status' => Order::PAYMENT_STATUS_PENDING,
           'order_status' => Order::ORDER_STATUS_PENDING,
-          'notes' => $validated['notes'] ?? null
+          'notes' => $validated['notes'] ?? null,
+          'policy_agreement' => true
         ]);
 
         Log::info('Order created', [

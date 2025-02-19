@@ -40,9 +40,17 @@
                 <div class="ms-3">
                     <h3 class="order-number">طلب #{{ $order->order_number }}</h3>
                     <span class="status-badge status-{{ $order->order_status }}">
-                        {{ $order->order_status === 'completed' ? 'مكتمل' :
-                               ($order->order_status === 'cancelled' ? 'ملغي' :
-                               ($order->order_status === 'processing' ? 'قيد المعالجة' : 'معلق')) }}
+                        {{ match($order->order_status) {
+                            'completed' => 'مكتمل',
+                            'cancelled' => 'ملغي',
+                            'processing' => 'قيد المعالجة',
+                            'pending' => 'قيد الانتظار',
+                            'out_for_delivery' => 'جاري التوصيل',
+                            'on_the_way' => 'في الطريق',
+                            'delivered' => 'تم التوصيل',
+                            'returned' => 'مرتجع',
+                            default => 'غير معروف'
+                        } }}
                     </span>
                 </div>
             </div>

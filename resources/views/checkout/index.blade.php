@@ -148,6 +148,24 @@
                                     <p class="error-message">{{ $message }}</p>
                                     @enderror
                                 </div>
+
+                                <!-- إضافة حقل الموافقة على السياسة -->
+                                <div class="form-group">
+                                    <div class="policy-agreement">
+                                        <input type="checkbox"
+                                               name="policy_agreement"
+                                               id="policy_agreement"
+                                               class="form-checkbox"
+                                               {{ old('policy_agreement') ? 'checked' : '' }}
+                                               required>
+                                        <label for="policy_agreement" class="form-label">
+                                            أوافق على <a href="{{ route('policy') }}" target="_blank">سياسة الشركة وشروط الخدمة</a>
+                                        </label>
+                                    </div>
+                                    @error('policy_agreement')
+                                    <p class="error-message">{{ $message }}</p>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
                     </div>

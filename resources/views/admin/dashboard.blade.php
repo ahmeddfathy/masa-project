@@ -76,6 +76,14 @@
                         <span class="me-2">قيد المعالجة: {{ $stats['processing_orders'] ?? 0 }}</span>
                         <span>مكتملة: {{ $stats['completed_orders'] ?? 0 }}</span>
                     </div>
+                    <div class="trend small mt-1">
+                        <span class="me-2">قيد التوصيل: {{ $stats['out_for_delivery_orders'] ?? 0 }}</span>
+                        <span>في الطريق: {{ $stats['on_the_way_orders'] ?? 0 }}</span>
+                    </div>
+                    <div class="trend small mt-1">
+                        <span class="me-2">تم التوصيل: {{ $stats['delivered_orders'] ?? 0 }}</span>
+                        <span>مرتجع: {{ $stats['returned_orders'] ?? 0 }}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -397,8 +405,28 @@
                                 </div>
                             </td>
                             <td data-label="حالة الطلب">
-                                <span class="badge bg-{{ $order['status_color'] }}">
-                                    {{ $order['status_text'] }}
+                                <span class="badge bg-{{ match($order['order_status']) {
+                                    'completed' => 'success',
+                                    'processing' => 'info',
+                                    'pending' => 'warning',
+                                    'cancelled' => 'danger',
+                                    'out_for_delivery' => 'primary',
+                                    'on_the_way' => 'info',
+                                    'delivered' => 'success',
+                                    'returned' => 'secondary',
+                                    default => 'secondary'
+                                } }}">
+                                    {{ match($order['order_status']) {
+                                        'completed' => 'مكتمل',
+                                        'processing' => 'قيد المعالجة',
+                                        'pending' => 'معلق',
+                                        'cancelled' => 'ملغي',
+                                        'out_for_delivery' => 'قيد التوصيل',
+                                        'on_the_way' => 'في الطريق',
+                                        'delivered' => 'تم التوصيل',
+                                        'returned' => 'مرتجع',
+                                        default => 'غير معروف'
+                                    } }}
                                 </span>
                             </td>
                             <td data-label="حالة الدفع">

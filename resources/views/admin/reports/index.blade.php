@@ -4,33 +4,14 @@
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         {{ __('Reports & Analytics') }}
       </h2>
-      <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-4 mb-6">
-          <div class="relative">
-            <select id="period-selector"
-              class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-              onchange="window.location.href=`{{ route('admin.reports.index') }}?period=${this.value}`">
-              <option value="week" @selected($period === 'week')>This Week</option>
-              <option value="month" @selected($period === 'month')>This Month</option>
-              <option value="quarter" @selected($period === 'quarter')>This Quarter</option>
-              <option value="year" @selected($period === 'year')>This Year</option>
-            </select>
-          </div>
-
-          <div class="relative">
-            <input type="date"
-              id="custom-date"
-              class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-              value="{{ request('date', now()->format('Y-m-d')) }}"
-              onchange="window.location.href=`{{ route('admin.reports.index') }}?date=${this.value}`">
-          </div>
-        </div>
-      </div>
     </div>
   </x-slot>
 
   <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <!-- الفلتر الجديد -->
+      @include('admin.reports._filters')
+
       <!-- Growth Indicators -->
       <div class="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <!-- Sales Growth -->
@@ -74,7 +55,7 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 truncate">Total Sales</dt>
-                  <dd class="text-lg font-semibold text-gray-900">${{ number_format($salesReport['total_sales'], 2) }}</dd>
+                  <dd class="text-lg font-semibold text-gray-900">{{ number_format($salesReport['total_sales'], 2) }} ريال</dd>
                 </dl>
               </div>
             </div>
@@ -110,7 +91,7 @@
               <div class="ml-5 w-0 flex-1">
                 <dl>
                   <dt class="text-sm font-medium text-gray-500 truncate">Average Order Value</dt>
-                  <dd class="text-lg font-semibold text-gray-900">${{ number_format($salesReport['average_order_value'], 2) }}</dd>
+                  <dd class="text-lg font-semibold text-gray-900">{{ number_format($salesReport['average_order_value'], 2) }} ريال</dd>
                 </dl>
               </div>
             </div>
@@ -144,13 +125,13 @@
             <div class="p-4 bg-gray-50 rounded-lg">
               <h4 class="text-sm font-medium text-gray-500">Current Period</h4>
               <p class="mt-2 text-2xl font-semibold text-gray-900">
-                ${{ number_format($salesReport['growth']['current_amount'] / 100, 2) }}
+                {{ number_format($salesReport['growth']['current_amount'], 2) }} ريال
               </p>
             </div>
             <div class="p-4 bg-gray-50 rounded-lg">
               <h4 class="text-sm font-medium text-gray-500">Previous Period</h4>
               <p class="mt-2 text-2xl font-semibold text-gray-900">
-                ${{ number_format($salesReport['growth']['previous_amount'] / 100, 2) }}
+                {{ number_format($salesReport['growth']['previous_amount'], 2) }} ريال
               </p>
             </div>
           </div>
@@ -163,16 +144,6 @@
           <h3 class="text-lg font-medium text-gray-900 mb-4">Sales Trend</h3>
           <div class="h-96">
             <canvas id="salesChart"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <!-- Payment Methods Chart -->
-      <div class="mb-8 bg-white overflow-hidden shadow-sm rounded-lg">
-        <div class="p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Sales by Payment Method</h3>
-          <div class="h-80">
-            <canvas id="paymentMethodsChart"></canvas>
           </div>
         </div>
       </div>
@@ -211,12 +182,18 @@
                     {{ number_format($product['total_quantity']) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                    ${{ number_format($product['total_revenue'] / 100, 2) }}
+                    {{ number_format($product['total_revenue'], 2) }} ريال
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $product['trend'] > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                      {{ $product['trend'] > 0 ? '↑' : '↓' }} {{ abs($product['trend']) }}%
-                    </span>
+                    @if($product['trend'] != 0)
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $product['trend'] > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $product['trend'] > 0 ? '↑' : '↓' }} {{ abs($product['trend']) }}%
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            -
+                        </span>
+                    @endif
                   </td>
                 </tr>
                 @empty
@@ -367,7 +344,6 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Debug data
     console.log('Sales Data:', @json($salesReport['daily_data']));
-    console.log('Payment Data:', @json($salesReport['payment_methods']));
     console.log('Stock Data:', @json($inventoryReport['stock_distribution']));
 
     // Sales Trend Chart
@@ -379,19 +355,21 @@
       data: {
         labels: Object.keys(salesData),
         datasets: [{
-          label: 'Sales',
+          label: 'المبيعات',
           data: Object.values(salesData).map(d => d.sales),
-          borderColor: 'rgb(59, 130, 246)',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderColor: '#4CAF50',
+          backgroundColor: 'rgba(76, 175, 80, 0.1)',
           fill: true,
-          tension: 0.4
+          tension: 0.3,
+          borderWidth: 3
         }, {
-          label: 'Orders',
+          label: 'الطلبات',
           data: Object.values(salesData).map(d => d.orders),
-          borderColor: 'rgb(16, 185, 129)',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          borderColor: '#2196F3',
+          backgroundColor: 'rgba(33, 150, 243, 0.1)',
           fill: true,
-          tension: 0.4
+          tension: 0.3,
+          borderWidth: 3
         }]
       },
       options: {
@@ -403,15 +381,38 @@
         },
         plugins: {
           legend: {
-            position: 'top'
+            position: 'top',
+            labels: {
+              font: {
+                size: 14,
+                weight: 'bold'
+              },
+              padding: 20
+            }
           },
           tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            titleColor: '#000',
+            titleFont: {
+              size: 16,
+              weight: 'bold'
+            },
+            bodyColor: '#000',
+            bodyFont: {
+              size: 14
+            },
+            borderColor: '#ddd',
+            borderWidth: 1,
+            padding: 15,
             callbacks: {
               label: function(context) {
-                if (context.dataset.label === 'Sales') {
-                  return `Sales: $${context.raw.toFixed(2)}`;
+                if (context.dataset.label === 'المبيعات') {
+                  return `المبيعات: ${Number(context.raw).toLocaleString('ar-SA', {
+                    style: 'currency',
+                    currency: 'SAR'
+                  })}`;
                 }
-                return `Orders: ${context.raw}`;
+                return `الطلبات: ${context.raw}`;
               }
             }
           }
@@ -419,45 +420,25 @@
         scales: {
           y: {
             beginAtZero: true,
+            grid: {
+              color: '#f0f0f0'
+            },
             ticks: {
-              callback: value => '$' + value.toFixed(2)
+              callback: function(value) {
+                return Number(value).toLocaleString('ar-SA', {
+                  style: 'currency',
+                  currency: 'SAR'
+                });
+              }
             }
-          }
-        }
-      }
-    });
-
-    // Payment Methods Chart
-    const paymentCtx = document.getElementById('paymentMethodsChart').getContext('2d');
-    const paymentData = @json($salesReport['payment_methods']);
-
-    new Chart(paymentCtx, {
-      type: 'doughnut',
-      data: {
-        labels: Object.keys(paymentData).map(method => method.toUpperCase()),
-        datasets: [{
-          data: Object.values(paymentData),
-          backgroundColor: [
-            'rgb(59, 130, 246)',
-            'rgb(16, 185, 129)',
-            'rgb(244, 63, 94)'
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'right'
           },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const value = context.raw;
-                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                const percentage = ((value / total) * 100).toFixed(1);
-                return `${context.label}: $${value.toFixed(2)} (${percentage}%)`;
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                size: 12
               }
             }
           }
@@ -469,16 +450,27 @@
     const stockCtx = document.getElementById('stockDistributionChart').getContext('2d');
     const stockData = @json($inventoryReport['stock_distribution']);
 
+    // إضافة console.log للتأكد من البيانات
+    console.log('Stock Distribution Data:', stockData);
+
     new Chart(stockCtx, {
       type: 'bar',
       data: {
-        labels: Object.keys(stockData),
+        labels: ['متوفر', 'منخفض', 'نفذ'],
         datasets: [{
-          label: 'Products',
-          data: Object.values(stockData),
-          backgroundColor: 'rgb(59, 130, 246)',
-          borderColor: 'rgb(37, 99, 235)',
-          borderWidth: 1
+          label: 'عدد المنتجات',
+          data: [
+            stockData['متوفر'] || 0,
+            stockData['منخفض'] || 0,
+            stockData['نفذ'] || 0
+          ],
+          backgroundColor: [
+            '#4CAF50',  // متوفر - أخضر
+            '#FFC107',  // منخفض - أصفر
+            '#F44336'   // نفذ - أحمر
+          ],
+          borderWidth: 0,
+          borderRadius: 5
         }]
       },
       options: {
@@ -487,13 +479,40 @@
         plugins: {
           legend: {
             display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            titleColor: '#000',
+            bodyColor: '#000',
+            callbacks: {
+              label: function(context) {
+                return `عدد المنتجات: ${context.raw} منتج`;
+              }
+            }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
+            grid: {
+              color: '#f0f0f0'
+            },
             ticks: {
-              stepSize: 1
+              stepSize: 1,
+              font: {
+                size: 12
+              }
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                size: 12,
+                weight: 'bold'
+              }
             }
           }
         }

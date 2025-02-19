@@ -154,7 +154,21 @@ class ProductController extends Controller
             ->take(4)
             ->get();
 
-        return view('products.show', compact('product', 'relatedProducts', 'availableFeatures'));
+        // التحقق من وجود عناصر في السلة تحتاج لحجز موعد
+        $pendingAppointment = null;
+        if (Auth::check()) {
+            $pendingAppointment = CartItem::whereHas('cart', function($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->where('needs_appointment', true)
+            ->whereHas('product', function($query) use ($product) {
+                $query->where('id', $product->id);
+            })
+            ->whereDoesntHave('appointment')
+            ->first();
+        }
+
+        return view('products.show', compact('product', 'relatedProducts', 'availableFeatures', 'pendingAppointment'));
     }
 
     public function filter(Request $request)
@@ -403,6 +417,10 @@ class ProductController extends Controller
                 'quantity' => $item->quantity,
                 'price' => $item->unit_price,
                 'subtotal' => $item->subtotal,
+                'color' => $item->color,
+                'size' => $item->size,
+                'needs_appointment' => $item->needs_appointment,
+                'has_appointment' => $item->appointment()->exists()
             ];
         });
 
@@ -441,7 +459,7 @@ class ProductController extends Controller
     {
         try {
             // التحقق من أن العنصر ينتمي للمستخدم الحالي
-            if ($cartItem->cart->user_id !== auth()->id()) {
+            if ($cartItem->cart->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'غير مصرح بهذا الإجراء'

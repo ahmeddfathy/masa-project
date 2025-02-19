@@ -348,51 +348,65 @@ function updateCartDisplay(data) {
     // تحديث الإجمالي
     cartTotal.textContent = (data.total || data.cart_total) + ' ر.س';
 
-    // إذا كانت البيانات تحتوي على items، قم بتحديث قائمة العناصر
-    if (data.items && cartItems) {
-        cartItems.innerHTML = '';
+    // تحديث قائمة العناصر
+    cartItems.innerHTML = '';
 
-        if (data.items.length === 0) {
-            cartItems.innerHTML = `
-                <div class="cart-empty text-center p-4">
-                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
-                    <p class="mb-3">السلة فارغة</p>
-                    <a href="/products" class="btn btn-primary">تصفح المنتجات</a>
-                </div>
-            `;
-            return;
+    if (!data.items || data.items.length === 0) {
+        cartItems.innerHTML = `
+            <div class="cart-empty text-center p-4">
+                <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                <p class="mb-3">السلة فارغة</p>
+                <a href="/products" class="btn btn-primary">تصفح المنتجات</a>
+            </div>
+        `;
+        return;
+    }
+
+    data.items.forEach(item => {
+        const itemElement = document.createElement('div');
+        itemElement.className = 'cart-item';
+        itemElement.dataset.itemId = item.id;
+
+        // تحضير معلومات إضافية
+        const additionalInfo = [];
+        if (item.color) additionalInfo.push(`اللون: ${item.color}`);
+        if (item.size) additionalInfo.push(`المقاس: ${item.size}`);
+        if (item.needs_appointment) {
+            additionalInfo.push(item.has_appointment ?
+                '<span class="text-success"><i class="fas fa-check-circle"></i> تم حجز موعد</span>' :
+                '<span class="text-warning"><i class="fas fa-clock"></i> بانتظار حجز موعد</span>');
         }
 
-        data.items.forEach(item => {
-            const itemHtml = `
-                <div class="cart-item" data-item-id="${item.id}">
-                    <div class="cart-item-inner">
-                        <button class="remove-btn" onclick="removeFromCart(this, ${item.id})" title="حذف من السلة">
-                            <i class="fas fa-times"></i>
-                        </button>
-                        <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                        <div class="cart-item-details">
-                            <h5 class="cart-item-title">${item.name}</h5>
-                            <div class="cart-item-price">${item.price} ر.س</div>
-                            <div class="quantity-controls">
-                                <button class="btn" onclick="updateQuantity(${item.id}, -1)">-</button>
-                                <input type="number"
-                                       value="${item.quantity}"
-                                       min="1"
-                                       class="quantity-input"
-                                       onchange="updateQuantity(${item.id}, 0, this.value)">
-                                <button class="btn" onclick="updateQuantity(${item.id}, 1)">+</button>
-                            </div>
-                            <div class="cart-item-subtotal">
-                                الإجمالي: ${item.subtotal} ر.س
-                            </div>
+        itemElement.innerHTML = `
+            <div class="cart-item-inner p-3 border-bottom">
+                <button class="remove-btn btn btn-link text-danger" onclick="removeFromCart(this, ${item.id})">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="d-flex gap-3">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-details flex-grow-1">
+                        <h5 class="cart-item-title mb-2">${item.name}</h5>
+                        <div class="cart-item-info mb-2">
+                            ${additionalInfo.length > 0 ?
+                                `<small class="text-muted">${additionalInfo.join(' | ')}</small>` : ''}
+                        </div>
+                        <div class="cart-item-price mb-2">${item.price} ر.س</div>
+                        <div class="quantity-controls d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${item.id}, -1)">-</button>
+                            <input type="number" value="${item.quantity}" min="1"
+                                onchange="updateQuantity(${item.id}, 0, this.value)"
+                                class="form-control form-control-sm quantity-input">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${item.id}, 1)">+</button>
+                        </div>
+                        <div class="cart-item-subtotal mt-2 text-primary">
+                            الإجمالي: ${item.subtotal} ر.س
                         </div>
                     </div>
                 </div>
-            `;
-            cartItems.insertAdjacentHTML('beforeend', itemHtml);
-        });
-    }
+            </div>
+        `;
+        cartItems.appendChild(itemElement);
+    });
 }
 
 function updateQuantity(itemId, change, newValue = null) {

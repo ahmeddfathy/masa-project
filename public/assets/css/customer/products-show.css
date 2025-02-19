@@ -1434,3 +1434,157 @@ body.cart-open {
         font-size: 1rem;
     }
 }
+/* Login Modal Styles */
+#loginPromptModal .modal-content {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    background: #ffffff;
+}
+
+#loginPromptModal .modal-header {
+    background: var(--primary-color);
+    border-bottom: none;
+    padding: 1.5rem;
+    position: relative;
+}
+
+#loginPromptModal .modal-title {
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+    text-align: center;
+    width: 100%;
+}
+
+#loginPromptModal .btn-close {
+    position: absolute;
+    left: 1rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+#loginPromptModal .btn-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+#loginPromptModal .modal-body {
+    padding: 2rem;
+    text-align: center;
+}
+
+#loginPromptModal .modal-body p {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+#loginPromptModal .modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    justify-content: center;
+    gap: 1rem;
+}
+
+#loginPromptModal .btn {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+#loginPromptModal .btn-secondary {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    color: var(--text-color);
+}
+
+#loginPromptModal .btn-secondary:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    transform: translateY(-2px);
+}
+
+#loginPromptModal .btn-primary {
+    background: var(--primary-color);
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+#loginPromptModal .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Animation for modal */
+.modal.fade .modal-dialog {
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1);
+}
+
+/* Responsive Styles */
+@media (max-width: 576px) {
+    #loginPromptModal .modal-content {
+        margin: 1rem;
+        border-radius: 12px;
+    }
+
+    #loginPromptModal .modal-header {
+        padding: 1rem;
+    }
+
+    #loginPromptModal .modal-body {
+        padding: 1.5rem;
+    }
+
+    #loginPromptModal .modal-footer {
+        padding: 1rem;
+        flex-direction: column;
+    }
+
+    #loginPromptModal .btn {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+}
+
+/* Add icon to login button */
+#loginPromptModal #loginButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+#loginPromptModal #loginButton::before {
+    content: '\f2f6';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+}
+
+/* Add animation for buttons */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+#loginPromptModal .btn-primary:focus {
+    animation: pulse 1s infinite;
+}

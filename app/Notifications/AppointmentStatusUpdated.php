@@ -86,11 +86,14 @@ class AppointmentStatusUpdated extends Notification
     public function toMail($notifiable): MailMessage
     {
         try {
-            Log::info('Attempting to send appointment status email notification', [
-                'to_email' => $notifiable->email,
-                'user_name' => $notifiable->name,
-                'appointment_id' => $this->appointmentId
-            ]);
+            $statusEmoji = match($this->appointmentStatus) {
+                'pending' => '⏳',
+                'confirmed' => '✅',
+                'cancelled' => '❌',
+                'completed' => '🎉',
+                'approved' => '👍',
+                default => '📝'
+            };
 
             $status = match($this->appointmentStatus) {
                 'pending' => 'قيد الانتظار',
@@ -102,37 +105,33 @@ class AppointmentStatusUpdated extends Notification
             };
 
             $message = (new MailMessage)
-                ->subject("تحديث حالة الموعد: {$status}")
-                ->greeting("مرحباً {$notifiable->name}!")
-                ->line("تم تحديث حالة موعدك إلى {$status}.");
+                ->subject("{$statusEmoji} تحديث حالة الموعد - {$this->appointment->reference_number}")
+                ->greeting("✨ مرحباً {$notifiable->name}!")
+                ->line("تم تحديث حالة موعدك إلى: {$statusEmoji} {$status}")
+                ->line('━━━━━━━━━━━━━━━━━━━━━━')
+                ->line("🔖 رقم المرجع: {$this->appointment->reference_number}");
 
-            // Add date and time only if they are available
             if ($this->appointmentDate !== 'غير محدد') {
-                $message->line("التاريخ: {$this->appointmentDate}");
+                $message->line("📅 التاريخ: {$this->appointmentDate}");
             }
             if ($this->appointmentTime !== 'غير محدد') {
-                $message->line("الوقت: {$this->appointmentTime}");
+                $message->line("⏰ الوقت: {$this->appointmentTime}");
             }
 
             if ($this->appointmentNotes) {
-                $message->line("ملاحظات: {$this->appointmentNotes}");
+                $message->line('━━━━━━━━━━━━━━━━━━━━━━')
+                       ->line("📝 ملاحظات: {$this->appointmentNotes}");
             }
 
             return $message
-                ->action('عرض الموعد', route('appointments.show', $this->appointmentId))
-                ->line('شكراً لاختيارك خدماتنا!');
+                ->line('━━━━━━━━━━━━━━━━━━━━━━')
+                ->action('👉 تفاصيل الموعد', route('appointments.show', $this->appointment->reference_number))
+                ->line('🙏 شكراً لاختيارك خدماتنا!')
+                ->line('📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.');
         } catch (Throwable $e) {
             Log::error('Error preparing appointment status email', [
                 'error' => $e->getMessage(),
-                'error_trace' => $e->getTraceAsString(),
-                'appointment_id' => $this->appointmentId ?? null,
-                'user_id' => $notifiable->id ?? null,
-                'user_email' => $notifiable->email ?? null,
-                'appointment_data' => [
-                    'date' => $this->appointmentDate,
-                    'time' => $this->appointmentTime,
-                    'status' => $this->appointmentStatus
-                ]
+                'appointment_reference' => $this->appointment->reference_number
             ]);
             throw $e;
         }
@@ -159,7 +158,7 @@ class AppointmentStatusUpdated extends Notification
                 'title' => 'تحديث حالة الموعد',
                 'message' => $message,
                 'type' => 'appointment_status_updated',
-                'appointment_id' => $this->appointmentId,
+                'reference_number' => $this->appointment->reference_number,
                 'status' => $this->appointmentStatus
             ];
         } catch (Throwable $e) {
@@ -172,7 +171,7 @@ class AppointmentStatusUpdated extends Notification
                 'title' => 'تحديث حالة الموعد',
                 'message' => 'حدث خطأ أثناء معالجة الإشعار',
                 'type' => 'appointment_status_updated',
-                'appointment_id' => $this->appointmentId,
+                'reference_number' => $this->appointment->reference_number,
                 'status' => $this->appointmentStatus ?? 'unknown'
             ];
         }

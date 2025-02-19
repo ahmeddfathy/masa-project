@@ -40,8 +40,13 @@ class CartItem extends Model
     return $this->belongsTo(Product::class);
   }
 
-  public function appointment(): BelongsTo
+  public function appointment()
   {
-    return $this->belongsTo(Appointment::class);
+    return $this->hasOne(Appointment::class);
+  }
+
+  public function needsAppointment(): bool
+  {
+    return $this->needs_appointment && !$this->appointment()->exists();
   }
 }

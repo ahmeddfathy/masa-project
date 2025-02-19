@@ -28,7 +28,7 @@ class CartController extends Controller
         }
 
         $cart_items = $cart->items()
-            ->with(['product.images', 'product.category'])
+            ->with(['product.images', 'product.category', 'appointment'])
             ->get();
 
         $subtotal = $cart_items->sum(function ($item) {
@@ -283,6 +283,22 @@ class CartController extends Controller
             'message' => 'تم حذف المنتج من السلة بنجاح',
             'cart_total' => $cart->total_amount,
             'cart_count' => $cart->items->sum('quantity')
+        ]);
+    }
+
+    public function checkAppointment(CartItem $cartItem)
+    {
+        // التحقق من ملكية العنصر
+        if ($cartItem->cart->user_id !== Auth::id()) {
+            return response()->json([
+                'needs_appointment' => false,
+                'message' => 'غير مصرح بهذا الإجراء'
+            ], 403);
+        }
+
+        return response()->json([
+            'needs_appointment' => $cartItem->needsAppointment(),
+            'has_appointment' => $cartItem->appointment()->exists()
         ]);
     }
 }

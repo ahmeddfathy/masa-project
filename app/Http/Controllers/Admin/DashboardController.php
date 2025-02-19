@@ -29,6 +29,10 @@ class DashboardController extends Controller
                 'pending_orders' => 0,
                 'processing_orders' => 0,
                 'completed_orders' => 0,
+                'out_for_delivery_orders' => 0,
+                'on_the_way_orders' => 0,
+                'delivered_orders' => 0,
+                'returned_orders' => 0,
                 'today_orders' => 0,
                 'today_revenue' => 0,
                 'month_orders' => 0,
@@ -58,6 +62,10 @@ class DashboardController extends Controller
                 'pending_orders' => Order::where('order_status', Order::ORDER_STATUS_PENDING)->count(),
                 'processing_orders' => Order::where('order_status', Order::ORDER_STATUS_PROCESSING)->count(),
                 'completed_orders' => Order::where('order_status', Order::ORDER_STATUS_COMPLETED)->count(),
+                'out_for_delivery_orders' => Order::where('order_status', Order::ORDER_STATUS_OUT_FOR_DELIVERY)->count(),
+                'on_the_way_orders' => Order::where('order_status', Order::ORDER_STATUS_ON_THE_WAY)->count(),
+                'delivered_orders' => Order::where('order_status', Order::ORDER_STATUS_DELIVERED)->count(),
+                'returned_orders' => Order::where('order_status', Order::ORDER_STATUS_RETURNED)->count(),
                 'today_orders' => Order::whereDate('created_at', Carbon::today())->count(),
                 'today_revenue' => Order::where('payment_status', Order::PAYMENT_STATUS_PAID)
                     ->whereDate('created_at', Carbon::today())
@@ -165,7 +173,11 @@ class DashboardController extends Controller
                 Order::ORDER_STATUS_COMPLETED => Order::where('order_status', Order::ORDER_STATUS_COMPLETED)->count(),
                 Order::ORDER_STATUS_PROCESSING => Order::where('order_status', Order::ORDER_STATUS_PROCESSING)->count(),
                 Order::ORDER_STATUS_PENDING => Order::where('order_status', Order::ORDER_STATUS_PENDING)->count(),
-                Order::ORDER_STATUS_CANCELLED => Order::where('order_status', Order::ORDER_STATUS_CANCELLED)->count()
+                Order::ORDER_STATUS_CANCELLED => Order::where('order_status', Order::ORDER_STATUS_CANCELLED)->count(),
+                Order::ORDER_STATUS_OUT_FOR_DELIVERY => Order::where('order_status', Order::ORDER_STATUS_OUT_FOR_DELIVERY)->count(),
+                Order::ORDER_STATUS_ON_THE_WAY => Order::where('order_status', Order::ORDER_STATUS_ON_THE_WAY)->count(),
+                Order::ORDER_STATUS_DELIVERED => Order::where('order_status', Order::ORDER_STATUS_DELIVERED)->count(),
+                Order::ORDER_STATUS_RETURNED => Order::where('order_status', Order::ORDER_STATUS_RETURNED)->count()
             ];
 
             // إضافة إحصائيات حالات الحجوزات
@@ -204,6 +216,10 @@ class DashboardController extends Controller
                             Order::ORDER_STATUS_PROCESSING => 'info',
                             Order::ORDER_STATUS_PENDING => 'warning',
                             Order::ORDER_STATUS_CANCELLED => 'danger',
+                            Order::ORDER_STATUS_OUT_FOR_DELIVERY => 'primary',
+                            Order::ORDER_STATUS_ON_THE_WAY => 'info',
+                            Order::ORDER_STATUS_DELIVERED => 'success',
+                            Order::ORDER_STATUS_RETURNED => 'secondary',
                             default => 'secondary'
                         },
                         'status_text' => match($order->order_status) {
@@ -211,6 +227,10 @@ class DashboardController extends Controller
                             Order::ORDER_STATUS_PROCESSING => 'قيد المعالجة',
                             Order::ORDER_STATUS_PENDING => 'معلق',
                             Order::ORDER_STATUS_CANCELLED => 'ملغي',
+                            Order::ORDER_STATUS_OUT_FOR_DELIVERY => 'قيد التوصيل',
+                            Order::ORDER_STATUS_ON_THE_WAY => 'في الطريق',
+                            Order::ORDER_STATUS_DELIVERED => 'تم التوصيل',
+                            Order::ORDER_STATUS_RETURNED => 'مرتجع',
                             default => 'غير معروف'
                         },
                         'payment_status_color' => match($order->payment_status) {
