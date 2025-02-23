@@ -149,7 +149,7 @@
 
 .service-card h3 {
     font-size: 1.8rem;
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 1.5rem;
     color: var(--dark-color);
     transition: all 0.4s ease;
@@ -309,7 +309,7 @@
 
 .gallery-info h4 {
     font-size: 1.8rem;
-    font-weight: 700;
+    font-weight: 500;
     margin-bottom: 0.8rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
@@ -454,7 +454,7 @@
 
 .section-title {
     color: var(--primary-color);
-    font-weight: 800;
+    font-weight: 600;
     font-size: var(--font-size-xl);
     margin-bottom: var(--spacing-md);
     position: relative;
@@ -563,12 +563,14 @@
     font-size: 3.5rem;
     margin-bottom: 1rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 500;
 }
 
 .carousel-caption p {
     font-size: 1.5rem;
     margin-bottom: 2rem;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-weight: 400;
 }
 
 .carousel-caption .btn {
@@ -735,7 +737,7 @@
 .contact-info-content h4 {
     font-size: 1.2rem;
     margin-bottom: 5px;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--dark-color);
 }
 
@@ -789,7 +791,7 @@
 }
 
 .contact-form .form-label {
-    font-weight: 600;
+    font-weight: 500;
     color: #333;
     margin-bottom: 10px;
     font-size: 1rem;
@@ -802,7 +804,7 @@
 
 .contact-form .btn-primary {
     padding: 15px 40px;
-    font-weight: 600;
+    font-weight: 500;
     border-radius: 50px;
     transition: all 0.3s ease;
     background: var(--primary-color);

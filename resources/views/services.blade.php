@@ -3,7 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>خدماتنا - عدسة سوما</title>
+    <meta name="description" content="خدمات عدسة سوما - تصوير فوتوغرافي احترافي، مجسمات ثري دي، البومات أطفال، وصور مطبوعة فاخرة. خدمات متكاملة للعائلات والأطفال في الرياض.">
+    <meta name="keywords" content="تصوير فوتوغرافي، مجسمات ثري دي، البومات أطفال، صور مطبوعة، تصوير مواليد، تصوير أطفال، استوديو تصوير، عدسة سوما، الرياض">
+    <meta name="author" content="عدسة سوما">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:site_name" content="عدسة سوما">
+    <meta property="og:title" content="خدمات عدسة سوما - تصوير احترافي وخدمات متكاملة للعائلات">
+    <meta property="og:description" content="خدمات تصوير فوتوغرافي احترافي، مجسمات ثري دي، البومات أطفال، وصور مطبوعة فاخرة. خدمات متكاملة للعائلات والأطفال في الرياض.">
+    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ar_SA">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="خدمات عدسة سوما - تصوير احترافي وخدمات متكاملة للعائلات">
+    <meta name="twitter:description" content="خدمات تصوير فوتوغرافي احترافي، مجسمات ثري دي، البومات أطفال، وصور مطبوعة فاخرة. خدمات متكاملة للعائلات والأطفال في الرياض.">
+    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <title>خدمات عدسة سوما - تصوير احترافي وخدمات متكاملة للعائلات في الرياض</title>
     <!-- Bootstrap RTL CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <!-- Font Awesome -->

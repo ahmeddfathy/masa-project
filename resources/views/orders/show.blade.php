@@ -76,8 +76,8 @@
                         <div class="order-items">
                             @foreach($order->items as $item)
                             <div class="order-item">
-                                @if($item->product->images->where('is_primary', true)->first())
-                                <img src="{{ Storage::url($item->product->images->where('is_primary', true)->first()->image_path) }}"
+                                @if($item->product->images->first())
+                                <img src="{{ Storage::url($item->product->images->first()->image_path) }}"
                                     alt="{{ $item->product->name }}"
                                     class="item-image">
                                 @endif

@@ -3,7 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عدسة سوما - استوديو التصوير العائلي</title>
+    <meta name="description" content="استوديو عدسة سوما - استوديو تصوير احترافي للعائلات والأطفال في الرياض. نقدم خدمات التصوير الفوتوغرافي، مجسمات ثري دي، والبومات مطبوعة بجودة عالية.">
+    <meta name="keywords" content="استوديو تصوير، تصوير عائلي، تصوير أطفال، استوديو في الرياض، عدسة سوما، البومات صور، مجسمات ثري دي، تصوير مناسبات، تصوير احترافي">
+    <meta name="author" content="عدسة سوما">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:site_name" content="عدسة سوما">
+    <meta property="og:title" content="عدسة سوما - استوديو التصوير العائلي في الرياض">
+    <meta property="og:description" content="استوديو تصوير احترافي للعائلات والأطفال في الرياض. نقدم خدمات التصوير الفوتوغرافي، مجسمات ثري دي، والبومات مطبوعة بجودة عالية.">
+    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ar_SA">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="عدسة سوما - استوديو التصوير العائلي في الرياض">
+    <meta name="twitter:description" content="استوديو تصوير احترافي للعائلات والأطفال في الرياض. نقدم خدمات التصوير الفوتوغرافي، مجسمات ثري دي، والبومات مطبوعة بجودة عالية.">
+    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <title>عدسة سوما - استوديو التصوير العائلي في الرياض | تصوير احترافي للعائلات والأطفال</title>
     <!-- Bootstrap RTL CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <!-- Font Awesome -->
@@ -96,7 +124,7 @@
     <!-- Featured Services -->
     <section class="services section-padding curved-top curved-bottom">
         <div class="container">
-            <h2 class="text-center mb-5">خدماتنا المميزة</h2>
+            <h2 class="text-center mb-5" style="font-weight: 500;">خدماتنا المميزة</h2>
             <div class="row">
                 @foreach($services as $service)
                     <div class="col-md-4">
@@ -119,7 +147,7 @@
     <!-- Latest Work -->
     <section class="gallery section-padding curved-top">
         <div class="container">
-            <h2 class="text-center mb-5" style="position: relative; z-index: 1;">أحدث أعمالنا</h2>
+            <h2 class="text-center mb-5" style="font-weight: 500; position: relative; z-index: 1;">أحدث أعمالنا</h2>
             <div class="row g-4">
                 @foreach($latestImages as $image)
                     <div class="col-md-4">
@@ -150,7 +178,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="about-content">
-                        <h2 class="section-title">من نحن</h2>
+                        <h2 class="section-title" style="font-weight: 500;">من نحن</h2>
                         <p class="section-description">
                             نحن في عدسة سوما نقدم خدمات التصوير الفوتوغرافي للعائلات والأطفال مع خدمات متكاملة تشمل مجسمات الليزر والصور المغناطيسية والمؤطرة. نسعى دائماً لتقديم أعلى مستويات الجودة والإبداع في كل صورة نلتقطها.
                         </p>
@@ -168,7 +196,7 @@
     <!-- Contact Form Section -->
     <section class="contact-section py-5" id="contact">
         <div class="container">
-            <h2 class="text-center mb-5">تواصل معنا</h2>
+            <h2 class="text-center mb-5" style="font-weight: 500;">تواصل معنا</h2>
             <div class="row">
                 <!-- Contact Info Side -->
                 <div class="col-lg-4 mb-4 mb-lg-0">

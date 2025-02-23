@@ -34,7 +34,6 @@ class ProductController extends Controller
                 $query->where('price', '<=', $maxPrice);
             });
 
-        // Apply sorting
         $query->when($request->sort, function (Builder $query, $sort) {
             match ($sort) {
                 'price-low' => $query->orderBy('price', 'asc'),
@@ -47,10 +46,11 @@ class ProductController extends Controller
         $products = $query->paginate($request->per_page ?? 12);
 
         $categories = Category::select('id', 'name', 'slug')
-            ->withCount('products')
+            ->withCount(['products' => function($query) {
+                $query->where('is_available', true);
+            }])
             ->get();
 
-        // Get price range for filter
         $priceRange = [
             'min' => Product::min('price'),
             'max' => Product::max('price')
@@ -85,7 +85,8 @@ class ProductController extends Controller
                             ];
                         })->toArray(),
                         'rating' => $product->rating ?? 0,
-                        'reviews' => $product->reviews ?? 0
+                        'reviews' => $product->reviews ?? 0,
+                        'is_available' => $product->stock > 0
                     ];
                 }),
                 'pagination' => [
@@ -108,7 +109,6 @@ class ProductController extends Controller
 
         $product->load(['category', 'images', 'colors', 'sizes']);
 
-        // تحديث الميزات المتاحة في دليل الميزات
         $availableFeatures = [];
 
         if ($product->allow_color_selection && $product->colors->isNotEmpty()) {
@@ -146,7 +146,6 @@ class ProductController extends Controller
             ];
         }
 
-        // Get related products from same category (only available ones)
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_available', true)
@@ -154,7 +153,6 @@ class ProductController extends Controller
             ->take(4)
             ->get();
 
-        // التحقق من وجود عناصر في السلة تحتاج لحجز موعد
         $pendingAppointment = null;
         if (Auth::check()) {
             $pendingAppointment = CartItem::whereHas('cart', function($query) {
@@ -177,14 +175,12 @@ class ProductController extends Controller
             $query = Product::with(['category', 'images', 'colors', 'sizes'])
                 ->where('is_available', true);
 
-            // Filter by categories
             if ($request->has('categories') && !empty($request->categories)) {
                 $query->whereHas('category', function($q) use ($request) {
                     $q->whereIn('slug', $request->categories);
                 });
             }
 
-            // Filter by price range
             if ($request->has('minPrice') && is_numeric($request->minPrice)) {
                 $query->where('price', '>=', (float) $request->minPrice);
             }
@@ -192,7 +188,6 @@ class ProductController extends Controller
                 $query->where('price', '<=', (float) $request->maxPrice);
             }
 
-            // Apply sorting
             if ($request->has('sort')) {
                 match ($request->sort) {
                     'price-low' => $query->orderBy('price', 'asc'),
@@ -220,7 +215,7 @@ class ProductController extends Controller
                             asset('images/placeholder.jpg'),
                         'rating' => $product->rating ?? 0,
                         'reviews' => $product->reviews ?? 0,
-                        'stock' => $product->stock,
+                        'is_available' => $product->stock > 0,
                         'description' => Str::limit($product->description, 100)
                     ];
                 }),
@@ -274,7 +269,7 @@ class ProductController extends Controller
                     'is_available' => $size->is_available
                 ];
             })->toArray() : [],
-            'stock' => $product->stock > 0 ? 'متوفر' : 'غير متوفر',
+            'is_available' => $product->stock > 0,
             'features' => [
                 'allow_custom_color' => $product->allow_custom_color,
                 'allow_custom_size' => $product->allow_custom_size,
@@ -304,10 +299,8 @@ class ProductController extends Controller
             ], 422);
         }
 
-        // Check if appointment is needed
         $needs_appointment = $request->needs_appointment;
 
-        // تعديل التحقق من المقاس ليكون أكثر مرونة
         if (!$needs_appointment) {
             if ($product->sizes()->count() > 0 && !$request->size) {
                 return response()->json([
@@ -317,7 +310,6 @@ class ProductController extends Controller
             }
         }
 
-        // Get or create cart
         $cart = null;
         if (Auth::check()) {
             $cart = Cart::firstOrCreate(
@@ -336,7 +328,6 @@ class ProductController extends Controller
             );
         }
 
-        // تعديل التحقق من العنصر في السلة ليشمل الحالة الجديدة
         $cartItem = CartItem::where('cart_id', $cart->id)
             ->where('product_id', $product->id)
             ->where('needs_appointment', $needs_appointment)
@@ -351,12 +342,10 @@ class ProductController extends Controller
             ->first();
 
         if ($cartItem) {
-            // Update existing cart item
             $cartItem->quantity += $request->quantity;
             $cartItem->subtotal = $cartItem->quantity * $product->price;
             $cartItem->save();
         } else {
-            // Create new cart item
             $cartItem = CartItem::create([
                 'cart_id' => $cart->id,
                 'product_id' => $product->id,
@@ -369,7 +358,6 @@ class ProductController extends Controller
             ]);
         }
 
-        // Update cart total
         $cart->total_amount = $cart->items()->sum('subtotal');
         $cart->save();
 
@@ -441,7 +429,6 @@ class ProductController extends Controller
         $cartItem->subtotal = $cartItem->quantity * $cartItem->unit_price;
         $cartItem->save();
 
-        // Update cart total
         $cart = $cartItem->cart;
         $cart->total_amount = $cart->items()->sum('subtotal');
         $cart->save();
@@ -458,7 +445,6 @@ class ProductController extends Controller
     public function removeCartItem(CartItem $cartItem)
     {
         try {
-            // التحقق من أن العنصر ينتمي للمستخدم الحالي
             if ($cartItem->cart->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
@@ -469,10 +455,8 @@ class ProductController extends Controller
             $cart = $cartItem->cart;
             $cartItem->delete();
 
-            // تحديث إجمالي السلة
             $cart->updateTotals();
 
-            // إرجاع البيانات المحدثة للسلة
             return response()->json([
                 'success' => true,
                 'message' => 'تم حذف المنتج من السلة بنجاح',

@@ -63,7 +63,54 @@
         @endforelse
 
         <div class="mt-4">
-            {{ $notifications->links() }}
+            @if($notifications->hasPages())
+                <nav aria-label="صفحات الإشعارات">
+                    <div class="pagination">
+                        {{-- Previous Page Link --}}
+                        @if($notifications->onFirstPage())
+                            <span class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">
+                                    <i class="bi bi-chevron-right"></i>
+                                </span>
+                            </span>
+                        @else
+                            <span class="page-item">
+                                <a class="page-link" href="{{ $notifications->previousPageUrl() }}" rel="prev">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </span>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @foreach($notifications->getUrlRange(1, $notifications->lastPage()) as $page => $url)
+                            @if($page == $notifications->currentPage())
+                                <span class="page-item active">
+                                    <span class="page-link">{{ $page }}</span>
+                                </span>
+                            @else
+                                <span class="page-item">
+                                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                                </span>
+                            @endif
+                        @endforeach
+
+                        {{-- Next Page Link --}}
+                        @if($notifications->hasMorePages())
+                            <span class="page-item">
+                                <a class="page-link" href="{{ $notifications->nextPageUrl() }}" rel="next">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </span>
+                        @else
+                            <span class="page-item disabled">
+                                <span class="page-link" aria-hidden="true">
+                                    <i class="bi bi-chevron-left"></i>
+                                </span>
+                            </span>
+                        @endif
+                    </div>
+                </nav>
+            @endif
         </div>
     </div>
 </div>

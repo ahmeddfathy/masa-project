@@ -1,46 +1,37 @@
 :root {
-    /* Primary Colors (60%) - Pink */
-    --primary-color: #ff1493;      /* وردي أكثر حدة */
-    --primary-light: #ff69b4;      /* وردي فاتح */
-    --primary-dark: #c71585;       /* وردي غامق */
+    --primary-color: #ff1493;
+    --primary-light: #ff69b4;
+    --primary-dark: #c71585;
 
-    /* Secondary Colors (30%) - Light Blue */
-    --secondary-color: #4169e1;    /* أزرق ملكي */
-    --secondary-light: #6495ed;    /* أزرق فاتح */
-    --secondary-dark: #283593;     /* أزرق غامق */
+    --secondary-color: #4169e1;
+    --secondary-light: #6495ed;
+    --secondary-dark: #283593;
 
-    /* Accent Colors (10%) */
-    --accent-color: #40e0d0;     /* تركواز */
-    --accent-light: #7fffd4;     /* تركواز فاتح */
-    --accent-dark: #20b2aa;      /* تركواز غامق */
+    --accent-color: #40e0d0;
+    --accent-light: #7fffd4;
+    --accent-dark: #20b2aa;
 
-    /* Neutral Colors */
     --light-color: #ffffff;
     --dark-color: #1a1a1a;
     --gray-100: #f8f9fa;
     --gray-200: #e9ecef;
     --gray-300: #dee2e6;
 
-    /* خلفية مشرقة وواضحة */
-    --background-color: #F0F4FF;  /* خلفية مشرقة وناعمة */
+    --background-color: #F0F4FF;
 
-    /* تأثير زجاجي أكثر وضوحًا */
     --glass-background: rgba(255, 255, 255, 0.85);
     --glass-background-dark: rgba(255, 255, 255, 0.95);
     --glass-border: 1px solid rgba(255, 255, 255, 0.65);
 
-    /* تم إزالة الظل */
     --card-shadow: none;
 
-    /* درجات لونية أكثر تباينًا */
-    --text-color: #1E2A38;        /* أزرق رمادي داكن وواضح */
-    --text-light: #2C3E50;        /* أزرق رمادي متوسط مع وضوح */
-    --text-muted: #4A5F6E;        /* رمادي مائل للأزرق أكثر حيوية */
-    --heading-color: #1E2A38;     /* متناسق مع لون النص الرئيسي مع تأكيد */
+    --text-color: #1E2A38;
+    --text-light: #2C3E50;
+    --text-muted: #4A5F6E;
+    --heading-color: #1E2A38;
 
-    /* ألوان الحالة أكثر حدة وتميزًا */
-    --danger-color: #FF4D4D;      /* أحمر صارخ وواضح */
-    --success-color: #2ECC71;     /* أخضر مشرق وحيوي */
+    --danger-color: #FF4D4D;
+    --success-color: #2ECC71;
 }
 body {
     background: linear-gradient(135deg, var(--background-color) 0%, #ffffff 100%);

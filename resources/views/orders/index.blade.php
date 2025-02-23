@@ -74,8 +74,8 @@
                 @foreach($order->items->take(4) as $item)
                 <div class="col-md-3">
                     <div class="order-item">
-                        @if($item->product->images->where('is_primary', true)->first())
-                        <img src="{{ Storage::url($item->product->images->where('is_primary', true)->first()->image_path) }}"
+                        @if($item->product->images->first())
+                        <img src="{{ Storage::url($item->product->images->first()->image_path) }}"
                             alt="{{ $item->product->name }}"
                             class="item-image">
                         @endif
@@ -113,7 +113,54 @@
     @endforelse
 
     <div class="mt-4">
-        {{ $orders->links() }}
+        @if($orders->hasPages())
+            <nav aria-label="صفحات الطلبات">
+                <div class="pagination">
+                    {{-- Previous Page Link --}}
+                    @if($orders->onFirstPage())
+                        <span class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">
+                                <i class="bi bi-chevron-right"></i>
+                            </span>
+                        </span>
+                    @else
+                        <span class="page-item">
+                            <a class="page-link" href="{{ $orders->previousPageUrl() }}" rel="prev">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </span>
+                    @endif
+
+                    {{-- Pagination Elements --}}
+                    @foreach($orders->getUrlRange(1, $orders->lastPage()) as $page => $url)
+                        @if($page == $orders->currentPage())
+                            <span class="page-item active">
+                                <span class="page-link">{{ $page }}</span>
+                            </span>
+                        @else
+                            <span class="page-item">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </span>
+                        @endif
+                    @endforeach
+
+                    {{-- Next Page Link --}}
+                    @if($orders->hasMorePages())
+                        <span class="page-item">
+                            <a class="page-link" href="{{ $orders->nextPageUrl() }}" rel="next">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </span>
+                    @else
+                        <span class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">
+                                <i class="bi bi-chevron-left"></i>
+                            </span>
+                        </span>
+                    @endif
+                </div>
+            </nav>
+        @endif
     </div>
 </main>
 @endsection

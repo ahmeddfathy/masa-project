@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\CartItem;
-use App\Notifications\AppointmentStatusUpdated;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,30 +12,26 @@ use Illuminate\Support\Facades\DB;
 
 class AppointmentController extends Controller
 {
-    /**
-     * عرض قائمة المواعيد للمستخدم
-     */
     public function index()
     {
-        $appointments = Auth::user()
-            ->appointments()
-            ->latest()
-            ->paginate(10);
+        $query = Auth::user()->appointments();
+
+        if (request('filter') === 'upcoming') {
+            $query->where('appointment_date', '>', now());
+        } elseif (request('filter') === 'past') {
+            $query->where('appointment_date', '<=', now());
+        }
+
+        $appointments = $query->latest()->paginate(10);
 
         return view('appointments.index', compact('appointments'));
     }
 
-    /**
-     * عرض نموذج إنشاء موعد جديد
-     */
     public function create()
     {
         return view('appointments.create');
     }
 
-    /**
-     * حفظ موعد جديد
-     */
     public function store(Request $request)
     {
         if (!Auth::check()) {
@@ -51,11 +46,9 @@ class AppointmentController extends Controller
 
             $validated = $this->validateAppointment($request);
 
-            // تحويل التاريخ والوقت إلى كائنات Carbon
             $appointmentDate = Carbon::parse($validated['appointment_date']);
             $appointmentTime = Carbon::parse($validated['appointment_time']);
 
-            // التحقق من أن الموعد في المستقبل
             if ($appointmentDate->isPast() || ($appointmentDate->isToday() && $appointmentTime->isPast())) {
                 return response()->json([
                     'success' => false,
@@ -70,14 +63,19 @@ class AppointmentController extends Controller
                 ], 422);
             }
 
+            // Create the appointment with status set to pending
             $appointment = $this->createAppointment($validated);
 
             DB::commit();
 
+            $redirectUrl = $validated['service_type'] === 'custom_design'
+                ? route('appointments.show', $appointment->reference_number)
+                : route('cart.index');
+
             return response()->json([
                 'success' => true,
                 'message' => 'تم حجز الموعد بنجاح',
-                'redirect_url' => route('appointments.show', $appointment->reference_number)
+                'redirect_url' => $redirectUrl
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -91,9 +89,7 @@ class AppointmentController extends Controller
             DB::rollBack();
             Log::error('خطأ في حجز الموعد: ' . $e->getMessage(), [
                 'user_id' => Auth::id(),
-                'data' => $request->all(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'data' => $request->all()
             ]);
 
             return response()->json([
@@ -103,20 +99,12 @@ class AppointmentController extends Controller
         }
     }
 
-    /**
-     * عرض تفاصيل الموعد
-     */
     public function show(Appointment $appointment)
     {
         $this->authorizeAccess($appointment);
-
-        // نحذف أي معالجة إضافية لنوع الخدمة أو سجل الموعد
         return view('appointments.show', compact('appointment'));
     }
 
-    /**
-     * عرض قائمة المواعيد للمشرف
-     */
     public function adminIndex()
     {
         $this->authorize('viewAny', Appointment::class);
@@ -128,9 +116,6 @@ class AppointmentController extends Controller
         return view('admin.appointments.index', compact('appointments'));
     }
 
-    /**
-     * التحقق من صحة البيانات
-     */
     private function validateAppointment(Request $request): array
     {
         return $request->validate([
@@ -145,9 +130,6 @@ class AppointmentController extends Controller
         ]);
     }
 
-    /**
-     * التحقق من ملكية cart_item
-     */
     private function validateCartItem(?int $cartItemId): bool
     {
         if (!$cartItemId) {
@@ -158,14 +140,11 @@ class AppointmentController extends Controller
             $cartItem = CartItem::findOrFail($cartItemId);
             return $cartItem->cart->user_id === Auth::id();
         } catch (\Exception $e) {
-            \Log::error('Error validating cart item: ' . $e->getMessage());
+            Log::error('Error validating cart item: ' . $e->getMessage());
             return false;
         }
     }
 
-    /**
-     * إنشاء موعد جديد
-     */
     private function createAppointment(array $data): Appointment
     {
         $appointment = new Appointment();
@@ -176,7 +155,7 @@ class AppointmentController extends Controller
         $appointment->appointment_time = Carbon::parse($data['appointment_time'])->format('H:i:s');
         $appointment->phone = $data['phone'];
         $appointment->notes = $data['notes'] ?? null;
-        $appointment->status = Appointment::STATUS_PENDING;
+        $appointment->status = Appointment::STATUS_PENDING; // Ensure status is set to pending
         $appointment->location = $data['location'];
         $appointment->address = $data['address'] ?? null;
         $appointment->save();
@@ -184,9 +163,6 @@ class AppointmentController extends Controller
         return $appointment;
     }
 
-    /**
-     * التحقق من صلاحية الوصول
-     */
     private function authorizeAccess(Appointment $appointment): void
     {
         if ($appointment->user_id !== Auth::id()) {
@@ -194,9 +170,6 @@ class AppointmentController extends Controller
         }
     }
 
-    /**
-     * تحديث الموعد
-     */
     public function update(Request $request, Appointment $appointment)
     {
         $this->authorizeAccess($appointment);
@@ -220,8 +193,12 @@ class AppointmentController extends Controller
                 'address' => $validated['address'],
             ]);
 
+            $redirectRoute = $appointment->service_type === 'custom_design'
+                ? route('appointments.show', $appointment->reference_number)
+                : route('cart.index');
+
             return redirect()
-                ->route('appointments.show', $appointment->reference_number)
+                ->to($redirectRoute)
                 ->with('success', 'تم تحديث الموعد بنجاح');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -236,9 +213,6 @@ class AppointmentController extends Controller
         }
     }
 
-    /**
-     * إلغاء الموعد
-     */
     public function cancel(Appointment $appointment)
     {
         $this->authorizeAccess($appointment);
@@ -248,9 +222,7 @@ class AppointmentController extends Controller
                 return back()->with('error', 'لا يمكن إلغاء هذا الموعد في الوقت الحالي');
             }
 
-            $appointment->update([
-                'status' => Appointment::STATUS_CANCELLED,
-            ]);
+            $appointment->update(['status' => Appointment::STATUS_CANCELLED]);
 
             return redirect()
                 ->route('appointments.show', $appointment->reference_number)

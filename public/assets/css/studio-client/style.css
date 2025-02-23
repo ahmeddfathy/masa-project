@@ -1,27 +1,21 @@
-/* Global Styles */
 :root {
-    /* Primary Colors - Teal */
-    --primary-color: #21B3B0;  /* تركواز */
-    --primary-light: #6DD5ED;  /* تركواز فاتح */
-    --primary-dark: #219376;   /* تركواز غامق */
+    --primary-color: #21B3B0;
+    --primary-light: #6DD5ED;
+    --primary-dark: #219376;
 
-    /* Secondary Colors - Pink */
-    --secondary-color: #FF69B4;  /* وردي */
-    --secondary-light: #FF8DC7;  /* وردي فاتح */
-    --secondary-dark: #FF1493;   /* وردي غامق */
+    --secondary-color: #FF69B4;
+    --secondary-light: #FF8DC7;
+    --secondary-dark: #FF1493;
 
-    /* RGB Values for Effects */
     --primary-rgb: 33, 179, 176;
     --secondary-rgb: 255, 105, 180;
 
-    /* Neutral Colors */
     --light-color: #ffffff;
     --dark-color: #1a1a1a;
     --gray-100: #f8f9fa;
     --gray-200: #e9ecef;
     --gray-300: #dee2e6;
 
-    /* Typography */
     --font-weight-light: 300;
     --font-weight-regular: 400;
     --font-weight-medium: 500;
@@ -45,7 +39,6 @@
     --letter-spacing-normal: 0.25px;
     --letter-spacing-tight: 0px;
 
-    /* Effects */
     --glass-bg: rgba(255, 255, 255, 0.1);
     --glass-border: rgba(255, 255, 255, 0.2);
     --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -57,7 +50,6 @@
     --box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Spacing */
     --spacing-xxl: 6rem;
     --spacing-xl: 4rem;
     --spacing-lg: 3rem;
@@ -65,7 +57,6 @@
     --spacing-sm: 1rem;
     --spacing-xs: 0.5rem;
 
-    /* Icon Colors */
     --icon-primary: var(--primary-color);
     --icon-hover: var(--primary-light);
     --icon-active: var(--primary-dark);

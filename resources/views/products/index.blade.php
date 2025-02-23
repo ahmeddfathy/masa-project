@@ -3,8 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في الرياض.">
+    <meta name="keywords" content="عدسة سوما، البومات صور، مجسمات ثري دي، صور مطبوعة، هدايا تذكارية، صور عائلية، صور أطفال، استوديو تصوير، الرياض">
+    <meta name="author" content="عدسة سوما">
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:site_name" content="عدسة سوما">
+    <meta property="og:title" content="متجر عدسة سوما | البومات صور ومجسمات ثري دي">
+    <meta property="og:description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في الرياض.">
+    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ar_SA">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="متجر عدسة سوما | البومات صور ومجسمات ثري دي">
+    <meta name="twitter:description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في الرياض.">
+    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ url()->current() }}">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>المنتجات - Madil</title>
+    <title>متجر عدسة سوما | البومات صور ومجسمات ثري دي في الرياض</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('assets/css/customer/products.css') }}">

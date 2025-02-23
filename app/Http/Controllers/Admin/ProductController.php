@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 
@@ -18,10 +18,17 @@ class ProductController extends Controller
         $query = Product::with(['category', 'images'])
             ->withCount('orderItems');
 
+        // Filter by specific product
+        if ($request->product) {
+            $query->where('id', $request->product);
+        }
+
+        // Filter by category
         if ($request->category) {
             $query->where('category_id', $request->category);
         }
 
+        // Filter by search term
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
@@ -29,10 +36,27 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->latest()->paginate(15);
-        $categories = Category::all();
+        // Handle sorting
+        switch ($request->sort) {
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            default:
+                $query->latest(); // 'newest' is default
+                break;
+        }
 
-        return view('admin.products.index', compact('products', 'categories'));
+        $products = $query->paginate(15);
+        $categories = Category::all();
+        $allProducts = Product::orderBy('name')->get(); // Get all products sorted by name
+
+        return view('admin.products.index', compact('products', 'categories', 'allProducts'));
     }
 
     public function create()
@@ -300,7 +324,7 @@ class ProductController extends Controller
             return redirect()->route('admin.products.index')
                 ->with('success', 'تم تحديث المنتج بنجاح');
         } catch (\Exception $e) {
-            \Log::error('Product update error: ' . $e->getMessage(), [
+            Log::error('Product update error: ' . $e->getMessage(), [
                 'product_id' => $product->id,
                 'request_data' => $request->all(),
                 'stack_trace' => $e->getTraceAsString()

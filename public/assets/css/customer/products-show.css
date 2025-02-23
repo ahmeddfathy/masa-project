@@ -228,16 +228,99 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+        max-width: 100%;
+    }
+
     .product-info {
         margin-top: 20px;
+        padding: 15px;
     }
 
     .colors-grid, .sizes-grid {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 8px;
     }
 
     .custom-measurements-section {
         padding: 15px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .product-gallery {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .col-md-6 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .breadcrumb {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .product-title {
+        font-size: 1.5rem;
+    }
+
+    .quantity-selector .input-group {
+        margin: 0 auto;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+}
+
+/* Additional Mobile Optimizations */
+@media (max-width: 576px) {
+    .product-gallery .card-body {
+        padding: 10px;
+    }
+
+    .image-thumbnails {
+        gap: 5px;
+    }
+
+    .thumbnail-wrapper {
+        flex: 0 0 60px;
+        height: 60px;
+    }
+
+    .product-price {
+        font-size: 1.3rem;
+    }
+
+    .category-badge {
+        font-size: 0.8rem;
+        padding: 4px 12px;
+    }
+
+    .section-title {
+        font-size: 1rem;
+    }
+
+    .custom-measurements-section small {
+        font-size: 0.8rem;
+    }
+
+    .form-check-label {
+        font-size: 0.9rem;
+    }
+
+    .cart-sidebar {
+        width: 100%;
     }
 }
 
