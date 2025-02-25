@@ -3,9 +3,11 @@
 namespace App\Notifications;
 
 use App\Models\Order;
+use App\Services\FirebaseNotificationService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\App;
 
 class OrderCreated extends Notification
 {
@@ -16,6 +18,33 @@ class OrderCreated extends Notification
   public function __construct(Order $order)
   {
     $this->order = $order;
+
+    try {
+      $firebaseService = App::make(FirebaseNotificationService::class);
+
+      $title = "طلب جديد #{$order->order_number}";
+      $body = "تم إنشاء طلب جديد بقيمة $" . number_format($order->total_amount, 2);
+
+      $itemsWithAppointments = $order->items->filter(function($item) {
+        return $item->appointment !== null;
+      });
+
+      if ($itemsWithAppointments->isNotEmpty()) {
+        $body .= "\n\nمواعيد المقاسات:";
+        foreach ($itemsWithAppointments as $item) {
+          $body .= "\nالمنتج: {$item->product->name}";
+          $body .= "\nالموعد: " . $item->appointment->appointment_date->format('Y-m-d H:i');
+          $body .= "\nرقم المرجع: " . $item->appointment->reference_number;
+        }
+      }
+
+      $result = $firebaseService->sendNotificationToAdmins(
+        $title,
+        $body,
+        $order->uuid
+      );
+    } catch (\Exception $e) {
+    }
   }
 
   public function via($notifiable): array
@@ -33,8 +62,7 @@ class OrderCreated extends Notification
         $itemText .= "  السعر: $" . number_format($item->subtotal, 2);
 
         if ($item->appointment) {
-            $itemText .= "\n  موعد المقاسات: " . $item->appointment->formatted_date;
-            $itemText .= " " . $item->appointment->formatted_time;
+            $itemText .= "\n  موعد المقاسات: " . $item->appointment->appointment_date->format('Y-m-d H:i');
             $itemText .= "\n  رقم المرجع: " . $item->appointment->reference_number;
         }
 
@@ -65,7 +93,7 @@ class OrderCreated extends Notification
 
   public function toArray($notifiable): array
   {
-    return [
+    $data = [
       'title' => 'تأكيد الطلب',
       'message' => 'تم استلام طلبك رقم #' . $this->order->order_number . ' بنجاح',
       'type' => 'order_created',
@@ -73,5 +101,23 @@ class OrderCreated extends Notification
       'total_amount' => $this->order->total_amount,
       'payment_method' => $this->order->payment_method
     ];
+
+    $appointments = $this->order->items
+      ->filter(function($item) {
+        return $item->appointment !== null;
+      })
+      ->map(function($item) {
+        return [
+          'product_name' => $item->product->name,
+          'date' => $item->appointment->appointment_date->format('Y-m-d H:i'),
+          'reference_number' => $item->appointment->reference_number
+        ];
+      });
+
+    if ($appointments->isNotEmpty()) {
+      $data['appointments'] = $appointments->values()->all();
+    }
+
+    return $data;
   }
 }

@@ -10,6 +10,8 @@ use Illuminate\Support\Collection;
 use App\Services\Booking\PackageService;
 use App\Services\Booking\GalleryService;
 use App\Services\Booking\AvailabilityService;
+use App\Notifications\BookingConfirmation;
+
 
 /**
  * خدمة إدارة الحجوزات
@@ -103,11 +105,26 @@ class BookingService
             'total_amount' => $totalAmount,
             'status' => 'pending',
             'booking_date' => now(),
-            'image_consent' => $data['image_consent']
+            'image_consent' => $data['image_consent'],
+            'uuid' => (string) \Illuminate\Support\Str::uuid(),
         ]);
 
         if (!empty($data['addons'])) {
             $this->attachAddons($booking, $data['addons']);
+        }
+
+        // تحميل العلاقات المطلوبة للإشعار
+        $booking->load(['user', 'service', 'package', 'addons']);
+
+        try {
+            // إرسال إشعار للمستخدم
+            $booking->user->notify(new BookingConfirmation($booking));
+        } catch (\Exception $e) {
+            \Log::error('فشل في إرسال إشعار الحجز:', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
         }
 
         return $booking;

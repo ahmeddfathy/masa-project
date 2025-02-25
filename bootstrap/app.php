@@ -33,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
+            'store_appointments' => \App\Http\Middleware\CheckStoreAppointmentsFeature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

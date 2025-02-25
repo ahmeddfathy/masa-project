@@ -26,7 +26,8 @@ class Booking extends Model
         'terms_consent',
         'payment_transaction_id',
         'payment_id',
-        'payment_status'
+        'payment_status',
+        'uuid'
     ];
 
     protected $casts = [

@@ -14,6 +14,8 @@ use App\Models\Service;
 use App\Models\Package;
 use App\Models\Booking;
 use App\Models\PackageAddon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class DashboardController extends Controller
 {
@@ -326,6 +328,56 @@ class DashboardController extends Controller
                 ],
                 'error' => 'Error loading dashboard data: ' . $e->getMessage()
             ]);
+        }
+    }
+
+    /**
+     * تحديث FCM token للمستخدم
+     */
+    public function updateFcmToken(Request $request)
+    {
+        try {
+            // التحقق من صحة البيانات
+            $validator = Validator::make($request->all(), [
+                'fcm_token' => 'required|string|max:255'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'بيانات غير صالحة',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // تحديث FCM token للمستخدم الحالي
+            $user = auth()->user();
+
+            // تحديث الـ token في جدول المستخدمين
+            $user->update([
+                'fcm_token' => $request->fcm_token
+            ]);
+
+            // تسجيل نجاح العملية
+            Log::info('FCM Token updated successfully for user: ' . $user->id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث FCM token بنجاح'
+            ]);
+
+        } catch (\Exception $e) {
+            // تسجيل الخطأ
+            Log::error('Error updating FCM token: ' . $e->getMessage(), [
+                'user_id' => auth()->id(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء تحديث FCM token'
+            ], 500);
         }
     }
 }

@@ -46,6 +46,21 @@
                     <small class="form-text text-muted">هذا الرقم يحدد عدد الحجوزات المسموح بها في نفس الوقت</small>
                 </div>
 
+                <div class="form-group mb-3">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox"
+                               class="custom-control-input"
+                               id="show_store_appointments"
+                               name="show_store_appointments"
+                               value="1"
+                               {{ $settings['show_store_appointments'] ? 'checked' : '' }}>
+                        <label class="custom-control-label font-weight-bold" for="show_store_appointments">
+                            إظهار خيارات حجز مواعيد المتجر للمستخدمين
+                        </label>
+                    </div>
+                    <small class="form-text text-muted">هذا الإعداد يتحكم في ظهور قائمة حجز مواعيد المتجر في واجهة المستخدم</small>
+                </div>
+
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-primary px-5">
                         <i class="fas fa-save ml-1"></i>

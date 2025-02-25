@@ -1,6 +1,10 @@
 let selectedColor = null;
 let selectedSize = null;
 
+function getAppointmentsStatus() {
+    return document.getElementById('appointmentsEnabled')?.value === 'true';
+}
+
 function updateMainImage(src, thumbnail) {
     document.getElementById('mainImage').src = src;
     document.querySelectorAll('.thumbnail-wrapper').forEach(thumb => {
@@ -14,7 +18,6 @@ function updateMainImage(src, thumbnail) {
 function selectColor(element) {
     if (!element.classList.contains('available')) return;
 
-    // Uncheck custom color checkbox if exists
     const useCustomColorCheckbox = document.getElementById('useCustomColor');
     if (useCustomColorCheckbox) {
         useCustomColorCheckbox.checked = false;
@@ -22,12 +25,10 @@ function selectColor(element) {
         document.getElementById('customColor').value = '';
     }
 
-    // Remove active class from all colors
     document.querySelectorAll('.color-item').forEach(item => {
         item.classList.remove('active');
     });
 
-    // Add active class to selected color
     element.classList.add('active');
     selectedColor = element.dataset.color;
 }
@@ -35,7 +36,6 @@ function selectColor(element) {
 function selectSize(element) {
     if (!element.classList.contains('available')) return;
 
-    // Uncheck custom size checkbox if exists
     const useCustomSizeCheckbox = document.getElementById('useCustomSize');
     if (useCustomSizeCheckbox) {
         useCustomSizeCheckbox.checked = false;
@@ -43,16 +43,13 @@ function selectSize(element) {
         document.getElementById('customSize').value = '';
     }
 
-    // Remove active class from all sizes
     document.querySelectorAll('.size-option').forEach(item => {
         item.classList.remove('active');
     });
 
-    // Add active class to selected size
     element.classList.add('active');
     selectedSize = element.dataset.size;
 
-    // If size is selected, uncheck needs appointment
     document.getElementById('needsAppointment').checked = false;
 }
 
@@ -67,7 +64,10 @@ function updatePageQuantity(change) {
 }
 
 function showAppointmentModal(cartItemId) {
-    // التحقق من حالة العنصر قبل عرض النافذة
+    if (!getAppointmentsStatus()) {
+        return;
+    }
+
     fetch(`/cart/items/${cartItemId}/check-appointment`)
         .then(response => response.json())
         .then(data => {
@@ -80,7 +80,6 @@ function showAppointmentModal(cartItemId) {
                 const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
                 modal.show();
             } else {
-                // إذا كان العنصر لا يحتاج لموعد، نزيل المعرف من URL
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.delete('pending_appointment');
                 window.history.replaceState({}, '', currentUrl);
@@ -93,7 +92,6 @@ function showAppointmentModal(cartItemId) {
 }
 
 function closeAppointmentModal() {
-    // إزالة معرف العنصر من الـ URL
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.delete('pending_appointment');
     window.history.replaceState({}, '', currentUrl);
@@ -120,17 +118,27 @@ function toggleAddress() {
 }
 
 function addToCart() {
+    const productId = document.getElementById('product-id').value;
+    const quantity = parseInt(document.getElementById('quantity').value);
     const needsAppointment = document.getElementById('needsAppointment')?.checked || false;
-    const quantity = document.getElementById('quantity').value;
+
+    const appointmentsEnabled = getAppointmentsStatus();
+    if (needsAppointment && !appointmentsEnabled) {
+        errorMessage.textContent = 'عذراً، ميزة مواعيد المتجر غير متاحة حالياً';
+        errorMessage.classList.remove('d-none');
+        return;
+    }
+
     const errorMessage = document.getElementById('errorMessage');
 
-    // التحقق من وجود أقسام الألوان والمقاسات
     const hasColorSelectionEnabled = document.querySelector('.colors-section') !== null;
     const hasCustomColorEnabled = document.getElementById('customColor') !== null;
     const hasSizeSelectionEnabled = document.querySelector('.available-sizes') !== null;
     const hasCustomSizeEnabled = document.getElementById('customSize') !== null;
+    const hasAppointmentEnabled = document.querySelector('.custom-measurements-section') !== null;
 
-    // الحصول على قيمة اللون
+    errorMessage.classList.add('d-none');
+
     let colorValue = null;
     if (hasColorSelectionEnabled && selectedColor) {
         colorValue = selectedColor;
@@ -141,7 +149,6 @@ function addToCart() {
         }
     }
 
-    // الحصول على قيمة المقاس
     let sizeValue = null;
     if (hasSizeSelectionEnabled && selectedSize) {
         sizeValue = selectedSize;
@@ -152,54 +159,99 @@ function addToCart() {
         }
     }
 
-    // التحقق من الحالات المختلفة
-    if (hasColorSelectionEnabled || hasCustomColorEnabled) {
-        if (hasSizeSelectionEnabled || hasCustomSizeEnabled) {
-            // في حالة وجود خيارات الألوان والمقاسات معاً
-            if (!needsAppointment) {
-                if (!colorValue) {
-                    errorMessage.textContent = 'يرجى اختيار لون للمنتج';
-                    errorMessage.classList.remove('d-none');
-                    return;
+    if (needsAppointment && hasAppointmentEnabled) {
+    }
+    else if (!needsAppointment) {
+        if ((hasColorSelectionEnabled || hasCustomColorEnabled) &&
+            !(hasSizeSelectionEnabled || hasCustomSizeEnabled)) {
+            if (!colorValue) {
+                let errorText = '';
+                if (hasColorSelectionEnabled && hasCustomColorEnabled) {
+                    errorText = 'يرجى اختيار لون أو كتابة اللون المطلوب';
+                } else if (hasColorSelectionEnabled) {
+                    errorText = 'يرجى اختيار لون للمنتج';
+                } else if (hasCustomColorEnabled) {
+                    errorText = 'يرجى كتابة اللون المطلوب';
                 }
-                if (!sizeValue) {
-                    errorMessage.textContent = 'يرجى اختيار مقاس للمنتج';
-                    errorMessage.classList.remove('d-none');
-                    return;
+
+                if (hasAppointmentEnabled) {
+                    errorText += ' أو اختيار خيار "أحتاج إلى أخذ المقاسات"';
                 }
-            }
-        } else {
-            // في حالة وجود خيارات الألوان فقط
-            if (!needsAppointment && !colorValue) {
-                errorMessage.textContent = 'يرجى اختيار لون للمنتج أو حجز موعد لأخذ المقاسات';
+
+                errorMessage.textContent = errorText;
                 errorMessage.classList.remove('d-none');
                 return;
             }
         }
-    } else if (hasSizeSelectionEnabled || hasCustomSizeEnabled) {
-        // في حالة وجود خيارات المقاسات فقط
-        if (!needsAppointment && !sizeValue) {
-            errorMessage.textContent = 'يرجى اختيار مقاس للمنتج أو حجز موعد لأخذ المقاسات';
-            errorMessage.classList.remove('d-none');
-            return;
+        else if (!(hasColorSelectionEnabled || hasCustomColorEnabled) &&
+                (hasSizeSelectionEnabled || hasCustomSizeEnabled)) {
+            if (!sizeValue) {
+                let errorText = '';
+                if (hasSizeSelectionEnabled && hasCustomSizeEnabled) {
+                    errorText = 'يرجى اختيار مقاس أو كتابة المقاس المطلوب';
+                } else if (hasSizeSelectionEnabled) {
+                    errorText = 'يرجى اختيار مقاس للمنتج';
+                } else if (hasCustomSizeEnabled) {
+                    errorText = 'يرجى كتابة المقاس المطلوب';
+                }
+
+                if (hasAppointmentEnabled) {
+                    errorText += ' أو اختيار خيار "أحتاج إلى أخذ المقاسات"';
+                }
+
+                errorMessage.textContent = errorText;
+                errorMessage.classList.remove('d-none');
+                return;
+            }
         }
-    } else if (!needsAppointment) {
-        // في حالة عدم وجود خيارات وعدم حجز موعد
-        errorMessage.textContent = 'يجب حجز موعد لأخذ المقاسات';
+        else if ((hasColorSelectionEnabled || hasCustomColorEnabled) &&
+                (hasSizeSelectionEnabled || hasCustomSizeEnabled)) {
+            let errorMessages = [];
+
+            if (!colorValue) {
+                if (hasColorSelectionEnabled && hasCustomColorEnabled) {
+                    errorMessages.push('اختيار لون أو كتابة اللون المطلوب');
+                } else if (hasColorSelectionEnabled) {
+                    errorMessages.push('اختيار لون للمنتج');
+                } else if (hasCustomColorEnabled) {
+                    errorMessages.push('كتابة اللون المطلوب');
+                }
+            }
+
+            if (!sizeValue) {
+                if (hasSizeSelectionEnabled && hasCustomSizeEnabled) {
+                    errorMessages.push('اختيار مقاس أو كتابة المقاس المطلوب');
+                } else if (hasSizeSelectionEnabled) {
+                    errorMessages.push('اختيار مقاس للمنتج');
+                } else if (hasCustomSizeEnabled) {
+                    errorMessages.push('كتابة المقاس المطلوب');
+                }
+            }
+
+            if (errorMessages.length > 0) {
+                let errorText = 'يرجى ' + errorMessages.join(' و');
+
+                if (hasAppointmentEnabled) {
+                    errorText += ' أو اختيار خيار "أحتاج إلى أخذ المقاسات"';
+                }
+
+                errorMessage.textContent = errorText;
+                errorMessage.classList.remove('d-none');
+                return;
+            }
+        }
+    }
+    else if (needsAppointment && !hasAppointmentEnabled) {
+        errorMessage.textContent = 'عذراً، خيار حجز الموعد غير متاح لهذا المنتج';
         errorMessage.classList.remove('d-none');
         return;
     }
 
-    // Hide any previous error
-    errorMessage.classList.add('d-none');
-
-    // Show loading state
     const addToCartBtn = document.querySelector('.btn-primary[onclick="addToCart()"]');
     const originalBtnText = addToCartBtn.innerHTML;
     addToCartBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الإضافة...';
     addToCartBtn.disabled = true;
 
-    // Make API call
     fetch('/cart/add', {
         method: 'POST',
         headers: {
@@ -207,7 +259,7 @@ function addToCart() {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({
-            product_id: document.getElementById('product-id').value,
+            product_id: productId,
             quantity: quantity,
             color: colorValue,
             size: sizeValue,
@@ -217,14 +269,11 @@ function addToCart() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Update cart count and show success message
             document.querySelector('.cart-count').textContent = data.cart_count;
             showNotification(data.message, 'success');
 
-            // Update cart items
             loadCartItems();
 
-            // Reset selections
             if (document.querySelector('.colors-section')) {
                 selectedColor = null;
                 document.querySelectorAll('.color-item').forEach(item => {
@@ -238,7 +287,6 @@ function addToCart() {
                 });
             }
 
-            // Reset custom inputs
             if (document.getElementById('customColor')) {
                 document.getElementById('customColor').value = '';
             }
@@ -251,7 +299,6 @@ function addToCart() {
                 document.getElementById('needsAppointment').checked = false;
             }
 
-            // If appointment is needed, show modal
             if (data.show_modal) {
                 document.getElementById('cart_item_id').value = data.cart_item_id;
                 const appointmentModal = new bootstrap.Modal(document.getElementById('appointmentModal'));
@@ -266,7 +313,6 @@ function addToCart() {
         showNotification('حدث خطأ أثناء إضافة المنتج إلى السلة', 'error');
     })
     .finally(() => {
-        // Reset button state
         addToCartBtn.innerHTML = originalBtnText;
         addToCartBtn.disabled = false;
     });
@@ -279,7 +325,6 @@ function showNotification(message, type = 'success') {
     notification.innerHTML = message;
     document.body.appendChild(notification);
 
-    // Remove notification after 3 seconds
     setTimeout(() => {
         notification.style.opacity = '0';
         setTimeout(() => notification.remove(), 300);
@@ -291,15 +336,12 @@ function updateCartDisplay(data) {
     const cartTotal = document.getElementById('cartTotal');
     const cartCountElements = document.querySelectorAll('.cart-count');
 
-    // تحديث عدد العناصر في كل أزرار السلة
     cartCountElements.forEach(element => {
         element.textContent = data.count;
     });
 
-    // تحديث الإجمالي
     cartTotal.textContent = data.total + ' ر.س';
 
-    // تحديث قائمة العناصر
     cartItems.innerHTML = '';
 
     if (!data.items || data.items.length === 0) {
@@ -318,7 +360,6 @@ function updateCartDisplay(data) {
         itemElement.className = 'cart-item';
         itemElement.dataset.itemId = item.id;
 
-        // تحضير معلومات إضافية
         const additionalInfo = [];
         if (item.color) additionalInfo.push(`اللون: ${item.color}`);
         if (item.size) additionalInfo.push(`المقاس: ${item.size}`);
@@ -384,18 +425,15 @@ function updateCartQuantity(itemId, change, newValue = null) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // تحديث الكمية والإجمالي الفرعي للعنصر
             quantityInput.value = quantity;
             const subtotalElement = cartItem.querySelector('.cart-item-subtotal');
             subtotalElement.textContent = `الإجمالي: ${data.item_subtotal} ر.س`;
 
-            // تحديث إجمالي السلة
             const cartTotal = document.getElementById('cartTotal');
             if (cartTotal) {
                 cartTotal.textContent = data.cart_total + ' ر.س';
             }
 
-            // تحديث عدد العناصر في السلة
             const cartCountElements = document.querySelectorAll('.cart-count');
             cartCountElements.forEach(element => {
                 element.textContent = data.cart_count;
@@ -403,7 +441,6 @@ function updateCartQuantity(itemId, change, newValue = null) {
 
             showNotification('تم تحديث الكمية بنجاح', 'success');
         } else {
-            // إرجاع القيمة القديمة في حالة الخطأ
             quantityInput.value = currentValue;
             showNotification(data.message || 'فشل تحديث الكمية', 'error');
         }
@@ -419,12 +456,10 @@ function updateCartQuantity(itemId, change, newValue = null) {
 }
 
 function removeFromCart(button, cartItemId) {
-    // Prevent default button behavior if event is passed
     if (event) {
         event.preventDefault();
     }
 
-    // تأكيد الحذف
     if (!confirm('هل أنت متأكد من حذف هذا المنتج من السلة؟')) {
         return;
     }
@@ -449,11 +484,9 @@ function removeFromCart(button, cartItemId) {
                 cartItem.style.transform = 'translateX(50px)';
             }
 
-            // تحديث عرض السلة
             updateCartDisplay(data);
             showNotification('تم حذف المنتج من السلة بنجاح', 'success');
 
-            // If appointment modal is open, close it
             const appointmentModal = document.getElementById('appointmentModal');
             if (appointmentModal && bootstrap.Modal.getInstance(appointmentModal)) {
                 appointmentModal.setAttribute('data-allow-close', 'true');
@@ -504,7 +537,6 @@ function showLoginPrompt(loginUrl) {
 }
 
 function updateFeatureVisibility(productFeatures) {
-    // التحكم في قسم الألوان
     const colorsSection = document.querySelector('.colors-section');
     const customColorSection = document.querySelector('.custom-color-section');
     const useCustomColorCheckbox = document.getElementById('useCustomColor');
@@ -523,7 +555,6 @@ function updateFeatureVisibility(productFeatures) {
             productFeatures.allow_custom_color ? 'block' : 'none';
     }
 
-    // التحكم في قسم المقاسات
     const sizesSection = document.querySelector('.available-sizes');
     const customSizeInput = document.querySelector('.custom-size-input');
     const useCustomSizeCheckbox = document.getElementById('useCustomSize');
@@ -537,7 +568,6 @@ function updateFeatureVisibility(productFeatures) {
         customSizeInput.style.display = productFeatures.allow_custom_size ? 'block' : 'none';
     }
 
-    // التحكم في خيار حجز الموعد
     const appointmentSection = document.querySelector('.custom-measurements-section');
     if (appointmentSection) {
         appointmentSection.style.display = productFeatures.allow_appointment ? 'block' : 'none';
@@ -553,16 +583,13 @@ function toggleCart() {
     }
 }
 
-// Initialize when document is ready
 document.addEventListener('DOMContentLoaded', function() {
     loadCartItems();
 
-    // Setup event listeners for both cart buttons
     document.getElementById('closeCart').addEventListener('click', closeCart);
     document.getElementById('cartToggle').addEventListener('click', toggleCart);
     document.getElementById('fixedCartBtn').addEventListener('click', toggleCart);
 
-    // Initialize appointment date handling
     const appointmentDate = document.getElementById('appointment_date');
     if (appointmentDate) {
         const today = new Date();
@@ -572,12 +599,10 @@ document.addEventListener('DOMContentLoaded', function() {
         appointmentDate.min = today.toISOString().split('T')[0];
         appointmentDate.max = maxDate.toISOString().split('T')[0];
 
-        // Handle date change
         appointmentDate.addEventListener('change', function() {
             const timeSelect = document.getElementById('appointment_time');
             const dateError = document.getElementById('date-error');
 
-            // Reset time select and validation states
             timeSelect.innerHTML = '<option value="">اختر الوقت المناسب</option>';
             timeSelect.disabled = true;
             dateError.textContent = '';
@@ -585,12 +610,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (!this.value) return;
 
-            // Parse the date correctly for timezone handling
             const [year, month, day] = this.value.split('-').map(Number);
-            const selectedDate = new Date(year, month - 1, day); // month is 0-based in JavaScript
+            const selectedDate = new Date(year, month - 1, day);
             const dayOfWeek = selectedDate.getDay();
 
-            // Arabic day names
             const arabicDays = {
                 0: 'الأحد',
                 1: 'الإثنين',
@@ -601,7 +624,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 6: 'السبت'
             };
 
-            // Check if date is in the past
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             if (selectedDate < today) {
@@ -611,18 +633,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Define time slots based on day
-            const slots = dayOfWeek === 5 ? // Friday
+            const slots = dayOfWeek === 5 ?
                 [{ start: '17:00', end: '23:00', label: 'الفترة المسائية' }] :
                 [
                     { start: '11:00', end: '14:00', label: 'الفترة الصباحية' },
                     { start: '17:00', end: '23:00', label: 'الفترة المسائية' }
                 ];
 
-            // Add day name to time select
             timeSelect.innerHTML = `<option value="">اختر الوقت المناسب ليوم ${arabicDays[dayOfWeek]}</option>`;
 
-            // Generate time slots
             slots.forEach(slot => {
                 const group = document.createElement('optgroup');
                 group.label = slot.label;
@@ -630,7 +649,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 let currentTime = new Date(`2000-01-01T${slot.start}`);
                 const endTime = new Date(`2000-01-01T${slot.end}`);
 
-                // If today, skip past times
                 const isToday = selectedDate.toDateString() === new Date().toDateString();
                 const now = new Date();
 
@@ -640,7 +658,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const minutes = currentTime.getMinutes().toString().padStart(2, '0');
                     const timeValue = `${hours}:${minutes}`;
 
-                    // Skip if time is in the past for today
                     if (isToday) {
                         const slotTime = new Date(selectedDate);
                         slotTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
@@ -650,7 +667,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     }
 
-                    // Format time in Arabic
                     const timeString = new Date(`2000-01-01T${timeValue}`)
                         .toLocaleTimeString('ar-SA', {
                             hour: '2-digit',
@@ -662,17 +678,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     option.textContent = timeString;
                     group.appendChild(option);
 
-                    // Add 30 minutes
                     currentTime.setMinutes(currentTime.getMinutes() + 30);
                 }
 
-                // Only add group if it has options
                 if (group.children.length > 0) {
                     timeSelect.appendChild(group);
                 }
             });
 
-            // Enable time select only if there are available slots
             const hasSlots = timeSelect.querySelectorAll('option').length > 1;
             timeSelect.disabled = !hasSlots;
 
@@ -682,13 +695,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Trigger change event if date is already selected
         if (appointmentDate.value) {
             appointmentDate.dispatchEvent(new Event('change'));
         }
     }
 
-    // Custom Color Toggle
     const useCustomColorCheckbox = document.getElementById('useCustomColor');
     const customColorGroup = document.getElementById('customColorGroup');
 
@@ -696,7 +707,6 @@ document.addEventListener('DOMContentLoaded', function() {
         useCustomColorCheckbox.addEventListener('change', function() {
             if (this.checked) {
                 customColorGroup.classList.remove('d-none');
-                // Clear existing color selection
                 document.querySelectorAll('.color-item').forEach(item => {
                     item.classList.remove('active');
                 });
@@ -708,7 +718,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Custom Size Toggle
     const useCustomSizeCheckbox = document.getElementById('useCustomSize');
     const customSizeGroup = document.getElementById('customSizeGroup');
 
@@ -716,7 +725,6 @@ document.addEventListener('DOMContentLoaded', function() {
         useCustomSizeCheckbox.addEventListener('change', function() {
             if (this.checked) {
                 customSizeGroup.classList.remove('d-none');
-                // Clear existing size selection
                 document.querySelectorAll('.size-item').forEach(item => {
                     item.classList.remove('active');
                 });
@@ -728,23 +736,59 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Add event listener to needs appointment checkbox
-    document.getElementById('needsAppointment').addEventListener('change', function(e) {
+    const customSizeInput = document.getElementById('customSize');
+    if (customSizeInput) {
+        customSizeInput.addEventListener('input', function() {
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage && !errorMessage.classList.contains('d-none')) {
+                errorMessage.classList.add('d-none');
+            }
+        });
+    }
+
+    const customColorInput = document.getElementById('customColor');
+    if (customColorInput) {
+        customColorInput.addEventListener('input', function() {
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage && !errorMessage.classList.contains('d-none')) {
+                errorMessage.classList.add('d-none');
+            }
+        });
+    }
+
+    document.getElementById('needsAppointment')?.addEventListener('change', function(e) {
         if (e.target.checked) {
-            // Clear size selection when appointment is needed
-            document.querySelectorAll('.size-item').forEach(item => {
+            document.querySelectorAll('.color-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            selectedColor = null;
+
+            if (document.getElementById('customColor')) {
+                document.getElementById('customColor').value = '';
+            }
+
+            document.querySelectorAll('.size-option').forEach(item => {
                 item.classList.remove('active');
             });
             selectedSize = null;
+
+            if (document.getElementById('customSize')) {
+                document.getElementById('customSize').value = '';
+            }
+
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage && !errorMessage.classList.contains('d-none')) {
+                errorMessage.classList.add('d-none');
+            }
+
+            showNotification('تم اختيار خيار حجز موعد لأخذ المقاسات', 'success');
         }
     });
 
-    // Setup appointment form
     const appointmentModal = document.getElementById('appointmentModal');
     if (appointmentModal) {
         const modal = new bootstrap.Modal(appointmentModal);
 
-        // Handle appointment form submission
         const appointmentForm = document.getElementById('appointmentForm');
         if (appointmentForm) {
             appointmentForm.addEventListener('submit', function(e) {
@@ -753,7 +797,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const spinner = submitBtn.querySelector('.spinner-border');
                 const errorDiv = document.getElementById('appointmentErrors');
 
-                // تعطيل زر الإرسال وإظهار مؤشر التحميل
                 submitBtn.disabled = true;
                 spinner.classList.remove('d-none');
                 errorDiv.classList.add('d-none');
@@ -770,10 +813,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // عرض رسالة النجاح
                         showNotification(data.message, 'success');
 
-                        // التحقق مما إذا كان المستخدم قادم من صفحة السلة
                         const urlParams = new URLSearchParams(window.location.search);
                         const redirectUrl = urlParams.has('pending_appointment') ?
                             '/cart' :
@@ -801,7 +842,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorDiv.classList.remove('d-none');
                 })
                 .finally(() => {
-                    // إعادة تعيين حالة الزر
                     submitBtn.disabled = false;
                     spinner.classList.add('d-none');
                 });
@@ -809,12 +849,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // معالجة زر الإلغاء في نافذة حجز المقاسات
     document.getElementById('cancelAppointment')?.addEventListener('click', function() {
         if (confirm('هل أنت متأكد من إلغاء حجز الموعد؟ سيتم إزالة المنتج من السلة.')) {
             const cartItemId = document.getElementById('cart_item_id').value;
 
-            // إزالة المنتج من السلة
             fetch(`/cart/remove/${cartItemId}`, {
                 method: 'DELETE',
                 headers: {
@@ -825,21 +863,16 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // تحديث عدد العناصر في السلة
                     document.querySelectorAll('.cart-count').forEach(el => {
                         el.textContent = data.cart_count;
                     });
 
-                    // عرض رسالة نجاح
                     showNotification('تم إلغاء الموعد وإزالة المنتج من السلة', 'success');
 
-                    // التحقق مما إذا كان المستخدم قادم من صفحة السلة
                     const urlParams = new URLSearchParams(window.location.search);
                     if (urlParams.has('pending_appointment')) {
-                        // إعادة توجيه المستخدم إلى صفحة السلة
                         window.location.href = '/cart';
                     } else {
-                        // إغلاق النافذة المنبثقة وتحديث محتوى السلة
                         bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
                         loadCartItems();
                     }
@@ -854,7 +887,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // تحميل تفاصيل المنتج وتحديث واجهة المستخدم
     const productId = document.getElementById('product-id').value;
     fetch(`/products/${productId}/details`)
         .then(response => response.json())
@@ -863,11 +895,22 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error:', error));
 
-    // إضافة استعادة حالة النافذة المنبثقة عند تحميل الصفحة
     const urlParams = new URLSearchParams(window.location.search);
     const pendingAppointment = urlParams.get('pending_appointment');
 
     if (pendingAppointment) {
         showAppointmentModal(pendingAppointment);
+    }
+
+    // إخفاء/إظهار العناصر المرتبطة بالمواعيد بناءً على حالة الميزة
+    const appointmentsEnabled = getAppointmentsStatus();
+    const needsAppointmentCheckbox = document.getElementById('needsAppointment');
+
+    // إذا كان عنصر زر حجز المواعيد موجود وكانت الميزة معطلة
+    if (needsAppointmentCheckbox) {
+        const measurementsSection = document.querySelector('.custom-measurements-section');
+        if (!appointmentsEnabled && measurementsSection) {
+            measurementsSection.style.display = 'none';
+        }
     }
 });

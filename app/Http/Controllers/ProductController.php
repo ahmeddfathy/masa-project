@@ -139,7 +139,10 @@ class ProductController extends Controller
             ];
         }
 
-        if ($product->allow_appointment) {
+        // فحص ما إذا كانت ميزة مواعيد المتجر مفعلة في الإعدادات
+        $showStoreAppointments = \App\Models\Setting::getBool('show_store_appointments', true);
+
+        if ($product->allow_appointment && $showStoreAppointments) {
             $availableFeatures[] = [
                 'icon' => 'tape',
                 'text' => 'يمكنك طلب موعد لأخذ المقاسات'
@@ -166,7 +169,13 @@ class ProductController extends Controller
             ->first();
         }
 
-        return view('products.show', compact('product', 'relatedProducts', 'availableFeatures', 'pendingAppointment'));
+        return view('products.show', compact(
+            'product',
+            'relatedProducts',
+            'availableFeatures',
+            'pendingAppointment',
+            'showStoreAppointments'
+        ));
     }
 
     public function filter(Request $request)
@@ -299,16 +308,61 @@ class ProductController extends Controller
             ], 422);
         }
 
-        $needs_appointment = $request->needs_appointment;
-
-        if (!$needs_appointment) {
-            if ($product->sizes()->count() > 0 && !$request->size) {
+        if ($request->needs_appointment) {
+            if (!$product->allow_appointment) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'يرجى اختيار المقاس أو تحديد موعد لأخذ المقاسات'
+                    'message' => 'عذراً، خيار حجز الموعد غير متاح لهذا المنتج'
+                ], 422);
+            }
+
+            // التحقق من تفعيل ميزة مواعيد المتجر
+            if (!\App\Models\Setting::getBool('show_store_appointments', true)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'عذراً، ميزة مواعيد المتجر غير متاحة حالياً'
                 ], 422);
             }
         }
+
+        if (!$request->needs_appointment) {
+            $needsColor = $product->allow_color_selection || $product->allow_custom_color;
+            $needsSize = $product->allow_size_selection || $product->allow_custom_size;
+
+            if ($needsColor && empty($request->color)) {
+                $colorMessage = '';
+                if ($product->allow_color_selection && $product->allow_custom_color) {
+                    $colorMessage = 'يرجى اختيار لون أو كتابة اللون المطلوب';
+                } else if ($product->allow_color_selection) {
+                    $colorMessage = 'يرجى اختيار لون للمنتج';
+                } else if ($product->allow_custom_color) {
+                    $colorMessage = 'يرجى كتابة اللون المطلوب';
+                }
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $colorMessage
+                ], 422);
+            }
+
+            if ($needsSize && empty($request->size)) {
+                $sizeMessage = '';
+                if ($product->allow_size_selection && $product->allow_custom_size) {
+                    $sizeMessage = 'يرجى اختيار مقاس أو كتابة المقاس المطلوب';
+                } else if ($product->allow_size_selection) {
+                    $sizeMessage = 'يرجى اختيار مقاس للمنتج';
+                } else if ($product->allow_custom_size) {
+                    $sizeMessage = 'يرجى كتابة المقاس المطلوب';
+                }
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $sizeMessage
+                ], 422);
+            }
+        }
+
+        $needs_appointment = $request->needs_appointment;
 
         $cart = null;
         if (Auth::check()) {

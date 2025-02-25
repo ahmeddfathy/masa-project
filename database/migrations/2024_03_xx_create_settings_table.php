@@ -25,6 +25,12 @@ return new class extends Migration
                 'value' => '1',
                 'type' => 'number',
                 'description' => 'الحد الأقصى للحجوزات المتزامنة'
+            ],
+            [
+                'key' => 'show_store_appointments',
+                'value' => 'true',
+                'type' => 'boolean',
+                'description' => 'إظهار قائمة حجز مواعيد المتجر للمستخدمين'
             ]
         ]);
     }

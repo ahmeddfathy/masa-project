@@ -8,6 +8,13 @@
 
 @section('content')
 <div class="container py-4">
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
     <!-- Welcome Section -->
     <div class="welcome-section mb-4">
         <div class="row align-items-center">
@@ -117,6 +124,8 @@
                 </div>
             </div>
         </div>
+
+        @if(\App\Models\Setting::getBool('show_store_appointments', true))
         <div class="col-12 col-sm-6 col-md-3">
             <div class="dashboard-card appointments">
                 <div class="card-icon">
@@ -133,6 +142,8 @@
                 </div>
             </div>
         </div>
+        @endif
+
         <div class="col-12 col-sm-6 col-md-3">
             <div class="dashboard-card bookings">
                 <div class="card-icon">
@@ -351,6 +362,7 @@
         </div>
 
         <!-- Upcoming Store Appointments -->
+        @if(\App\Models\Setting::getBool('show_store_appointments', true))
         <div class="col-12 col-xl-4">
             <div class="section-card h-100">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
@@ -401,9 +413,10 @@
                 @endif
             </div>
         </div>
+        @endif
 
         <!-- Upcoming Studio Bookings -->
-        <div class="col-12 col-xl-4">
+        <div class="col-12 col-xl-{{ \App\Models\Setting::getBool('show_store_appointments', true) ? '4' : '8' }}">
             <div class="section-card h-100">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
                     <h2 class="mb-0">حجوزات الاستوديو</h2>

@@ -144,35 +144,57 @@
         </div>
     </section>
 
-    <!-- Why Choose Us with Background -->
-    <section class="why-choose-us curved-bottom" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1554048612-b6a482bc67e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed; background-size: cover;">
+    <!-- Why Choose Us with Background - Enhanced -->
+    <section class="why-choose-us curved-bottom" style="background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1554048612-b6a482bc67e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed; background-size: cover;">
         <div class="container">
-            <h2 class="text-center mb-5 text-white display-4 fw-bold">لماذا تختارنا؟</h2>
+            <h2 class="text-center mb-5 text-white">لماذا يختار العملاء عدسة سوما؟</h2>
             <div class="row g-4">
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
                     <div class="feature-card glass-effect hover-lift">
-                        <i class="fas fa-award fa-3x mb-4"></i>
-                        <h4 class="fw-bold">جودة استثنائية</h4>
-                        <p class="text-white-50">نلتزم بتقديم أعلى معايير الجودة في كل تفاصيل عملنا</p>
+                        <i class="fas fa-award"></i>
+                        <h4>جودة استثنائية</h4>
+                        <p>نلتزم بتقديم أعلى معايير الجودة في كل صورة وكل منتج نقدمه لعملائنا الكرام</p>
                     </div>
                 </div>
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
                     <div class="feature-card glass-effect hover-lift">
-                        <i class="fas fa-camera-retro fa-3x mb-4"></i>
-                        <h4 class="fw-bold">تقنيات متطورة</h4>
-                        <p class="text-white-50">نستخدم أحدث التقنيات العالمية في التصوير والمعالجة</p>
+                        <i class="fas fa-camera-retro"></i>
+                        <h4>تقنيات متطورة</h4>
+                        <p>نستخدم أحدث التقنيات العالمية في التصوير والمعالجة لضمان نتائج مبهرة دائمًا</p>
                     </div>
                 </div>
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
                     <div class="feature-card glass-effect hover-lift">
-                        <i class="fas fa-heart fa-3x mb-4"></i>
-                        <h4 class="fw-bold">خدمة مميزة</h4>
-                        <p class="text-white-50">نقدم تجربة فريدة تفوق توقعاتكم في كل مرة</p>
+                        <i class="fas fa-heart"></i>
+                        <h4>خدمة مميزة</h4>
+                        <p>نقدم تجربة فريدة تفوق توقعاتكم في كل مرة، مع اهتمام خاص بأدق التفاصيل</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 mt-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-card glass-effect hover-lift">
+                        <i class="fas fa-child"></i>
+                        <h4>خبرة في تصوير الأطفال</h4>
+                        <p>فريقنا متخصص في التعامل مع الأطفال والمواليد لالتقاط أجمل اللحظات بأمان تام</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-card glass-effect hover-lift">
+                        <i class="fas fa-paint-brush"></i>
+                        <h4>لمسة إبداعية</h4>
+                        <p>نضيف لمستنا الفنية الخاصة لكل مشروع لنقدم صورًا فريدة تحكي قصة خاصة</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
+                    <div class="feature-card glass-effect hover-lift">
+                        <i class="fas fa-gem"></i>
+                        <h4>منتجات فاخرة</h4>
+                        <p>نستخدم أفضل الخامات العالمية لضمان منتجات فاخرة تدوم طويلاً وتحفظ ذكرياتكم</p>
                     </div>
                 </div>
             </div>
         </div>
-
     </section>
 
     @include('parts.footer')

@@ -114,6 +114,9 @@ class DashboardController extends Controller
                 ];
             });
 
+        // التحقق من وجود رسالة خطأ
+        $error = session('error');
+
         return view('dashboard', compact(
             'stats',
             'recent_orders',
@@ -121,7 +124,8 @@ class DashboardController extends Controller
             'upcoming_bookings',
             'recent_notifications',
             'addresses',
-            'phones'
+            'phones',
+            'error'
         ));
     }
 

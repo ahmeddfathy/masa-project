@@ -39,11 +39,15 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('products*') ? 'active' : '' }}" href="/products"><i class="fas fa-store ms-1"></i>المتجر</a>
                     </li>
+
+                    @if(\App\Models\Setting::getBool('show_store_appointments', true))
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.index') }}">
                             <i class="fas fa-calendar-alt ms-1"></i>مواعيد المتجر
                         </a>
                     </li>
+                    @endif
+
                     <li class="nav-item">
                         <a class="nav-link {{ request()->is('client/book*') ? 'active' : '' }}" href="{{ route('client.bookings.create') }}">
                             <i class="fas fa-camera ms-1"></i>حجز جلسة تصوير
@@ -105,12 +109,16 @@
                         المتجر
                     </a>
                 </li>
+
+                @if(\App\Models\Setting::getBool('show_store_appointments', true))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('appointments*') ? 'active' : '' }}" href="{{ route('appointments.index') }}">
                         <i class="fas fa-calendar-alt"></i>
                         مواعيد المتجر
                     </a>
                 </li>
+                @endif
+
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('client/book*') ? 'active' : '' }}" href="{{ route('client.bookings.create') }}">
                         <i class="fas fa-camera"></i>

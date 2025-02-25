@@ -67,6 +67,7 @@
                 </div>
 
                 <!-- Appointments Section -->
+                @if(\App\Models\Setting::getBool('show_store_appointments', true))
                 <div class="nav-section">
                     <div class="nav-section-title">المواعيد</div>
                     <div class="nav-item">
@@ -76,6 +77,7 @@
                         </a>
                     </div>
                 </div>
+                @endif
 
                 <!-- Studio Services Section -->
                 <div class="nav-section">
@@ -149,7 +151,7 @@
                         <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
                            href="{{ route('admin.settings.index') }}">
                             <i class="fas fa-cog"></i>
-                            <span>إعدادات الحجز</span>
+                            <span>إعدادات النظام</span>
                         </a>
                     </div>
                 </div>

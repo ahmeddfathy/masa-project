@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\{
 };
 
 use App\Http\Controllers\Client\BookingController;
+use App\Http\Controllers\TestNotificationController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -104,13 +105,16 @@ Route::middleware([
             Route::get('/{order:uuid}', [OrderController::class, 'show'])->name('show');
         });
 
-        Route::prefix('appointments')->name('appointments.')->group(function () {
-            Route::get('/', [AppointmentController::class, 'index'])->name('index');
-            Route::get('/create', [AppointmentController::class, 'create'])->name('create');
-            Route::post('/', [AppointmentController::class, 'store'])->name('store');
-            Route::get('/{appointment}', [AppointmentController::class, 'show'])->name('show');
-            Route::delete('/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('cancel');
-        });
+        Route::prefix('appointments')
+            ->name('appointments.')
+            ->middleware('store_appointments')
+            ->group(function () {
+                Route::get('/', [AppointmentController::class, 'index'])->name('index');
+                Route::get('/create', [AppointmentController::class, 'create'])->name('create');
+                Route::post('/', [AppointmentController::class, 'store'])->name('store');
+                Route::get('/{appointment}', [AppointmentController::class, 'show'])->name('show');
+                Route::delete('/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('cancel');
+            });
     });
 
     Route::middleware(['role:admin'])
@@ -118,6 +122,10 @@ Route::middleware([
         ->name('admin.')
         ->group(function () {
             Route::get('/dashboard/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+            Route::post('/update-fcm-token', [AdminDashboardController::class, 'updateFcmToken'])
+                ->name('update-fcm-token')
+                ->middleware(['web', 'auth']);
 
             Route::middleware(['permission:manage products'])->group(function () {
                 Route::resource('products', AdminProductController::class);
@@ -135,19 +143,24 @@ Route::middleware([
 
             Route::resource('gallery', AdminGalleryController::class);
 
-            Route::middleware(['permission:manage appointments'])->group(function () {
-                Route::resource('appointments', AdminAppointmentController::class)->except(['create', 'store', 'edit', 'update']);
-                Route::patch('/appointments/{appointment}/status', [AdminAppointmentController::class, 'updateStatus'])->name('appointments.update-status');
-                Route::patch('/appointments/{appointment:reference_number}/update-status', [AdminAppointmentController::class, 'updateStatus'])
-                    ->name('appointments.update-status');
-                Route::patch('/appointments/{appointment:reference_number}/cancel', [AdminAppointmentController::class, 'cancel'])
-                    ->name('appointments.cancel');
-                Route::patch('/appointments/{appointment:reference_number}/update-datetime', [AdminAppointmentController::class, 'updateDateTime'])
-                    ->name('appointments.update-datetime');
-            });
+            Route::middleware('store_appointments')->group(function () {
+                Route::controller(AdminAppointmentController::class)
+                    ->prefix('appointments')
+                    ->name('appointments.')
+                    ->group(function () {
+                        Route::get('/', 'index')->name('index');
+                        Route::get('/{appointment}', 'show')->name('show');
+                        Route::patch('/{appointment}/status', 'updateStatus')->name('update-status');
+                        Route::get('/calendar/view', 'calendar')->name('calendar');
+                        Route::get('/reports/view', 'reports')->name('reports');
+                    });
 
-            Route::middleware(['permission:manage reports'])->group(function () {
-                Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+                Route::controller(AdminReportController::class)
+                    ->prefix('reports')
+                    ->name('reports.')
+                    ->group(function () {
+                        Route::get('/', 'index')->name('index');
+                    });
             });
 
             Route::controller(ServiceController::class)->prefix('services')->name('services.')->group(function () {
@@ -189,7 +202,9 @@ Route::middleware([
         });
 });
 
-Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+Route::post('/appointments', [AppointmentController::class, 'store'])
+    ->name('appointments.store')
+    ->middleware('store_appointments');
 
 Route::middleware(['auth:sanctum'])->group(function() {
     Route::post('/cart/add', [ProductController::class, 'addToCart'])->name('cart.add');

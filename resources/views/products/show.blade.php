@@ -266,7 +266,7 @@
                     @endif
 
                     <!-- Custom Measurements Option -->
-                    @if($product->allow_appointment)
+                    @if($product->allow_appointment && $showStoreAppointments)
                         <div class="custom-measurements-section mb-4">
                             @auth
                             <div class="form-check">
@@ -514,6 +514,9 @@
 
     <!-- Add this hidden input for product ID -->
     <input type="hidden" id="product-id" value="{{ $product->id }}">
+
+    <!-- Add this hidden input after product-id -->
+    <input type="hidden" id="appointmentsEnabled" value="{{ $showStoreAppointments ? 'true' : 'false' }}">
 
     @if($pendingAppointment)
     <script>

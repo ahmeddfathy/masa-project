@@ -245,10 +245,10 @@
                         </div>
 
                         <div class="social-links-contact">
-                            <a href="https://wa.me/966533445566" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                            <a href="https://instagram.com/somalens" target="_blank"><i class="fab fa-instagram"></i></a>
-                            <a href="https://twitter.com/somalens" target="_blank"><i class="fab fa-twitter"></i></a>
-                            <a href="https://snapchat.com/add/somalens" target="_blank"><i class="fab fa-snapchat-ghost"></i></a>
+                            <a href="https://wa.me/966533445566" target="_blank" title="واتساب"><i class="fab fa-whatsapp"></i></a>
+                            <a href="https://instagram.com/somalens" target="_blank" title="انستغرام"><i class="fab fa-instagram"></i></a>
+                            <a href="https://twitter.com/somalens" target="_blank" title="تويتر"><i class="fab fa-twitter"></i></a>
+                            <a href="https://snapchat.com/add/somalens" target="_blank" title="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
                         </div>
                     </div>
                 </div>
@@ -258,6 +258,7 @@
                     <div class="contact-form-side">
                         @if(session('success'))
                             <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
                                 {{ session('success') }}
                             </div>
                         @endif
@@ -267,40 +268,55 @@
                             <div class="form-group">
                                 <label for="name" class="form-label">الاسم</label>
                                 <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                       id="name" name="name" value="{{ old('name') }}" required>
+                                       id="name" name="name" value="{{ old('name') }}" required placeholder="أدخل اسمك الكامل">
                                 @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ $message }}
+                                    </div>
                                 @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="email" class="form-label">البريد الإلكتروني</label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                       id="email" name="email" value="{{ old('email') }}" required>
+                                       id="email" name="email" value="{{ old('email') }}" required placeholder="أدخل بريدك الإلكتروني">
                                 @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ $message }}
+                                    </div>
                                 @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="phone" class="form-label">رقم الجوال</label>
                                 <input type="tel" class="form-control @error('phone') is-invalid @enderror"
-                                       id="phone" name="phone" value="{{ old('phone') }}" required>
+                                       id="phone" name="phone" value="{{ old('phone') }}" required placeholder="أدخل رقم جوالك">
                                 @error('phone')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ $message }}
+                                    </div>
                                 @enderror
                             </div>
 
                             <div class="form-group">
                                 <label for="message" class="form-label">الرسالة</label>
                                 <textarea class="form-control @error('message') is-invalid @enderror"
-                                          id="message" name="message" rows="5" required>{{ old('message') }}</textarea>
+                                          id="message" name="message" rows="5" required placeholder="اكتب رسالتك هنا...">{{ old('message') }}</textarea>
                                 @error('message')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ $message }}
+                                    </div>
                                 @enderror
                             </div>
 
-                            <button type="submit" class="btn btn-primary">إرسال الرسالة</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                إرسال الرسالة
+                            </button>
                         </form>
                     </div>
                 </div>

@@ -13,4 +13,10 @@ class Setting extends Model
         $setting = static::where('key', $key)->first();
         return $setting ? $setting->value : $default;
     }
+
+    public static function getBool($key, $default = false)
+    {
+        $value = static::get($key, $default ? 'true' : 'false');
+        return $value === 'true' || $value === '1' || $value === true;
+    }
 }
