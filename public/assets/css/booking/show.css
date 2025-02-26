@@ -1,0 +1,142 @@
+.booking-details {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin: 2rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.booking-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.booking-header h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.booking-body {
+    padding: 2rem;
+    background: var(--background-light);
+}
+
+.info-group {
+    background: white;
+    padding: 1.2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.info-group h6 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+}
+
+.addon-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.price-details {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.price-details h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+}
+
+.price-row {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.total-price {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.booking-status {
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.consent-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.consent-section h5 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+}
+
+.actions {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.btn-back {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 2.5rem;
+    font-weight: 600;
+    box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-back:hover {
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(33, 150, 243, 0.4);
+}
+
+@media (max-width: 768px) {
+    .booking-header {
+        padding: 1.2rem;
+    }
+
+    .booking-body {
+        padding: 1.5rem;
+    }
+
+    .info-group, .addon-item, .price-details, .consent-section {
+        padding: 1rem;
+    }
+
+    .btn-back {
+        width: 100%;
+        padding: 0.8rem;
+    }
+}

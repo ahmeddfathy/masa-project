@@ -482,12 +482,12 @@
                         let alertHtml = '';
 
                         // إذا كانت هناك باقات بديلة متاحة
-                        if (data.slots && data.slots.has_alternative_packages && 
-                            data.slots.alternative_packages && 
+                        if (data.slots && data.slots.has_alternative_packages &&
+                            data.slots.alternative_packages &&
                             data.slots.alternative_packages.length > 0) {
                             let alternativePackagesHtml = '';
                             let hasAnyValidAlternative = false;
-                            
+
                             data.slots.alternative_packages.forEach(alt => {
                                 const pkg = alt.package;
                                 // فقط إذا كانت هناك مواعيد متاحة للباقة البديلة
@@ -563,7 +563,11 @@
                             sessionTimeSelect.disabled = false;
                             timeNote.innerHTML = `
                                 <i class="fas fa-info-circle"></i>
-                                المواعيد المتاحة تأخذ في الاعتبار مدة الجلسة (${packageDuration} ساعة)
+                                المواعيد المتاحة تأخذ في الاعتبار مدة الجلسة (${
+                                    packageDuration >= 60
+                                    ? `${Math.floor(packageDuration / 60)} ساعة${packageDuration % 60 > 0 ? ` و ${packageDuration % 60} دقيقة` : ''}`
+                                    : `${packageDuration} دقيقة`
+                                })
                             `;
 
                             // إزالة أي alert سابق
@@ -783,18 +787,6 @@
                     const timeContainer = document.getElementById('sessionTime').closest('.col-md-6');
                     const alerts = timeContainer.querySelectorAll('.alert');
                     alerts.forEach(alert => alert.remove());
-
-                    // تمرير للباقة المختارة في الصفحة
-                    packageRadio.closest('.package-card').scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }
-            }
-        });
-    </script>
-</body>
-</html>
 
                     // تمرير للباقة المختارة في الصفحة
                     packageRadio.closest('.package-card').scrollIntoView({

@@ -153,7 +153,7 @@ class AvailabilityService
             $durationInMinutes = $package->duration;
             $maxConcurrentBookings = (int)Setting::get('max_concurrent_bookings', 1);
 
-            // جلب الحجوزات الموجودة في نفس اليوم
+            // جلب الحجوزات الموجودة في نفس اليوم وترتيبها حسب الوقت
             $existingBookings = Booking::where('status', '!=', 'cancelled')
                 ->where('session_date', $date->format('Y-m-d'))
                 ->with('package:id,duration')
@@ -162,89 +162,50 @@ class AvailabilityService
                     return Carbon::parse($booking->session_time)->format('H:i');
                 });
 
-            // تحويل الحجوزات إلى فترات زمنية محجوزة
-            $bookedPeriods = [];
-            foreach ($existingBookings as $booking) {
-                if (empty($booking->session_time)) continue;
-
-                $bookingStart = Carbon::parse($booking->session_time);
-                $bookingEnd = $bookingStart->copy()->addMinutes($booking->package->duration);
-
-                $bookedPeriods[] = [
-                    'start' => $bookingStart->format('H:i'),
-                    'end' => $bookingEnd->format('H:i')
-                ];
+            // تحديد وقت البداية للبحث
+            $currentTime = $studioStart->copy();
+            if ($date->format('Y-m-d') === Carbon::today()->format('Y-m-d')) {
+                $now = Carbon::now();
+                if ($now->format('H:i') > $currentTime->format('H:i')) {
+                    $currentTime = $now->copy()->addMinutes(30);
+                }
             }
 
             // البحث عن الفترات المتاحة
             $availableSlots = [];
-            $currentTime = $studioStart->copy();
-
-            // إذا كان اليوم هو اليوم الحالي، نبدأ من الوقت الحالي
-            if ($date->format('Y-m-d') === Carbon::today()->format('Y-m-d')) {
-                $now = Carbon::now();
-                if ($now->format('H:i') > $studioStart->format('H:i')) {
-                    $currentTime = $this->roundTimeUp($now->copy(), 30);
-                }
-            }
-
-            // البحث عن أول وقت متاح بعد آخر حجز
-            if (!empty($bookedPeriods)) {
-                $lastBooking = end($bookedPeriods);
-                $lastBookingEnd = Carbon::createFromFormat('H:i', $lastBooking['end']);
-                if ($lastBookingEnd > $currentTime) {
-                    $currentTime = $lastBookingEnd;
-                }
-            }
-
             while ($currentTime->copy()->addMinutes($durationInMinutes) <= $studioEnd) {
-                $slotStart = $currentTime->format('H:i');
-                $slotEnd = $currentTime->copy()->addMinutes($durationInMinutes)->format('H:i');
+                $endTime = $currentTime->copy()->addMinutes($durationInMinutes);
 
-                $isAvailable = true;
-                $concurrentBookings = 0;
+                // التحقق من عدم وجود تعارض مع الحجوزات الموجودة
+                $hasConflict = false;
+                foreach ($existingBookings as $booking) {
+                    if (empty($booking->session_time)) continue;
 
-                // التحقق من تداخل الحجوزات
-                foreach ($bookedPeriods as $period) {
+                    $bookingStart = Carbon::parse($booking->session_time);
+                    $bookingEnd = $bookingStart->copy()->addMinutes($booking->package->duration);
+
                     if (
-                        ($slotStart >= $period['start'] && $slotStart < $period['end']) ||
-                        ($slotEnd > $period['start'] && $slotEnd <= $period['end']) ||
-                        ($slotStart <= $period['start'] && $slotEnd >= $period['end'])
+                        ($currentTime >= $bookingStart && $currentTime < $bookingEnd) ||
+                        ($endTime > $bookingStart && $endTime <= $bookingEnd) ||
+                        ($currentTime <= $bookingStart && $endTime >= $bookingEnd)
                     ) {
-                        $concurrentBookings++;
-                        if ($concurrentBookings >= $maxConcurrentBookings) {
-                            $isAvailable = false;
-                            break;
-                        }
+                        $hasConflict = true;
+                        // نتخطى إلى ما بعد نهاية هذا الحجز
+                        $currentTime = $bookingEnd->copy();
+                        break;
                     }
                 }
 
-                if ($isAvailable) {
+                if (!$hasConflict) {
                     $availableSlots[] = [
-                        'time' => $slotStart,
-                        'end_time' => $slotEnd,
-                        'formatted_time' => $this->formatTimeInArabic($slotStart)
+                        'time' => $currentTime->format('H:i'),
+                        'end_time' => $endTime->format('H:i'),
+                        'formatted_time' => $this->formatTimeInArabic($currentTime->format('H:i'))
                     ];
-                }
-
-                // تحريك الوقت للموعد التالي المحتمل
-                if (!empty($bookedPeriods)) {
-                    // البحث عن أقرب نهاية حجز بعد الوقت الحالي
-                    $nextEnd = null;
-                    foreach ($bookedPeriods as $period) {
-                        $periodEnd = Carbon::createFromFormat('H:i', $period['end']);
-                        if ($periodEnd > $currentTime && ($nextEnd === null || $periodEnd < $nextEnd)) {
-                            $nextEnd = $periodEnd;
-                        }
-                    }
-
-                    if ($nextEnd !== null && $nextEnd > $currentTime) {
-                        $currentTime = $nextEnd;
-                    } else {
-                        $currentTime->addMinutes($durationInMinutes);
-                    }
+                    // ننتقل إلى الفترة التالية
+                    $currentTime = $endTime->copy();
                 } else {
-                    $currentTime->addMinutes($durationInMinutes);
+                    continue;
                 }
             }
 
@@ -259,7 +220,6 @@ class AvailabilityService
 
                 if ($checkAlternatives) {
                     $alternativePackages = $this->findAvailablePackages($date, $package);
-                    // فقط إذا وجدنا باقات بديلة متاحة فعلاً
                     if ($alternativePackages && !empty($alternativePackages)) {
                         $response['has_alternative_packages'] = true;
                         $response['alternative_packages'] = $alternativePackages;
@@ -336,85 +296,17 @@ class AvailabilityService
             $studioEnd = Carbon::createFromFormat('H:i', self::STUDIO_END_TIME);
             $maxConcurrentBookings = (int)Setting::get('max_concurrent_bookings', 1);
 
-            // جلب جميع الحجوزات في التاريخ المطلوب
+            // جلب جميع الحجوزات في التاريخ المطلوب وترتيبها حسب الوقت
             $existingBookings = Booking::where('status', '!=', 'cancelled')
                 ->where('session_date', $date->format('Y-m-d'))
                 ->with('package:id,duration')
-                ->get();
+                ->get()
+                ->sortBy(function($booking) {
+                    return Carbon::parse($booking->session_time)->format('H:i');
+                });
 
-            // إذا لم تكن هناك حجوزات، تحقق فقط من وقت العمل المتبقي
-            if ($existingBookings->isEmpty()) {
-                // إذا كان اليوم هو اليوم الحالي وتجاوزنا وقت البدء، نضبط وقت البدء
-                $currentStart = $studioStart->copy();
-                if ($date->format('Y-m-d') === Carbon::today()->format('Y-m-d')) {
-                    $now = Carbon::now();
-                    if ($now->format('H:i') > $studioStart->format('H:i')) {
-                        $currentStart = $this->roundTimeUp($now->copy(), 30);
-                    }
-                }
-
-                // تحقق من وقت العمل المتبقي
-                $remainingTime = $currentStart->diffInMinutes($studioEnd);
-
-                // إذا كان الوقت المتبقي أقل من مدة الباقة المطلوبة، لا توجد مواعيد متاحة
-                if ($remainingTime < $requestedPackage->duration) {
-                    return null;
-                }
-
-                // جلب باقات بديلة قد تكون مناسبة
-                $alternativePackages = Package::where('is_active', true)
-                    ->whereHas('services', function($query) use ($requestedPackage) {
-                        $query->whereIn('services.id', $requestedPackage->services->pluck('id'));
-                    })
-                    ->where('id', '!=', $requestedPackage->id)
-                    ->where('duration', '<=', $remainingTime) // فقط الباقات التي يمكن استيعابها في الوقت المتبقي
-                    ->orderBy('duration', 'desc')
-                    ->limit(2)
-                    ->get();
-
-                if ($alternativePackages->isEmpty()) {
-                    return null;
-                }
-
-                // ترجع البيانات المناسبة
-                $availablePackages = [];
-                foreach ($alternativePackages as $package) {
-                    $availablePackages[] = [
-                        'package' => $package,
-                        'available_slots' => [[
-                            'time' => $currentStart->format('H:i'),
-                            'end_time' => $currentStart->copy()->addMinutes($package->duration)->format('H:i'),
-                            'formatted_time' => $this->formatTimeInArabic($currentStart->format('H:i'))
-                        ]]
-                    ];
-                }
-
-                return $availablePackages;
-            }
-
-            // تحويل البيانات إلى مصفوفة من الفترات المحجوزة
-            $bookedTimeSlots = [];
-
-            foreach ($existingBookings as $booking) {
-                if (empty($booking->session_time)) continue;
-
-                $startTime = Carbon::parse($booking->session_time);
-                $endTime = $startTime->copy()->addMinutes($booking->package->duration);
-
-                // تقسيم الفترة إلى فترات مدة كل منها 30 دقيقة
-                $currentSlot = $startTime->copy();
-                while ($currentSlot < $endTime) {
-                    $slotKey = $currentSlot->format('H:i');
-                    if (!isset($bookedTimeSlots[$slotKey])) {
-                        $bookedTimeSlots[$slotKey] = 0;
-                    }
-                    $bookedTimeSlots[$slotKey]++;
-                    $currentSlot->addMinutes(30);
-                }
-            }
-
-            // تحديد ساعات العمل كاملة
-            $allTimeSlots = [];
+            // تحديد ساعات العمل المتاحة
+            $workingHours = [];
             $currentSlot = $studioStart->copy();
 
             // إذا كان اليوم هو اليوم الحالي وتجاوزنا وقت البدء، نضبط وقت البدء
@@ -428,79 +320,111 @@ class AvailabilityService
             // إنشاء قائمة بجميع الفترات الزمنية في ساعات العمل
             while ($currentSlot < $studioEnd) {
                 $slotKey = $currentSlot->format('H:i');
-                $allTimeSlots[$slotKey] = isset($bookedTimeSlots[$slotKey]) ? $bookedTimeSlots[$slotKey] : 0;
+                $workingHours[$slotKey] = 0;
                 $currentSlot->addMinutes(30);
             }
 
-            // الآن لدينا مصفوفة بجميع الفترات المتاحة وغير المتاحة
+            // تحديث الفترات المحجوزة
+            foreach ($existingBookings as $booking) {
+                if (empty($booking->session_time)) continue;
 
-            // جلب الباقات البديلة المحتملة
+                $startTime = Carbon::parse($booking->session_time);
+                $endTime = $startTime->copy()->addMinutes($booking->package->duration);
+
+                $currentSlot = $startTime->copy();
+                while ($currentSlot < $endTime && $currentSlot < $studioEnd) {
+                    $slotKey = $currentSlot->format('H:i');
+                    if (isset($workingHours[$slotKey])) {
+                        $workingHours[$slotKey]++;
+                    }
+                    $currentSlot->addMinutes(30);
+                }
+            }
+
+            // تحديد جميع الفترات المتاحة المتصلة
+            $availablePeriods = [];
+            $currentPeriodStart = null;
+            $currentDuration = 0;
+
+            foreach ($workingHours as $time => $bookingsCount) {
+                if ($bookingsCount < $maxConcurrentBookings) {
+                    if ($currentPeriodStart === null) {
+                        $currentPeriodStart = $time;
+                    }
+                    $currentDuration += 30;
+                } else {
+                    if ($currentPeriodStart !== null && $currentDuration >= 30) {
+                        $availablePeriods[] = [
+                            'start' => $currentPeriodStart,
+                            'duration' => $currentDuration
+                        ];
+                    }
+                    $currentPeriodStart = null;
+                    $currentDuration = 0;
+                }
+            }
+
+            // إضافة الفترة الأخيرة إذا كانت متاحة
+            if ($currentPeriodStart !== null && $currentDuration >= 30) {
+                $availablePeriods[] = [
+                    'start' => $currentPeriodStart,
+                    'duration' => $currentDuration
+                ];
+            }
+
+            // إذا لم تكن هناك فترات متاحة، لا نقترح أي باقات
+            if (empty($availablePeriods)) {
+                return null;
+            }
+
+            // جلب باقات بديلة قد تكون مناسبة
+            // نبحث عن أطول فترة متاحة
+            $longestAvailableDuration = max(array_column($availablePeriods, 'duration'));
+
             $alternativePackages = Package::where('is_active', true)
                 ->whereHas('services', function($query) use ($requestedPackage) {
                     $query->whereIn('services.id', $requestedPackage->services->pluck('id'));
                 })
                 ->where('id', '!=', $requestedPackage->id)
+                ->where('duration', '<=', $longestAvailableDuration)
                 ->orderBy('duration', 'desc')
+                ->limit(2)
                 ->get();
 
-            $availablePackages = [];
+            if ($alternativePackages->isEmpty()) {
+                return null;
+            }
 
-            // للتحقق من كل باقة بديلة
+            // ترجع البيانات المناسبة
+            $availablePackages = [];
             foreach ($alternativePackages as $package) {
-                $requiredSlots = ceil($package->duration / 30); // عدد الفترات المطلوبة (كل فترة 30 دقيقة)
                 $availableSlots = [];
 
-                // التحقق من كل وقت بداية محتمل
-                $startSlot = $studioStart->copy();
+                // التحقق من كل فترة متاحة
+                foreach ($availablePeriods as $period) {
+                    if ($period['duration'] >= $package->duration) {
+                        $startTime = Carbon::createFromFormat('H:i', $period['start']);
+                        $endPeriod = $startTime->copy()->addMinutes($period['duration']);
 
-                // ضبط وقت البداية إذا كان اليوم هو اليوم الحالي
-                if ($date->format('Y-m-d') === Carbon::today()->format('Y-m-d')) {
-                    $now = Carbon::now();
-                    if ($now->format('H:i') > $startSlot->format('H:i')) {
-                        $startSlot = $this->roundTimeUp($now->copy(), 30);
-                    }
-                }
-
-                while ($startSlot->copy()->addMinutes($package->duration) <= $studioEnd) {
-                    $isAvailable = true;
-
-                    // التحقق من توفر الوقت المطلوب بالكامل
-                    $checkSlot = $startSlot->copy();
-                    for ($i = 0; $i < $requiredSlots; $i++) {
-                        $slotKey = $checkSlot->format('H:i');
-
-                        // إذا تجاوزنا الحد الأقصى للحجوزات المتزامنة، الفترة غير متاحة
-                        if (isset($allTimeSlots[$slotKey]) && $allTimeSlots[$slotKey] >= $maxConcurrentBookings) {
-                            $isAvailable = false;
-                            break;
+                        // إضافة كل الأوقات الممكنة في هذه الفترة
+                        $currentTime = $startTime->copy();
+                        while ($currentTime->copy()->addMinutes($package->duration) <= $endPeriod) {
+                            $endTime = $currentTime->copy()->addMinutes($package->duration);
+                            $availableSlots[] = [
+                                'time' => $currentTime->format('H:i'),
+                                'end_time' => $endTime->format('H:i'),
+                                'formatted_time' => $this->formatTimeInArabic($currentTime->format('H:i'))
+                            ];
+                            $currentTime->addMinutes(30);
                         }
-
-                        $checkSlot->addMinutes(30);
                     }
-
-                    if ($isAvailable) {
-                        $endTime = $startSlot->copy()->addMinutes($package->duration);
-                        $availableSlots[] = [
-                            'time' => $startSlot->format('H:i'),
-                            'end_time' => $endTime->format('H:i'),
-                            'formatted_time' => $this->formatTimeInArabic($startSlot->format('H:i'))
-                        ];
-                    }
-
-                    $startSlot->addMinutes(30);
                 }
 
-                // إذا وجدنا أوقات متاحة، نضيف الباقة إلى النتائج
                 if (!empty($availableSlots)) {
                     $availablePackages[] = [
                         'package' => $package,
                         'available_slots' => $availableSlots
                     ];
-
-                    // نكتفي بباقتين كحد أقصى
-                    if (count($availablePackages) >= 2) {
-                        break;
-                    }
                 }
             }
 
@@ -511,3 +435,11 @@ class AvailabilityService
         }
     }
 }
+
+
+
+
+
+
+
+
