@@ -7,16 +7,36 @@ use App\Models\Booking;
 use App\Models\Service;
 use App\Models\Package;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $bookings = Booking::with(['user', 'service', 'package'])
-            ->latest()
-            ->paginate(10);
+        $query = Booking::with(['user', 'service', 'package']);
 
-        return view('admin.bookings.index', compact('bookings'));
+        // البحث برقم الحجز
+        if ($request->has('booking_number') && !empty($request->booking_number)) {
+            $query->where('booking_number', 'like', '%' . $request->booking_number . '%');
+        }
+
+        // تصفية حسب الحالة
+        if ($request->has('status') && !empty($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        // تصفية حسب التاريخ
+        if ($request->has('date') && !empty($request->date)) {
+            $query->whereDate('session_date', $request->date);
+        }
+
+        $bookings = $query->latest()->paginate(10);
+
+        // تمرير معايير البحث للعرض للحفاظ عليها بعد تحديث الصفحة
+        return view('admin.bookings.index', compact('bookings'))
+            ->with('search_booking_number', $request->booking_number)
+            ->with('search_status', $request->status)
+            ->with('search_date', $request->date);
     }
 
     public function show(Booking $booking)
@@ -35,16 +55,14 @@ class BookingController extends Controller
             'status' => $validated['status']
         ]);
 
-        // يمكن إضافة إشعار للعميل هنا
-
         return redirect()->back()->with('success', 'تم تحديث حالة الحجز بنجاح');
     }
 
     public function calendar()
     {
-        // يمكنك إضافة المنطق الخاص بعرض التقويم هنا
+        // استخدم الحجوزات المستقبلية لعرضها في التقويم
         $bookings = Booking::with(['service', 'package', 'user'])
-            ->whereDate('session_date', '>=', now())
+            ->whereDate('session_date', '>=', now()->subDays(30)) // عرض الحجوزات من الشهر الماضي
             ->get();
 
         return view('admin.bookings.calendar', compact('bookings'));

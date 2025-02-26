@@ -146,7 +146,16 @@
                                     <h5>{{ $package->name }}</h5>
                                     <p class="text-muted">{{ $package->description }}</p>
                                     <ul class="list-unstyled">
-                                        <li><i class="fas fa-clock me-2"></i>المدة: <span class="duration-value">{{ $package->duration }}</span> ساعة</li>
+                                        <li><i class="fas fa-clock me-2"></i>المدة:
+                                            @if($package->duration >= 60)
+                                                {{ floor($package->duration / 60) }} ساعة
+                                                @if($package->duration % 60 > 0)
+                                                    و {{ $package->duration % 60 }} دقيقة
+                                                @endif
+                                            @else
+                                                {{ $package->duration }} دقيقة
+                                            @endif
+                                        </li>
                                         <li><i class="fas fa-images me-2"></i>عدد الصور: {{ $package->num_photos }}</li>
                                         <li><i class="fas fa-palette me-2"></i>عدد الثيمات: {{ $package->themes_count }}</li>
                                         <li><i class="fas fa-tag me-2"></i>السعر: {{ $package->base_price }} درهم</li>
@@ -463,7 +472,6 @@
                 })
                 .then(data => {
                     console.log('Response data:', data);
-
                     sessionTimeSelect.innerHTML = '';
                     const defaultOption = document.createElement('option');
                     defaultOption.value = '';
@@ -471,38 +479,76 @@
                     sessionTimeSelect.appendChild(defaultOption);
 
                     if (data.status === 'success') {
-                        // التحقق من وجود مواعيد متاحة في يوم آخر
-                        if (data.slots && typeof data.slots === 'object' && data.slots.next_available_date) {
-                            sessionTimeSelect.disabled = true;
-                            const alertMessage = `لا تتوفر مواعيد في هذا اليوم. أقرب موعد متاح هو يوم ${data.slots.next_available_formatted_date}`;
+                        let alertHtml = '';
 
-                            // إضافة alert للإشعار
-                            const alertDiv = document.createElement('div');
-                            alertDiv.className = 'alert alert-warning alert-dismissible fade show mt-2';
-                            alertDiv.innerHTML = `
-                                <i class="fas fa-info-circle me-2"></i>
-                                ${alertMessage}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                <div class="mt-2">
-                                    <button onclick="selectDate('${data.slots.next_available_date}')" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-calendar-alt me-1"></i>
+                        // إذا كانت هناك باقات بديلة متاحة
+                        if (data.slots && data.slots.has_alternative_packages && 
+                            data.slots.alternative_packages && 
+                            data.slots.alternative_packages.length > 0) {
+                            let alternativePackagesHtml = '';
+                            let hasAnyValidAlternative = false;
+                            
+                            data.slots.alternative_packages.forEach(alt => {
+                                const pkg = alt.package;
+                                // فقط إذا كانت هناك مواعيد متاحة للباقة البديلة
+                                if (alt.available_slots && alt.available_slots.length > 0) {
+                                    hasAnyValidAlternative = true;
+                                    alternativePackagesHtml += `
+                                        <div class="alternative-package mb-2">
+                                            <h6>${pkg.name}</h6>
+                                            <p class="small text-muted mb-1">${pkg.description}</p>
+                                            <ul class="list-unstyled small">
+                                                <li><i class="fas fa-clock me-1"></i>المدة: ${
+                                                    pkg.duration >= 60
+                                                    ? `${Math.floor(pkg.duration / 60)} ساعة${pkg.duration % 60 > 0 ? ` و ${pkg.duration % 60} دقيقة` : ''}`
+                                                    : `${pkg.duration} دقيقة`
+                                                }</li>
+                                                <li><i class="fas fa-tag me-1"></i>السعر: ${pkg.base_price} درهم</li>
+                                                <li><i class="fas fa-calendar-check me-1"></i>المواعيد المتاحة: ${alt.available_slots.length}</li>
+                                            </ul>
+                                            <button onclick="selectPackage(${pkg.id})" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-exchange-alt me-1"></i>
+                                                اختيار هذه الباقة
+                                            </button>
+                                        </div>
+                                    `;
+                                }
+                            });
+
+                            // فقط عرض قسم الباقات البديلة إذا وجدت باقات متاحة فعلاً
+                            if (hasAnyValidAlternative) {
+                                alertHtml += `
+                                    <div class="alert alert-info mb-2">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        لا تتوفر مواعيد لهذه الباقة حالياً، ولكن هناك باقات متاحة في نفس اليوم:
+                                        <div class="mt-2">
+                                            ${alternativePackagesHtml}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        // إذا كان هناك يوم متاح قادم
+                        if (data.slots && data.slots.next_available_date) {
+                            alertHtml += `
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-calendar-alt me-2"></i>
+                                    أقرب موعد متاح هو يوم ${data.slots.next_available_formatted_date}
+                                    <button onclick="selectDate('${data.slots.next_available_date}')" class="btn btn-warning btn-sm float-end">
                                         اختيار هذا اليوم
                                     </button>
                                 </div>
                             `;
+                        }
 
-                            // إضافة الـ alert قبل حقل اختيار الوقت
+                        // إضافة الرسائل إلى الصفحة
+                        if (alertHtml) {
                             const timeContainer = sessionTimeSelect.closest('.col-md-6');
                             if (timeContainer.querySelector('.alert')) {
-                                timeContainer.querySelector('.alert').remove();
+                                timeContainer.querySelectorAll('.alert').forEach(alert => alert.remove());
                             }
-                            timeContainer.insertBefore(alertDiv, timeContainer.firstChild);
-
-                            timeNote.innerHTML = `
-                                <i class="fas fa-exclamation-circle text-warning"></i>
-                                يرجى اختيار اليوم المقترح لعرض المواعيد المتاحة
-                            `;
-                            return;
+                            timeContainer.insertAdjacentHTML('afterbegin', alertHtml);
                         }
 
                         // عرض المواعيد المتاحة في اليوم المحدد
@@ -638,7 +684,11 @@
                             <h5>${pkg.name}</h5>
                             <p class="text-muted">${pkg.description}</p>
                             <ul class="list-unstyled">
-                                <li><i class="fas fa-clock me-2"></i>المدة: ${pkg.duration} ساعة</li>
+                                <li><i class="fas fa-clock me-2"></i>المدة: ${
+                                    pkg.duration >= 60
+                                    ? `${Math.floor(pkg.duration / 60)} ساعة${pkg.duration % 60 > 0 ? ` و ${pkg.duration % 60} دقيقة` : ''}`
+                                    : `${pkg.duration} دقيقة`
+                                }</li>
                                 <li><i class="fas fa-images me-2"></i>عدد الصور: ${pkg.num_photos}</li>
                                 <li><i class="fas fa-palette me-2"></i>عدد الثيمات: ${pkg.themes_count}</li>
                                 <li><i class="fas fa-tag me-2"></i>السعر: ${pkg.base_price} درهم</li>
@@ -701,11 +751,57 @@
                 });
             });
 
-            // إضافة دالة selectDate في نهاية الـ DOMContentLoaded
-            function selectDate(date) {
+            // تحديث دالة selectDate لتقوم باختيار التاريخ تلقائياً
+            window.selectDate = function(date) {
                 const dateInput = document.querySelector('input[name="session_date"]');
                 dateInput.value = date;
                 dateInput.dispatchEvent(new Event('change'));
+
+                // إزالة رسائل التنبيه بعد اختيار التاريخ
+                const timeContainer = document.getElementById('sessionTime').closest('.col-md-6');
+                const alerts = timeContainer.querySelectorAll('.alert');
+                alerts.forEach(alert => alert.remove());
+            }
+
+            // تحديث دالة selectPackage لتقوم باختيار الباقة تلقائياً
+            window.selectPackage = function(packageId) {
+                const packageRadio = document.querySelector(`input[name="package_id"][value="${packageId}"]`);
+                if (packageRadio) {
+                    // تحديد الباقة
+                    packageRadio.checked = true;
+
+                    // إضافة class selected للباقة المختارة وإزالته من الباقي
+                    document.querySelectorAll('.package-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    packageRadio.closest('.package-card').classList.add('selected');
+
+                    // تشغيل معالج اختيار الباقة
+                    handlePackageSelection(packageId);
+
+                    // إزالة رسائل التنبيه
+                    const timeContainer = document.getElementById('sessionTime').closest('.col-md-6');
+                    const alerts = timeContainer.querySelectorAll('.alert');
+                    alerts.forEach(alert => alert.remove());
+
+                    // تمرير للباقة المختارة في الصفحة
+                    packageRadio.closest('.package-card').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+                    // تمرير للباقة المختارة في الصفحة
+                    packageRadio.closest('.package-card').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                }
             }
         });
     </script>

@@ -16,6 +16,7 @@ use App\Models\Booking;
 use App\Models\PackageAddon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -250,6 +251,59 @@ class DashboardController extends Controller
                     ];
                 });
 
+            // إضافة أحدث الحجوزات للوحة التحكم
+            $recentBookings = Booking::with(['user', 'package', 'addons'])
+                ->latest()
+                ->take(10)
+                ->get()
+                ->map(function ($booking) {
+                    return [
+                        'id' => $booking->id,
+                        'uuid' => $booking->uuid,
+                        'booking_number' => $booking->booking_number,
+                        'user_name' => $booking->user->name,
+                        'total' => $booking->total_amount,
+                        'package_name' => $booking->package->name,
+                        'booking_date' => Carbon::parse($booking->booking_date)->format('Y-m-d'),
+                        'time_slot' => $booking->time_slot,
+                        'status' => $booking->status,
+                        'payment_status' => $booking->payment_status,
+                        'created_at' => $booking->created_at->format('Y-m-d H:i'),
+                        'addons' => $booking->addons->map(function ($addon) {
+                            return [
+                                'name' => $addon->name,
+                                'price' => $addon->price
+                            ];
+                        }),
+                        'status_color' => match($booking->status) {
+                            'completed' => 'success',
+                            'pending' => 'warning',
+                            'cancelled' => 'danger',
+                            'rescheduled' => 'info',
+                            default => 'secondary'
+                        },
+                        'status_text' => match($booking->status) {
+                            'completed' => 'مكتمل',
+                            'pending' => 'معلق',
+                            'cancelled' => 'ملغي',
+                            'rescheduled' => 'معاد جدولته',
+                            default => 'غير معروف'
+                        },
+                        'payment_status_color' => match($booking->payment_status) {
+                            'paid' => 'success',
+                            'pending' => 'warning',
+                            'failed' => 'danger',
+                            default => 'secondary'
+                        },
+                        'payment_status_text' => match($booking->payment_status) {
+                            'paid' => 'مدفوع',
+                            'pending' => 'معلق',
+                            'failed' => 'فشل',
+                            default => 'غير معروف'
+                        }
+                    ];
+                });
+
             // المنتجات الأكثر مبيعاً
             $topProducts = Product::withCount(['orderItems as sales_count' => function ($query) {
                 $query->whereHas('order', function ($q) {
@@ -268,6 +322,7 @@ class DashboardController extends Controller
                 'studioChartData',
                 'studioMonthlyGrowth',
                 'recentOrders',
+                'recentBookings',
                 'orderStats',
                 'bookingStats',
                 'topProducts'
@@ -320,6 +375,7 @@ class DashboardController extends Controller
                 'studioChartData' => [0],
                 'studioMonthlyGrowth' => [0],
                 'recentOrders' => collect([]),
+                'recentBookings' => collect([]),
                 'orderStats' => $defaultStatuses,
                 'bookingStats' => [
                     'completed' => 0,
@@ -351,7 +407,7 @@ class DashboardController extends Controller
             }
 
             // تحديث FCM token للمستخدم الحالي
-            $user = auth()->user();
+            $user = Auth::user();
 
             // تحديث الـ token في جدول المستخدمين
             $user->update([
@@ -369,7 +425,7 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             // تسجيل الخطأ
             Log::error('Error updating FCM token: ' . $e->getMessage(), [
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine()
             ]);

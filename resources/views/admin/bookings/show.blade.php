@@ -6,7 +6,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">تفاصيل الحجز #{{ $booking->id }}</h3>
+                    <h3 class="card-title">تفاصيل الحجز #{{ $booking->booking_number }}</h3>
                     <div>
                         <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">عودة للحجوزات</a>
                     </div>
@@ -111,29 +111,47 @@
                                     <h5 class="mb-0">تحديث حالة الحجز</h5>
                                 </div>
                                 <div class="card-body">
-                                    <form action="{{ route('admin.bookings.update-status', $booking) }}"
+                                    <form action="{{ route('admin.bookings.update-status', $booking->uuid) }}"
                                           method="POST" class="d-flex align-items-center">
                                         @csrf
                                         @method('PATCH')
-                                        <select name="status" class="form-select me-2">
-                                            <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>
-                                                قيد الانتظار
-                                            </option>
-                                            <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>
-                                                مؤكد
-                                            </option>
-                                            <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>
-                                                مكتمل
-                                            </option>
-                                            <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>
-                                                ملغي
-                                            </option>
-                                        </select>
-                                        <button type="submit" class="btn btn-primary">تحديث الحالة</button>
+                                        <div class="row g-3 align-items-center w-100">
+                                            <div class="col-md-8">
+                                                <select name="status" class="form-select">
+                                                    <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>
+                                                        قيد الانتظار
+                                                    </option>
+                                                    <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>
+                                                        مؤكد
+                                                    </option>
+                                                    <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>
+                                                        مكتمل
+                                                    </option>
+                                                    <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>
+                                                        ملغي
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-save me-1"></i>
+                                                    تحديث الحالة
+                                                </button>
+                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- إضافة قسم لعرض رسائل النجاح -->
+                        @if(session('success'))
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <i class="fas fa-check-circle me-1"></i>
+                            {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

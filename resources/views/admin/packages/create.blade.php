@@ -42,9 +42,11 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="duration" class="form-label">المدة (ساعات)</label>
+                                    <label for="duration" class="form-label">المدة (دقائق)</label>
                                     <input type="number" class="form-control @error('duration') is-invalid @enderror"
-                                           id="duration" name="duration" value="{{ old('duration') }}" required>
+                                           id="duration" name="duration" value="{{ old('duration') }}"
+                                           required min="30" step="30">
+                                    <small class="form-text text-muted">أقل مدة 30 دقيقة</small>
                                     @error('duration')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

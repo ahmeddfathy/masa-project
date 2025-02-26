@@ -114,6 +114,12 @@
                 <div class="nav-section">
                     <div class="nav-section-title">الحجوزات</div>
                     <div class="nav-item">
+                        <a href="{{ route('admin.bookings.index') }}" class="nav-link {{ request()->routeIs('admin.bookings.index') || request()->routeIs('admin.bookings.show') ? 'active' : '' }}">
+                            <i class="fas fa-list-alt"></i>
+                            <span class="nav-title">جميع الحجوزات</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
                         <a href="{{ route('admin.bookings.calendar') }}" class="nav-link {{ request()->routeIs('admin.bookings.calendar') ? 'active' : '' }}">
                             <i class="far fa-calendar-check"></i>
                             <span class="nav-title">تقويم الحجوزات</span>

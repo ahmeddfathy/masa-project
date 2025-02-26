@@ -166,7 +166,7 @@
             <!-- Booking Header -->
             <div class="booking-header d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="mb-2">تفاصيل الحجز #{{ $booking->id }}</h2>
+                    <h2 class="mb-2">تفاصيل الحجز #{{ $booking->booking_number }}</h2>
                     <p class="text-light mb-0">
                         <i class="fas fa-calendar-alt me-1"></i>
                         تاريخ الحجز: {{ $booking->created_at->format('Y/m/d') }}

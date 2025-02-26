@@ -63,11 +63,12 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         events: {!! json_encode($bookings->map(function($booking) {
             return [
-                'id' => $booking->id,
+                'id' => $booking->uuid,
                 'title' => $booking->user->name . ' - ' . $booking->service->name,
                 'start' => $booking->session_date->format('Y-m-d') . 'T' . $booking->session_time->format('H:i:s'),
                 'className' => 'fc-event-' . $booking->status,
                 'extendedProps' => [
+                    'bookingNumber' => $booking->booking_number,
                     'status' => $booking->status,
                     'package' => $booking->package->name,
                     'total' => $booking->total_amount
@@ -77,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
         eventClick: function(info) {
             var event = info.event;
             var html = `
+                <p><strong>رقم الحجز:</strong> ${event.extendedProps.bookingNumber}</p>
                 <p><strong>العميل:</strong> ${event.title}</p>
                 <p><strong>الباقة:</strong> ${event.extendedProps.package}</p>
                 <p><strong>الحالة:</strong> ${getStatusInArabic(event.extendedProps.status)}</p>

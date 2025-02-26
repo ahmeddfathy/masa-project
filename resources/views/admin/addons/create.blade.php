@@ -65,7 +65,7 @@
                         <div class="mb-4">
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" id="is_active"
-                                       name="is_active" value="1" {{ old('is_active') ? 'checked' : '' }}>
+                                       name="is_active" value="1" {{ old('is_active', '1') ? 'checked' : '' }}>
                                 <label class="form-check-label fw-medium" for="is_active">نشط</label>
                             </div>
                         </div>

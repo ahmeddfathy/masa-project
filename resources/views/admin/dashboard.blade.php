@@ -463,6 +463,85 @@
             </div>
         </div>
     </div>
+
+    <!-- Recent Bookings -->
+    <div class="row g-4 mt-3">
+        <div class="col-12">
+            <div class="activity-section bg-white rounded-3 shadow-sm">
+                <div class="activity-header border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="activity-title mb-0">آخر الحجوزات</h5>
+                    <a href="{{ route('admin.bookings.index') }}" class="btn btn-sm btn-primary">عرض الكل</a>
+                </div>
+                <div class="table-responsive-xl">
+                    <table class="table table-hover mb-0 recent-bookings-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 70px">الحجز</th>
+                                <th style="min-width: 120px">العميل</th>
+                                <th style="min-width: 250px">الباقة والإضافات</th>
+                                <th style="min-width: 120px">موعد الحجز</th>
+                                <th style="min-width: 120px">حالة الحجز</th>
+                                <th style="min-width: 120px">حالة الدفع</th>
+                                <th style="min-width: 100px">المبلغ</th>
+                                <th style="min-width: 80px">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentBookings as $booking)
+                            <tr>
+                                <td data-label="الحجز">#{{ $booking['booking_number'] }}</td>
+                                <td data-label="العميل">{{ $booking['user_name'] }}</td>
+                                <td data-label="التفاصيل">
+                                    <div class="small products-list">
+                                        <div class="mb-1">
+                                            <strong>الباقة:</strong> {{ $booking['package_name'] }}
+                                        </div>
+                                        @if(count($booking['addons']) > 0)
+                                            <div class="mt-1">
+                                                <strong>الإضافات:</strong>
+                                                @foreach($booking['addons'] as $addon)
+                                                    <div class="mt-1">
+                                                        {{ $addon['name'] }} ({{ $addon['price'] }} ريال)
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td data-label="الموعد">
+                                    <div>{{ $booking['booking_date'] }}</div>
+                                    <div class="small text-muted">{{ $booking['time_slot'] }}</div>
+                                </td>
+                                <td data-label="حالة الحجز">
+                                    <span class="badge bg-{{ $booking['status_color'] }}">
+                                        {{ $booking['status_text'] }}
+                                    </span>
+                                </td>
+                                <td data-label="حالة الدفع">
+                                    <span class="badge bg-{{ $booking['payment_status_color'] }}">
+                                        {{ $booking['payment_status_text'] }}
+                                    </span>
+                                </td>
+                                <td data-label="المبلغ">{{ $booking['total'] }} ريال</td>
+                                <td data-label="الإجراءات">
+                                    <a href="{{ route('admin.bookings.show', $booking['uuid']) }}"
+                                       class="btn btn-sm btn-primary"
+                                       title="عرض تفاصيل الحجز">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-3">لا توجد حجوزات حديثة</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 

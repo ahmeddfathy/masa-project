@@ -28,7 +28,12 @@ class BookingConfirmation extends Notification
                 $booking->save();
             }
 
-            $title = "حجز جديد #{$booking->id}";
+            if (!$booking->booking_number) {
+                $booking->booking_number = 'BN-' . date('y') . '-' . str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
+                $booking->save();
+            }
+
+            $title = "حجز جديد #{$booking->booking_number}";
             $body = "تم إنشاء حجز جديد للتصوير\n";
             $body .= "العميل: {$booking->user->name}\n";
             $body .= "الخدمة: {$booking->service->name}\n";
@@ -49,7 +54,7 @@ class BookingConfirmation extends Notification
             );
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('فشل في إرسال إشعار Firebase:', [
-                'booking_id' => $booking->id,
+                'booking_id' => $booking->booking_number,
                 'error' => $e->getMessage()
             ]);
         }
@@ -69,11 +74,11 @@ class BookingConfirmation extends Notification
         })->join("\n");
 
         return (new MailMessage)
-            ->subject('📸 تأكيد الحجز #' . $this->booking->id)
+            ->subject('📸 تأكيد الحجز #' . $this->booking->booking_number)
             ->greeting("✨ مرحباً {$notifiable->name}")
             ->line('نشكرك على حجزك! تم تأكيد موعد التصوير بنجاح.')
             ->line('━━━━━━━━━━━━━━━━━━━━━━')
-            ->line("📋 رقم الحجز: #{$this->booking->id}")
+            ->line("📋 رقم الحجز: #{$this->booking->booking_number}")
             ->line('📦 تفاصيل الحجز:')
             ->line("• الخدمة: {$this->booking->service->name}")
             ->line("• الباقة: {$this->booking->package->name}")
@@ -99,7 +104,7 @@ class BookingConfirmation extends Notification
             ->line('💳 معلومات الدفع:')
             ->line('المبلغ الإجمالي: 💰 $' . number_format($this->booking->total_amount, 2))
             ->line('حالة الدفع: ' . ($this->booking->payment_status === 'paid' ? '✅ مدفوع' : '⏳ قيد الانتظار'))
-            ->action('👉 تفاصيل الحجز', route('bookings.show', $this->booking))
+            ->action('👉 تفاصيل الحجز', route('client.bookings.show', $this->booking->uuid))
             ->line('━━━━━━━━━━━━━━━━━━━━━━')
             ->when($this->booking->notes, function($mail) {
                 return $mail->line('📝 ملاحظات:')->line($this->booking->notes);
@@ -112,9 +117,11 @@ class BookingConfirmation extends Notification
     {
         return [
             'title' => 'تأكيد الحجز',
-            'message' => 'تم تأكيد حجز التصوير رقم #' . $this->booking->id . ' بنجاح',
+            'message' => 'تم تأكيد حجز التصوير رقم #' . $this->booking->booking_number . ' بنجاح',
             'type' => 'booking_confirmed',
             'booking_id' => $this->booking->id,
+            'booking_number' => $this->booking->booking_number,
+            'uuid' => $this->booking->uuid,
             'service' => [
                 'name' => $this->booking->service->name,
                 'id' => $this->booking->service_id

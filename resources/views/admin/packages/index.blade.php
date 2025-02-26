@@ -33,7 +33,16 @@
                                         <td>{{ $package->id }}</td>
                                         <td>{{ $package->name }}</td>
                                         <td>{{ $package->base_price }} درهم</td>
-                                        <td>{{ $package->duration }} ساعة</td>
+                                        <td>
+                                            @if($package->duration >= 60)
+                                                {{ floor($package->duration / 60) }} ساعة
+                                                @if($package->duration % 60 > 0)
+                                                    و {{ $package->duration % 60 }} دقيقة
+                                                @endif
+                                            @else
+                                                {{ $package->duration }} دقيقة
+                                            @endif
+                                        </td>
                                         <td>{{ $package->num_photos }}</td>
                                         <td>{{ $package->themes_count }}</td>
                                         <td>

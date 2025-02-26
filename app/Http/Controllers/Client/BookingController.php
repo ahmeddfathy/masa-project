@@ -10,6 +10,7 @@ use App\Services\Booking\BookingService;
 use App\Services\Booking\AvailabilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 
@@ -99,9 +100,13 @@ class BookingController extends Controller
         try {
             // حساب التكلفة الإجمالية وإنشاء الحجز
             $totalAmount = $this->bookingService->calculateTotalAmount($package, $validated['addons'] ?? []);
+
+            // إضافة UUID ورقم الحجز العشوائي
+            $validated['uuid'] = (string) Str::uuid();
+
             $booking = $this->bookingService->createBooking($validated, $totalAmount, Auth::id());
 
-            return redirect()->route('client.bookings.success', $booking)
+            return redirect()->route('client.bookings.success', $booking->uuid)
                 ->with('success', 'تم إنشاء الحجز بنجاح!');
 
         } catch (\Exception $e) {
@@ -116,6 +121,11 @@ class BookingController extends Controller
      */
     public function success(Booking $booking)
     {
+        // التحقق من ملكية الحجز
+        if ($booking->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
+            abort(403, 'غير مصرح لك بعرض هذا الحجز');
+        }
+
         return view('client.booking.success', compact('booking'));
     }
 
@@ -138,7 +148,7 @@ class BookingController extends Controller
     public function show(Booking $booking)
     {
         // التحقق من ملكية الحجز
-        if ($booking->user_id !== Auth::id()) {
+        if ($booking->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
             abort(403, 'غير مصرح لك بعرض هذا الحجز');
         }
 

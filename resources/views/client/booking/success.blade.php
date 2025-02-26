@@ -19,7 +19,7 @@
                     <div class="booking-details">
                         <h4>تفاصيل الحجز:</h4>
                         <ul class="list-unstyled">
-                            <li><strong>رقم الحجز:</strong> #{{ $booking->id }}</li>
+                            <li><strong>رقم الحجز:</strong> {{ $booking->booking_number }}</li>
                             <li><strong>حالة الدفع:</strong>
                                 @if($booking->status === 'confirmed')
                                     <span class="badge bg-success">تم الدفع</span>

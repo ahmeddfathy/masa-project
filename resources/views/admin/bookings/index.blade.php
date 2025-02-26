@@ -21,36 +21,75 @@
     <!-- Filters Card -->
     <div class="card mb-4">
         <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label">تصفية حسب الحالة</label>
-                    <select class="form-select" id="status-filter">
-                        <option value="">جميع الحالات</option>
-                        <option value="pending">قيد الانتظار</option>
-                        <option value="confirmed">مؤكد</option>
-                        <option value="completed">مكتمل</option>
-                        <option value="cancelled">ملغي</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">تصفية حسب التاريخ</label>
-                    <input type="date" class="form-control" id="date-filter">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">بحث</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="ابحث عن عميل...">
-                        <button class="btn btn-outline-secondary" type="button">
-                            <i class="fas fa-search"></i>
-                        </button>
+            <form action="{{ route('admin.bookings.index') }}" method="GET" id="searchForm">
+                <div class="row g-3">
+                    <!-- البحث برقم الحجز -->
+                    <div class="col-md-3">
+                        <label class="form-label">البحث برقم الحجز</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="booking_number"
+                                placeholder="ادخل رقم الحجز" value="{{ $search_booking_number ?? '' }}">
+                            @if(!empty($search_booking_number))
+                            <button class="btn btn-outline-secondary clear-search" type="button" data-clear="booking_number">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- تصفية حسب الحالة -->
+                    <div class="col-md-3">
+                        <label class="form-label">تصفية حسب الحالة</label>
+                        <select class="form-select" id="status-filter" name="status">
+                            <option value="">جميع الحالات</option>
+                            <option value="pending" {{ ($search_status ?? '') == 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
+                            <option value="confirmed" {{ ($search_status ?? '') == 'confirmed' ? 'selected' : '' }}>مؤكد</option>
+                            <option value="completed" {{ ($search_status ?? '') == 'completed' ? 'selected' : '' }}>مكتمل</option>
+                            <option value="cancelled" {{ ($search_status ?? '') == 'cancelled' ? 'selected' : '' }}>ملغي</option>
+                        </select>
+                    </div>
+
+                    <!-- تصفية حسب التاريخ -->
+                    <div class="col-md-3">
+                        <label class="form-label">تصفية حسب التاريخ</label>
+                        <div class="input-group">
+                            <input type="date" class="form-control" id="date-filter" name="date" value="{{ $search_date ?? '' }}">
+                            @if(!empty($search_date))
+                            <button class="btn btn-outline-secondary clear-search" type="button" data-clear="date">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- أزرار البحث والإلغاء -->
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="btn-group w-100">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i> بحث
+                            </button>
+                            @if(!empty($search_booking_number) || !empty($search_status) || !empty($search_date))
+                            <a href="{{ route('admin.bookings.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i> إلغاء البحث
+                            </a>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
     <!-- Bookings Table Card -->
     <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                الحجوزات
+                @if(!empty($search_booking_number) || !empty($search_status) || !empty($search_date))
+                    <span class="badge bg-info">{{ $bookings->total() }} نتيجة</span>
+                @endif
+            </h5>
+        </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
@@ -70,7 +109,7 @@
                     <tbody>
                         @forelse($bookings as $booking)
                         <tr>
-                            <td>{{ $booking->id }}</td>
+                            <td>{{ $booking->booking_number }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar avatar-sm me-3">
@@ -93,31 +132,38 @@
                                 <small class="text-muted">درهم</small>
                             </td>
                             <td>
-                                <select class="form-select form-select-sm status-select w-auto"
-                                        data-booking-id="{{ $booking->id }}"
-                                        onchange="updateStatus(this, {{ $booking->id }})">
-                                    <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>
-                                        قيد الانتظار
-                                    </option>
-                                    <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>
-                                        مؤكد
-                                    </option>
-                                    <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>
-                                        مكتمل
-                                    </option>
-                                    <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>
-                                        ملغي
-                                    </option>
-                                </select>
+                                <form action="{{ route('admin.bookings.update-status', $booking->uuid) }}"
+                                      method="POST"
+                                      class="d-flex gap-2 align-items-center status-form">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select class="form-select form-select-sm status-select" name="status">
+                                        <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>
+                                            قيد الانتظار
+                                        </option>
+                                        <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>
+                                            مؤكد
+                                        </option>
+                                        <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>
+                                            مكتمل
+                                        </option>
+                                        <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>
+                                            ملغي
+                                        </option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
                             </td>
                             <td>
                                 <div class="btn-group">
-                                    <a href="{{ route('admin.bookings.show', $booking) }}"
+                                    <a href="{{ route('admin.bookings.show', $booking->uuid) }}"
                                        class="btn btn-sm btn-info">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <button type="button" class="btn btn-sm btn-danger"
-                                            onclick="confirmDelete({{ $booking->id }})">
+                                            onclick="confirmDelete('{{ $booking->uuid }}')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -140,7 +186,11 @@
         </div>
         <div class="card-footer border-0 py-3">
             <div class="d-flex justify-content-center">
-                {{ $bookings->links() }}
+                {{ $bookings->appends([
+                    'booking_number' => $search_booking_number ?? null,
+                    'status' => $search_status ?? null,
+                    'date' => $search_date ?? null
+                ])->links() }}
             </div>
         </div>
     </div>
@@ -148,34 +198,26 @@
 
 @push('scripts')
 <script>
-function updateStatus(select, bookingId) {
-    const status = select.value;
-    fetch(`/admin/bookings/${bookingId}/update-status`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // تحديث لون الخلفية حسب الحالة
-            select.classList.remove('bg-warning', 'bg-success', 'bg-info', 'bg-danger');
-            select.classList.add(`bg-${getStatusColor(status)}`);
-        }
-    });
-}
+// تحديث التنسيقات للحالة المحددة
+document.querySelectorAll('.status-select').forEach(select => {
+    updateSelectStyle(select);
 
-function getStatusColor(status) {
+    select.addEventListener('change', function() {
+        updateSelectStyle(this);
+    });
+});
+
+function updateSelectStyle(select) {
+    const status = select.value;
     const colors = {
-        pending: 'warning',
-        confirmed: 'success',
-        completed: 'info',
-        cancelled: 'danger'
+        pending: '#ffc107',    // warning
+        confirmed: '#28a745',  // success
+        completed: '#17a2b8',  // info
+        cancelled: '#dc3545'   // danger
     };
-    return colors[status] || 'secondary';
+
+    select.style.backgroundColor = colors[status] || '#6c757d';
+    select.style.color = '#fff';
 }
 
 function confirmDelete(bookingId) {
@@ -193,6 +235,18 @@ function filterBookings() {
     const date = document.getElementById('date-filter').value;
     window.location.href = `{{ route('admin.bookings.index') }}?status=${status}&date=${date}`;
 }
+
+// إضافة معالجات الأحداث لأزرار مسح البحث
+document.querySelectorAll('.clear-search').forEach(button => {
+    button.addEventListener('click', function() {
+        const fieldName = this.getAttribute('data-clear');
+        const input = document.querySelector(`[name="${fieldName}"]`);
+        if (input) {
+            input.value = '';
+            document.getElementById('searchForm').submit();
+        }
+    });
+});
 </script>
 @endpush
 
@@ -237,6 +291,14 @@ function filterBookings() {
 .page-header-subtitle {
     color: #6c757d;
     font-size: 1rem;
+}
+
+.status-form {
+    min-width: 200px;
+}
+
+.status-form .btn {
+    padding: 0.25rem 0.5rem;
 }
 </style>
 @endsection

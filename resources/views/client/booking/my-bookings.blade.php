@@ -37,7 +37,7 @@
                         <div class="booking-card">
                             <div class="booking-header d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h5 class="mb-0">حجز #{{ $booking->id }}</h5>
+                                    <h5 class="mb-0">حجز #{{ $booking->booking_number }}</h5>
                                     <small class="text-muted">{{ $booking->created_at->format('Y-m-d H:i') }}</small>
                                 </div>
                                 <div class="d-flex align-items-center">
@@ -106,7 +106,7 @@
 
                                 <!-- Show Details Button -->
                                 <div class="mt-3 text-end">
-                                    <a href="{{ route('client.bookings.show', $booking) }}" class="btn btn-primary">
+                                    <a href="{{ route('client.bookings.show', $booking->uuid) }}" class="btn btn-primary">
                                         <i class="fas fa-eye me-1"></i>
                                         عرض التفاصيل
                                     </a>

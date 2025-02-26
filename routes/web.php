@@ -192,8 +192,8 @@ Route::middleware([
 
             Route::controller(AdminBookingController::class)->prefix('bookings')->name('bookings.')->group(function () {
                 Route::get('/', 'index')->name('index');
-                Route::get('/{booking}', 'show')->name('show');
-                Route::patch('/{booking}/status', 'updateStatus')->name('update-status');
+                Route::get('/{booking:uuid}', 'show')->name('show');
+                Route::patch('/{booking:uuid}/status', 'updateStatus')->name('update-status');
                 Route::get('/calendar/view', 'calendar')->name('calendar');
                 Route::get('/reports/view', 'reports')->name('reports');
             });
@@ -226,9 +226,9 @@ Route::post('/client/book/save-form', [BookingController::class, 'saveFormData']
 Route::middleware(['auth'])->prefix('client')->name('client.')->group(function () {
     Route::prefix('bookings')->name('bookings.')->group(function () {
         Route::post('/store', [BookingController::class, 'store'])->name('store');
-        Route::get('/success/{booking}', [BookingController::class, 'success'])->name('success');
+        Route::get('/success/{booking:uuid}', [BookingController::class, 'success'])->name('success');
         Route::get('/my', [BookingController::class, 'myBookings'])->name('my');
-        Route::get('/{booking}', [BookingController::class, 'show'])->name('show');
+        Route::get('/{booking:uuid}', [BookingController::class, 'show'])->name('show');
         Route::post('/available-slots', [BookingController::class, 'getAvailableTimeSlots'])->name('available-slots');
     });
 
