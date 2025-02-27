@@ -121,25 +121,7 @@
                     </div>
                 </div>
 
-                <!-- البومات الأطفال -->
-                <div class="col-lg-6">
-                    <div class="service-detail">
-                        <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1472162072942-cd5147eb3902?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80" alt="البومات الأطفال">
-                        </div>
-                        <div class="icon-wrapper">
-                            <i class="fas fa-book"></i>
-                        </div>
-                        <h3>البومات الأطفال</h3>
-                        <p>ألبومات مخصصة لتوثيق ذكريات الأطفال</p>
-                        <ul>
-                            <li><i class="fas fa-check-circle"></i>تصميمات خاصة للأطفال</li>
-                            <li><i class="fas fa-check-circle"></i>جودة عالية في الطباعة</li>
-                            <li><i class="fas fa-check-circle"></i>خيارات متنوعة للألبومات</li>
-                            <li><i class="fas fa-check-circle"></i>تخصيص كامل حسب الطلب</li>
-                        </ul>
-                    </div>
-                </div>
+
             </div>
         </div>
     </section>

@@ -64,7 +64,6 @@ class AvailabilityService
             $timeComponents = explode(':', $sessionTime);
             $cleanTime = sprintf('%02d:%02d', (int)$timeComponents[0], (int)$timeComponents[1]);
 
-            // تنسيق التاريخ والوقت بشكل صحيح
             $sessionStartTime = Carbon::parse($sessionDate . ' ' . $cleanTime);
             $sessionEndTime = $sessionStartTime->copy()->addMinutes($package->duration);
 
@@ -171,6 +170,25 @@ class AvailabilityService
                 }
             }
 
+            // تتبع عدد الحجوزات المتزامنة في كل فترة زمنية
+            $timeSlots = [];
+            foreach ($existingBookings as $booking) {
+                if (empty($booking->session_time)) continue;
+
+                $bookingStart = Carbon::parse($booking->session_time);
+                $bookingEnd = $bookingStart->copy()->addMinutes($booking->package->duration);
+
+                $current = $bookingStart->copy();
+                while ($current < $bookingEnd) {
+                    $timeKey = $current->format('H:i');
+                    if (!isset($timeSlots[$timeKey])) {
+                        $timeSlots[$timeKey] = 0;
+                    }
+                    $timeSlots[$timeKey]++;
+                    $current->addMinutes(30);
+                }
+            }
+
             // البحث عن الفترات المتاحة
             $availableSlots = [];
             while ($currentTime->copy()->addMinutes($durationInMinutes) <= $studioEnd) {
@@ -184,15 +202,15 @@ class AvailabilityService
                     $bookingStart = Carbon::parse($booking->session_time);
                     $bookingEnd = $bookingStart->copy()->addMinutes($booking->package->duration);
 
-                    if (
-                        ($currentTime >= $bookingStart && $currentTime < $bookingEnd) ||
-                        ($endTime > $bookingStart && $endTime <= $bookingEnd) ||
-                        ($currentTime <= $bookingStart && $endTime >= $bookingEnd)
-                    ) {
-                        $hasConflict = true;
-                        // نتخطى إلى ما بعد نهاية هذا الحجز
-                        $currentTime = $bookingEnd->copy();
-                        break;
+                    // التحقق من عدد الحجوزات المتزامنة
+                    $checkTime = $currentTime->copy();
+                    while ($checkTime < $endTime) {
+                        $timeKey = $checkTime->format('H:i');
+                        if (isset($timeSlots[$timeKey]) && $timeSlots[$timeKey] >= $maxConcurrentBookings) {
+                            $hasConflict = true;
+                            break 2;
+                        }
+                        $checkTime->addMinutes(30);
                     }
                 }
 
@@ -205,7 +223,8 @@ class AvailabilityService
                     // ننتقل إلى الفترة التالية
                     $currentTime = $endTime->copy();
                 } else {
-                    continue;
+                    // نتخطى إلى ما بعد نهاية هذا الحجز
+                    $currentTime->addMinutes(30);
                 }
             }
 
@@ -381,15 +400,23 @@ class AvailabilityService
             // نبحث عن أطول فترة متاحة
             $longestAvailableDuration = max(array_column($availablePeriods, 'duration'));
 
+            // Get alternative packages that belong to the same service
+            \Illuminate\Support\Facades\Log::info('Service ID from request:', ['service_id' => request('service_id')]);
+            \Illuminate\Support\Facades\Log::info('Requested Package Services:', ['services' => $requestedPackage->services->pluck('id')]);
+
             $alternativePackages = Package::where('is_active', true)
-                ->whereHas('services', function($query) use ($requestedPackage) {
-                    $query->whereIn('services.id', $requestedPackage->services->pluck('id'));
-                })
                 ->where('id', '!=', $requestedPackage->id)
                 ->where('duration', '<=', $longestAvailableDuration)
+                ->whereHas('services', function($query) use ($requestedPackage) {
+                    // Get the service ID from the request
+                    $serviceId = request('service_id');
+                    $query->where('services.id', $serviceId);
+                })
                 ->orderBy('duration', 'desc')
                 ->limit(2)
                 ->get();
+
+            \Illuminate\Support\Facades\Log::info('Alternative Packages Found:', ['packages' => $alternativePackages->pluck('id')]);
 
             if ($alternativePackages->isEmpty()) {
                 return null;
@@ -435,11 +462,3 @@ class AvailabilityService
         }
     }
 }
-
-
-
-
-
-
-
-

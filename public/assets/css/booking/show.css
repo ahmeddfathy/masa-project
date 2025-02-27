@@ -32,12 +32,12 @@
 
 .booking-details {
     background: var(--glass-background);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 15px;
-    border: var(--glass-border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: var(--card-shadow);
-    margin: 2rem 0;
+    margin-bottom: 2rem;
     overflow: hidden;
     transition: all 0.3s ease;
 }
@@ -49,12 +49,9 @@
 }
 
 .booking-header {
-    background: var(--primary-color) !important;
-    color: white;
-    padding: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    position: relative;
-    overflow: hidden;
+    padding: 1.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: linear-gradient(45deg, rgba(255, 105, 180, 0.1), transparent);
 }
 
 .booking-header::before {
@@ -83,14 +80,14 @@
 }
 
 .info-group {
-    background: white;
-    padding: 1.75rem;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(255, 20, 147, 0.1);
-    position: relative;
-    overflow: hidden;
+    background: var(--glass-background);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    transition: all 0.3s ease;
 }
 
 .info-group::before {
@@ -128,13 +125,13 @@
 }
 
 .price-details {
-    background: white;
-    border-radius: var(--border-radius);
-    padding: 2rem;
+    background: var(--glass-background);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 15px;
+    border: var(--glass-border);
+    padding: 1.75rem;
     margin-top: 2rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    position: relative;
-    overflow: hidden;
 }
 
 .price-details::after {

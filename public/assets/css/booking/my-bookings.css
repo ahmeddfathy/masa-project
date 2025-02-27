@@ -49,10 +49,10 @@ body::before {
 
 .booking-card {
     background: var(--glass-background);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 15px;
-    border: var(--glass-border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: var(--card-shadow);
     margin-bottom: 2rem;
     overflow: hidden;
@@ -66,13 +66,9 @@ body::before {
 }
 
 .booking-header {
-    background: var(--primary-color);
-    color: white;
-    padding: 2.5rem;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.15);
+    padding: 1.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: linear-gradient(45deg, rgba(255, 105, 180, 0.1), transparent);
 }
 
 .booking-header::before {
@@ -100,9 +96,8 @@ body::before {
 }
 
 .booking-body {
-    padding: 2rem;
-    background: white;
-    position: relative;
+    padding: 1.75rem;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .booking-card h5 {
@@ -163,6 +158,17 @@ body::before {
     color: var(--primary-color);
     font-weight: 700;
     margin-right: 0.75rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
 .btn-primary {
@@ -321,4 +327,15 @@ h2::after {
     height: 4px;
     background: var(--primary-color);
     border-radius: 3px;
+}
+
+.status-badge {
+    padding: 0.5rem 1.25rem;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
 }

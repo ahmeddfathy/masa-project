@@ -125,15 +125,7 @@
             <div class="carousel-inner">
                 @foreach($galleryImages as $key => $image)
                 <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
-                    <img src="{{ Storage::url($image->image_url) }}" class="d-block w-100" alt="{{ $image->caption }}">
-                    @if($image->caption)
-                    <div class="carousel-caption">
-                        <h5>{{ $image->caption }}</h5>
-                        @if($image->category)
-                        <p>{{ $image->category }}</p>
-                        @endif
-                    </div>
-                    @endif
+                    <img src="{{ Storage::url($image->image_url) }}" class="d-block w-100" alt="Gallery Image">
                 </div>
                 @endforeach
             </div>
@@ -235,13 +227,13 @@
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-calendar"></i></span>
                             <input type="date" name="session_date" class="form-control" required
-                                   min="{{ date('Y-m-d') }}"
+                                   min="{{ date('Y-m-d', strtotime('+1 day')) }}"
                                    max="{{ date('Y-m-d', strtotime('+30 days')) }}"
                                    value="{{ old('session_date') }}">
                         </div>
                         <small class="text-muted mt-1">
                             <i class="fas fa-info-circle"></i>
-                            يمكنك اختيار موعد خلال الـ 30 يوم القادمة
+                            يمكنك اختيار موعد من الغد وحتى 30 يوم قادمة
                         </small>
                     </div>
                     <div class="col-md-6">
@@ -310,7 +302,14 @@
                                 <option value="0" {{ old('image_consent') == '0' ? 'selected' : '' }}>لا، لا أوافق على عرض الصور</option>
                             </select>
                         </div>
+                        <div class="mt-2">
+                            <small class="text-success">
+                                <i class="fas fa-gift me-1"></i>
+                                في حالة الموافقة على عرض الصور، ستحصل على ثيم إضافي مجاناً كهدية شكر
+                            </small>
+                        </div>
                     </div>
+
                     <div class="form-check">
                         <input type="checkbox" name="terms_consent" class="form-check-input" id="termsConsent"
                                value="1" required {{ old('terms_consent') ? 'checked' : '' }}>
@@ -320,46 +319,26 @@
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <div class="text-center">
-                    @auth
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-credit-card me-2"></i>متابعة للدفع
-                            <small class="d-block text-white-50">سيتم تحويلك إلى بوابة الدفع الآمنة PayTabs</small>
-                        </button>
-                        <div class="mt-3">
-                            <small class="text-muted">
-                                <i class="fas fa-lock me-1"></i>
-                                جميع المعاملات مؤمنة ومشفرة عبر PayTabs
-                            </small>
-                        </div>
-                    @else
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            يرجى <a href="{{ route('login') }}">تسجيل الدخول</a> أو <a href="{{ route('register') }}">إنشاء حساب جديد</a> للمتابعة
-                        </div>
-                    @endauth
-                </div>
-
+                <!-- تعليمات الحجز والدفع -->
                 @auth
-                <div class="mt-4 text-center">
+                <div class="mb-4 text-center">
                     <div class="row justify-content-center">
                         <div class="col-md-8">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <h6 class="mb-3">معلومات الدفع والحجز:</h6>
+                                    <h6 class="mb-3">تعليمات الحجز والدفع:</h6>
                                     <ul class="list-unstyled text-start mb-0">
                                         <li class="mb-2">
                                             <i class="fas fa-check-circle text-success me-2"></i>
-                                            سيتم تأكيد الحجز تلقائياً بعد اكتمال عملية الدفع
+                                            بعد تأكيد الحجز، سيتم إرسال رقم الحساب البنكي إليك
                                         </li>
                                         <li class="mb-2">
                                             <i class="fas fa-check-circle text-success me-2"></i>
-                                            الدفع آمن ومشفر عبر PayTabs
+                                            يرجى تحويل المبلغ المطلوب وإرسال صورة الإيصال على الواتساب
                                         </li>
                                         <li class="mb-2">
                                             <i class="fas fa-check-circle text-success me-2"></i>
-                                            في حالة فشل الدفع، لن يتم تأكيد الحجز
+                                            سيتم تأكيد الحجز نهائياً بعد استلام إيصال التحويل
                                         </li>
                                         <li>
                                             <i class="fas fa-check-circle text-success me-2"></i>
@@ -372,6 +351,27 @@
                     </div>
                 </div>
                 @endauth
+
+                <!-- Submit Button -->
+                <div class="text-center">
+                    @auth
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calendar-check me-2"></i>تأكيد الحجز
+                        </button>
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                سيتم إرسال تفاصيل التحويل البنكي بعد تأكيد الحجز
+                            </small>
+                        </div>
+                    @else
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            يرجى <a href="{{ route('login') }}">تسجيل الدخول</a> أو <a href="{{ route('register') }}">إنشاء حساب جديد</a> للمتابعة
+                        </div>
+                    @endauth
+                </div>
+
             </form>
         </div>
     </div>
@@ -430,9 +430,10 @@
                 const sessionDateInput = document.querySelector('input[name="session_date"]');
                 const timeNote = document.getElementById('timeNote');
                 const selectedPackageRadio = document.querySelector('.package-select:checked');
+                const selectedServiceId = document.querySelector('select[name="service_id"]').value;
 
                 // التحقق من وجود جميع العناصر المطلوبة
-                if (!sessionTimeSelect || !sessionDateInput || !timeNote || !selectedPackageRadio) {
+                if (!sessionTimeSelect || !sessionDateInput || !timeNote || !selectedPackageRadio || !selectedServiceId) {
                     console.error('Required elements not found');
                     return;
                 }
@@ -475,7 +476,8 @@
                 // تجهيز البيانات
                 const requestData = {
                     date: formattedDate,
-                    package_id: selectedPackageRadio.value
+                    package_id: selectedPackageRadio.value,
+                    service_id: selectedServiceId
                 };
 
                 // تنفيذ الطلب
@@ -540,7 +542,7 @@
                                                 <li><i class="fas fa-tag me-1"></i>السعر: ${pkg.base_price} درهم</li>
                                                 <li><i class="fas fa-calendar-check me-1"></i>المواعيد المتاحة: ${alt.available_slots.length}</li>
                                             </ul>
-                                            <button onclick="selectPackage(${pkg.id})" class="btn btn-warning btn-sm">
+                                            <button onclick="selectPackage(${pkg.id}, ${selectedServiceId})" class="btn btn-warning btn-sm">
                                                 <i class="fas fa-exchange-alt me-1"></i>
                                                 اختيار هذه الباقة
                                             </button>
@@ -554,7 +556,7 @@
                                 alertHtml += `
                                     <div class="alert alert-info mb-2">
                                         <i class="fas fa-info-circle me-2"></i>
-                                        لا تتوفر مواعيد لهذه الباقة حالياً، ولكن هناك باقات متاحة في نفس اليوم:
+                                        لا تتوفر مواعيد لهذه الباقة حالياً، ولكن هناك باقات متاحة في نفس الخدمة:
                                         <div class="mt-2">
                                             ${alternativePackagesHtml}
                                         </div>
@@ -802,7 +804,7 @@
             }
 
             // تحديث دالة selectPackage لتقوم باختيار الباقة تلقائياً
-            window.selectPackage = function(packageId) {
+            window.selectPackage = function(packageId, serviceId) {
                 const packageRadio = document.querySelector(`input[name="package_id"][value="${packageId}"]`);
                 if (packageRadio) {
                     // تحديد الباقة
@@ -813,6 +815,13 @@
                         card.classList.remove('selected');
                     });
                     packageRadio.closest('.package-card').classList.add('selected');
+
+                    // تحديد الخدمة المناسبة إذا لم تكن محددة
+                    const serviceSelect = document.querySelector('select[name="service_id"]');
+                    if (serviceSelect.value !== serviceId.toString()) {
+                        serviceSelect.value = serviceId;
+                        serviceSelect.dispatchEvent(new Event('change'));
+                    }
 
                     // تشغيل معالج اختيار الباقة
                     handlePackageSelection(packageId);

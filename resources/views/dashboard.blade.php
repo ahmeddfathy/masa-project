@@ -483,8 +483,8 @@
                     <div class="mb-3">
                         <label class="form-label required">رقم الهاتف</label>
                         <input type="tel" class="form-control" name="phone" required
-                               pattern="\d{10}" title="يجب أن يتكون رقم الهاتف من 10 أرقام">
-                        <div class="form-text">مثال: 0512345678</div>
+                               minlength="8" maxlength="20">
+                        <div class="form-text">أدخل رقم الهاتف بدون رموز خاصة</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label required">النوع</label>
@@ -518,7 +518,7 @@
                     <div class="mb-3">
                         <label class="form-label required">رقم الهاتف</label>
                         <input type="tel" class="form-control" name="phone" required
-                               pattern="\d{10}" title="يجب أن يتكون رقم الهاتف من 10 أرقام">
+                               minlength="8" maxlength="20">
                     </div>
                     <div class="mb-3">
                         <label class="form-label required">النوع</label>

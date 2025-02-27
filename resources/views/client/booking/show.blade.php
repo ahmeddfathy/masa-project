@@ -1,6 +1,6 @@
 @extends('layouts.customer')
 
-@section('title', 'تفاصيل الحجز - Lense Soma Studio')
+@section('title', 'تفاصيل الحجز')
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/booking/show.css') }}">
@@ -8,6 +8,23 @@
 @endsection
 
 @section('content')
+<header class="header-container">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="page-title">تفاصيل الحجز #{{ $booking->booking_number }}</h2>
+                <p class="page-subtitle">{{ $booking->created_at->format('Y/m/d') }}</p>
+            </div>
+            <div class="col-md-6 text-start">
+                <a href="{{ route('client.bookings.my') }}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-right"></i>
+                    العودة للحجوزات
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
 <div class="container py-4">
     <div class="booking-details">
         <!-- Booking Header -->

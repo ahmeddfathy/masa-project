@@ -11,7 +11,7 @@ class PhoneController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'phone' => 'required|string|max:20|unique:phone_numbers,phone,NULL,id,user_id,' . Auth::id(),
+            'phone' => 'required|string|min:8|max:20|unique:phone_numbers,phone,NULL,id,user_id,' . Auth::id(),
             'type' => 'required|string'
         ]);
 
@@ -37,7 +37,7 @@ class PhoneController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'phone' => 'required|string|max:20|unique:phone_numbers,phone,' . $id . ',id,user_id,' . Auth::id(),
+            'phone' => 'required|string|min:8|max:20|unique:phone_numbers,phone,' . $id . ',id,user_id,' . Auth::id(),
             'type' => 'required|string'
         ]);
 

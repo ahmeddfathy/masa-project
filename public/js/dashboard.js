@@ -93,8 +93,9 @@ $(document).ready(function() {
     // Form Validation
     function validatePhoneForm(form) {
         const phone = form.find('input[name="phone"]').val();
-        if (!/^\d{10}$/.test(phone)) {
-            alert('رقم الهاتف يجب أن يتكون من 10 أرقام');
+        // تحقق فقط من أن الرقم يحتوي على أرقام فقط ولا يقل عن 8 أرقام
+        if (!/^\d{8,}$/.test(phone)) {
+            alert('رقم الهاتف يجب أن يتكون من أرقام فقط ولا يقل عن 8 أرقام');
             return false;
         }
         return true;

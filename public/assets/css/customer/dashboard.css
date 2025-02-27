@@ -1,23 +1,23 @@
 :root {
-    /* Primary color and shades */
-    --primary-color: #FF1493;
-    --primary-light: #FF69B4;
-    --primary-dark: #C71585;
-    --secondary-color: #4169E1;
-    --secondary-light: #6495ED;
-    --secondary-dark: #283593;
-    --accent-color: #00CED1;
-    --accent-light: #40E0D0;
-    --accent-dark: #008B8B;
+    --primary-color: #ff1493;
+    --primary-light: #ff69b4;
+    --primary-dark: #c71585;
 
-    /* Neutral colors */
+    --secondary-color: #4169e1;
+    --secondary-light: #6495ed;
+    --secondary-dark: #283593;
+
+    --accent-color: #40e0d0;
+    --accent-light: #7fffd4;
+    --accent-dark: #20b2aa;
+
     --light-color: #ffffff;
     --dark-color: #1a1a1a;
     --gray-100: #f8f9fa;
     --gray-200: #e9ecef;
     --gray-300: #dee2e6;
 
-    --background-color: #F5F7FF;
+    --background-color: #F0F4FF;
 
     --glass-background: rgba(255, 255, 255, 0.85);
     --glass-background-dark: rgba(255, 255, 255, 0.95);
@@ -30,12 +30,11 @@
     --text-muted: #4A5F6E;
     --heading-color: #1E2A38;
 
-    /* Status colors */
-    --danger-color: #FF0000;
-    --success-color: #00B140;
-    --warning-color: #FFA500;
-    --info-color: #3498DB;
-    --processing-color: #0066CC;
+    --danger-color: #FF4D4D;
+    --success-color: #2ECC71;
+
+    --warning-color: #ffa502;
+    --info-color: #70a1ff;
 }
 body {
     background: linear-gradient(135deg, var(--background-color) 0%, #ffffff 100%);
@@ -82,7 +81,7 @@ body {
 }
 
 .navbar-brand:hover {
-    color: var(--primary-color);
+    color: var(--secondary-color);
 }
 
 .nav-link {
@@ -119,7 +118,7 @@ body {
     -webkit-backdrop-filter: blur(4px);
     border-radius: 15px;
     padding: 2rem;
-    border: 1px solid rgba(78, 84, 200, 0.1);
+    border: 2px solid rgba(74, 58, 255, 0.15);
     box-shadow: none;
     margin-bottom: 2rem;
 }
@@ -156,6 +155,9 @@ body {
     gap: 1.5rem;
     position: relative;
     overflow: hidden;
+    background: var(--glass-background);
+    border: 1px solid rgba(33, 179, 176, 0.1);
+    box-shadow: 0 4px 15px rgba(33, 179, 176, 0.08);
 }
 
 .card-icon {
@@ -166,28 +168,29 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    background: linear-gradient(45deg, rgba(255,255,255,0.8), rgba(255,255,255,0.9));
+    background: rgba(33, 179, 176, 0.1);
+    color: var(--primary-color);
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .orders .card-icon {
-    background: rgba(255, 20, 147, 0.1);
+    background: rgba(74, 58, 255, 0.1);
     color: var(--primary-color);
 }
 
 .appointments .card-icon {
-    background: rgba(255, 20, 147, 0.1);
-    color: var(--primary-color);
+    background: rgba(0, 184, 148, 0.1);
+    color: #00b894;
 }
 
-.bookings .card-icon {
-    background: rgba(255, 20, 147, 0.1);
-    color: var(--primary-color);
+.cart .card-icon {
+    background: rgba(253, 121, 168, 0.1);
+    color: #fd79a8;
 }
 
 .notifications .card-icon {
-    background: rgba(255, 20, 147, 0.1);
-    color: var(--primary-color);
+    background: rgba(255, 159, 67, 0.1);
+    color: #ff9f43;
 }
 
 .card-info {
@@ -247,12 +250,12 @@ body {
     border-radius: 20px;
     padding: 1.5rem;
     height: 100%;
-    border: 1px solid rgba(255, 20, 147, 0.08);
+    border: 1px solid rgba(33, 179, 176, 0.1);
     transition: all 0.3s ease;
 }
 
 .section-card:hover {
-    border-color: rgba(255, 20, 147, 0.12);
+    border-color: rgba(74, 58, 255, 0.15);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
@@ -271,7 +274,7 @@ body {
 
 .table th {
     font-weight: 700;
-    background: rgba(255,255,255,0.5);
+    background: rgba(33, 179, 176, 0.05);
     border-bottom: 2px solid var(--primary-light);
     padding: 1rem;
     letter-spacing: 0.3px;
@@ -297,39 +300,27 @@ body {
 .appointments-grid,
 .bookings-grid {
     display: grid;
-    gap: 1.25rem;
+    gap: 1.5rem;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .appointment-card,
 .booking-card {
     background: var(--glass-background);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 15px;
+    border-radius: 12px;
     padding: 1.5rem;
-    border: 1px solid rgba(78, 84, 200, 0.08);
-    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.8);
     position: relative;
     overflow: hidden;
-}
-
-.appointment-card::before,
-.booking-card::before {
-    display: none;
-}
-
-.appointment-card,
-.booking-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 12px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .appointment-card:hover,
 .booking-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    border-color: rgba(0, 0, 0, 0.08);
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .appointment-header,
@@ -339,7 +330,7 @@ body {
     align-items: center;
     margin-bottom: 1.25rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(78, 84, 200, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .appointment-header .date,
@@ -354,9 +345,11 @@ body {
 }
 
 .appointment-header i,
-.booking-header i {
-    margin-left: 0.5rem;
+.booking-header i,
+.appointment-body .location i,
+.booking-body .package i {
     color: var(--primary-color);
+    margin-left: 0.5rem;
     font-size: 1rem;
 }
 
@@ -383,13 +376,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.appointment-body .location i,
-.booking-body .package i {
-    color: var(--primary-color);
-    margin-left: 0.5rem;
-    font-size: 1rem;
-}
-
 .appointment-body .status,
 .booking-body .status {
     display: inline-block;
@@ -413,7 +399,7 @@ body {
 .booking-footer .btn {
     padding: 0.5rem 1.25rem;
     font-size: 0.9rem;
-    border-radius: 50px;
+    border-radius: 8px;
     background: var(--primary-color);
     color: white;
     border: none;
@@ -437,32 +423,24 @@ body {
 /* Badges */
 .badge {
     padding: 0.5rem 1rem;
-    border-radius: 50px;
+    border-radius: 6px;
     font-weight: 500;
 }
 
 .badge.bg-warning {
-    background-color: var(--warning-color) !important;
-    color: #1e1e2d;
-    font-weight: 600;
+    background: var(--warning-color) !important;
 }
 
 .badge.bg-success {
-    background-color: var(--success-color) !important;
-    color: #fff;
-    font-weight: 600;
+    background: var(--success-color) !important;
 }
 
 .badge.bg-danger {
-    background-color: var(--danger-color) !important;
-    color: #fff;
-    font-weight: 600;
+    background: var(--danger-color) !important;
 }
 
 .badge.bg-info {
-    background-color: var(--info-color) !important;
-    color: #fff;
-    font-weight: 600;
+    background: var(--info-color) !important;
 }
 
 .badge.bg-secondary {
@@ -481,12 +459,12 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+    background: var(--primary-color);
     border: none;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(45deg, var(--primary-dark), var(--primary-color));
+    background: var(--primary-dark);
     transform: translateY(-2px);
 }
 
@@ -552,9 +530,9 @@ body {
 .empty-state {
     text-align: center;
     padding: 2.5rem 1rem;
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--glass-background);
     border-radius: 15px;
-    border: 1px dashed rgba(0, 0, 0, 0.08);
+    border: 1px dashed rgba(33, 179, 176, 0.2);
 }
 
 .empty-state i {
@@ -809,22 +787,22 @@ body {
     }
 }
 
-/* Custom Scrollbar - تحديث لشريط التمرير */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 6px; /* تقليل العرض */
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.02); /* خلفية هادئة جداً */
+    background: rgba(255, 255, 255, 0.1);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15); /* لون رمادي هادئ للشريط نفسه */
-    border-radius: 3px;
+    background: var(--primary-color);
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.25); /* تغيير بسيط عند التحويم */
+    background: var(--primary-dark);
 }
 
 /* Animations */
@@ -858,7 +836,7 @@ body {
 
 /* Addresses Section */
 .card {
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 2px solid rgba(74, 58, 255, 0.15);
     box-shadow: none;
     border-radius: 12px;
     transition: none;
@@ -910,7 +888,7 @@ body {
 }
 
 .list-group-item {
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(33, 179, 176, 0.1);
     margin-bottom: 0.5rem;
     border-radius: 8px !important;
     transition: none;
@@ -922,12 +900,13 @@ body {
 }
 
 .list-group-item.active {
-    background-color: rgba(0, 0, 0, 0.02) !important;
-    border-color: rgba(0, 0, 0, 0.08) !important;
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
 }
 
 .list-group-item:hover {
-    background-color: var(--glass-background);
+    background: rgba(255, 255, 255, 0.95);
+    border-color: var(--primary-color);
 }
 
 /* Address Content */
@@ -1048,21 +1027,21 @@ body {
 
 .user-guide-section .card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8));
-    border: 1px solid rgba(78, 84, 200, 0.08);
+    border: 2px solid rgba(74, 58, 255, 0.1);
     box-shadow: 0 4px 15px rgba(74, 58, 255, 0.05);
 }
 
 .guide-item {
     padding: 1rem;
     border-radius: 10px;
-    background: rgba(78, 84, 200, 0.02);
-    border: 1px solid rgba(78, 84, 200, 0.08);
+    background: rgba(33, 179, 176, 0.05);
+    border: 1px solid rgba(33, 179, 176, 0.1);
     margin-bottom: 1rem;
     transition: all 0.3s ease;
 }
 
 .guide-item:hover {
-    background: rgba(78, 84, 200, 0.04);
+    background: rgba(33, 179, 176, 0.08);
     transform: translateY(-2px);
 }
 
@@ -1100,7 +1079,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 10px rgba(78, 84, 200, 0.2);
+    box-shadow: 0 2px 10px rgba(74, 58, 255, 0.2);
     transition: all 0.3s ease;
 }
 
@@ -1119,7 +1098,7 @@ body {
 
 /* Guide Hint Styles */
 .guide-hint .alert {
-    background: rgba(78, 84, 200, 0.05);
+    background: rgba(74, 58, 255, 0.05);
     border-radius: 10px;
     padding: 0.75rem 1rem;
 }
@@ -1155,8 +1134,8 @@ body {
 
 /* Primary Badge Styles */
 .primary-badge {
-    background-color: #ffc107 !important;
-    color: #000 !important;
+    background: var(--primary-color) !important;
+    color: white !important;
     font-weight: 600;
     padding: 0.4em 0.8em;
     border-radius: 50px;
@@ -1165,8 +1144,8 @@ body {
 
 /* Active List Item with Primary Phone */
 .list-group-item.active {
-    background-color: rgba(78, 84, 200, 0.05) !important;
-    border-color: rgba(78, 84, 200, 0.2) !important;
+    background-color: rgba(74, 58, 255, 0.05) !important;
+    border-color: rgba(74, 58, 255, 0.2) !important;
 }
 
 .list-group-item.active .phone-number {
@@ -1177,7 +1156,7 @@ body {
 /* Status Badge Colors */
 .badge.bg-pending {
     background: var(--warning-color) !important;
-    color: #1e1e2d;
+    color: white;
 }
 
 .badge.bg-confirmed {
