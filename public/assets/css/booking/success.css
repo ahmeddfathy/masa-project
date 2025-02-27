@@ -3,23 +3,23 @@
 
 /* Variables */
 :root {
-    --primary-color: #2196f3;      /* أزرق */
-    --secondary-color: #00bcd4;    /* تركواز */
+    --primary-color: #21B3B0;      /* تغيير للون التركواز */
+    --secondary-color: #21B3B0;    /* توحيد الألوان */
     --text-dark: #1a1a2e;
     --text-light: #f4f4f4;
     --background-light: #f8f9fa;
     --background-dark: #f1f4f9;
-    --primary-gradient: linear-gradient(45deg, #2196f3, #00bcd4);
-    --secondary-gradient: linear-gradient(45deg, #00bcd4, #2196f3);
+    --primary-gradient: linear-gradient(45deg, #21B3B0, #21B3B0);  /* توحيد الألوان */
+    --secondary-gradient: linear-gradient(45deg, #21B3B0, #21B3B0);  /* توحيد الألوان */
     --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
     --border-radius: 15px;
     --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --select-border: #e2e8f0;
-    --select-focus: #2196f3;
+    --select-focus: #21B3B0;  /* تغيير للون التركواز */
     --select-arrow: #64748b;
     --option-hover: #f0f7ff;
     --option-selected: #e3f2fd;
-    --navbar-bg: #ff69b4;
+    --navbar-bg: #21B3B0;  /* تغيير للون التركواز */
     --navbar-text: #ffffff;
     --glass-background: rgba(255, 255, 255, 0.95);
     --glass-border: 1px solid rgba(255, 255, 255, 0.2);

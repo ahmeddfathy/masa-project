@@ -468,20 +468,20 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.02);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
-    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary-color);
+    background: rgba(0, 0, 0, 0.25);
 }
 
 /* Add specific styles for the view details button */

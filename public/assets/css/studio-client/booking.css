@@ -1,22 +1,22 @@
 /* Variables */
 :root {
-    --primary-color: #2196f3;
-    --secondary-color: #00bcd4;
+    --primary-color: #21B3B0;
+    --secondary-color: #21B3B0;
     --text-dark: #1a1a2e;
     --text-light: #f4f4f4;
     --background-light: #f8f9fa;
     --background-dark: #f1f4f9;
-    --primary-gradient: linear-gradient(45deg, #2196f3, #00bcd4);
-    --secondary-gradient: linear-gradient(45deg, #00bcd4, #2196f3);
+    --primary-gradient: linear-gradient(45deg, #21B3B0, #21B3B0);
+    --secondary-gradient: linear-gradient(45deg, #21B3B0, #21B3B0);
     --box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
     --border-radius: 15px;
     --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     --select-border: #e2e8f0;
-    --select-focus: #2196f3;
+    --select-focus: #21B3B0;
     --select-arrow: #64748b;
     --option-hover: #f0f7ff;
     --option-selected: #e3f2fd;
-    --navbar-bg: #ff69b4;
+    --navbar-bg: #21B3B0;
     --navbar-text: #ffffff;
 }
 
@@ -592,4 +592,34 @@ h2, h5, .form-label {
 
 .navbar .nav-link:hover {
     color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* تحسين الناف بار في صفحات الحجز */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: rgba(33, 179, 176, 0.95) !important;
+        padding: 1rem;
+        border-radius: 15px;
+        margin-top: 1rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar-nav .nav-link {
+        padding: 0.8rem 1.2rem !important;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: white !important;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 0.3rem 0;
+    }
+
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(-5px);
+    }
 }

@@ -42,6 +42,40 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/booking.css') }}">
+    <style>
+        :root {
+            --primary-color: #21B3B0 !important;
+            --secondary-color: #21B3B0 !important;
+            --primary-gradient: linear-gradient(45deg, #21B3B0, #21B3B0) !important;
+            --secondary-gradient: linear-gradient(45deg, #21B3B0, #21B3B0) !important;
+            --navbar-bg: #21B3B0 !important;
+            --select-focus: #21B3B0 !important;
+        }
+
+        .btn-primary {
+            background: #21B3B0 !important;
+        }
+
+        .btn-primary:hover {
+            background: #219376 !important;
+        }
+
+        .package-card::before {
+            background: #21B3B0 !important;
+        }
+
+        .package-card.selected {
+            border-color: #21B3B0 !important;
+        }
+
+        .booking-form h2 {
+            color: #21B3B0 !important;
+        }
+
+        .booking-form h2::after {
+            background: #21B3B0 !important;
+        }
+    </style>
 </head>
 <body>
     @include('parts.navbar')

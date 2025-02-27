@@ -4,6 +4,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/booking/show.css') }}">
+
 @endsection
 
 @section('content')

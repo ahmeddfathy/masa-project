@@ -6,6 +6,52 @@
     <title>تم الحجز بنجاح - Lense Soma Studio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/booking/success.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #21B3B0 !important;
+            --secondary-color: #21B3B0 !important;
+            --primary-gradient: linear-gradient(45deg, #21B3B0, #21B3B0) !important;
+            --secondary-gradient: linear-gradient(45deg, #21B3B0, #21B3B0) !important;
+        }
+
+        .success-icon {
+            border-color: #21B3B0 !important;
+            color: #21B3B0 !important;
+        }
+
+        .success-icon::after {
+            border-color: #21B3B0 !important;
+        }
+
+        .success-card h2 {
+            color: #21B3B0 !important;
+        }
+
+        .booking-details h4 {
+            color: #21B3B0 !important;
+        }
+
+        .booking-details h4::after {
+            background: #21B3B0 !important;
+        }
+
+        .booking-details li strong {
+            color: #21B3B0 !important;
+        }
+
+        .btn-primary {
+            background: #21B3B0 !important;
+        }
+
+        .btn-outline-primary {
+            border-color: #21B3B0 !important;
+            color: #21B3B0 !important;
+        }
+
+        .btn-outline-primary:hover {
+            background: #21B3B0 !important;
+        }
+    </style>
 </head>
 <body>
     <div class="container">

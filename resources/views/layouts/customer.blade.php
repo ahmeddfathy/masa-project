@@ -49,7 +49,7 @@
                     @endif
 
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('client/book*') ? 'active' : '' }}" href="{{ route('client.bookings.create') }}">
+                        <a class="nav-link {{ request()->is('client/book') ? 'active' : '' }}" href="{{ route('client.bookings.create') }}">
                             <i class="fas fa-camera ms-1"></i>حجز جلسة تصوير
                         </a>
                     </li>
@@ -120,13 +120,13 @@
                 @endif
 
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('client/book*') ? 'active' : '' }}" href="{{ route('client.bookings.create') }}">
+                    <a class="nav-link {{ request()->is('client/book') ? 'active' : '' }}" href="{{ route('client.bookings.create') }}">
                         <i class="fas fa-camera"></i>
                         حجز جلسة تصوير
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('client/bookings/my*') ? 'active' : '' }}" href="{{ route('client.bookings.my') }}">
+                    <a class="nav-link {{ request()->is('client/bookings/my') ? 'active' : '' }}" href="{{ route('client.bookings.my') }}">
                         <i class="fas fa-camera-retro"></i>
                         حجوزاتي
                     </a>

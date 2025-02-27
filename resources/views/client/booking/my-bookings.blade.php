@@ -4,6 +4,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/booking/my-bookings.css') }}">
+
 @endsection
 
 @section('content')
@@ -30,8 +31,8 @@
                                 <small class="text-muted">{{ $booking->created_at->format('Y-m-d H:i') }}</small>
                             </div>
                             <div class="d-flex align-items-center">
-                                <span class="badge me-2 bg-{{ $booking->payment_status === 'A' ? 'success' : ($booking->payment_status === 'H' || $booking->payment_status === 'V' ? 'warning' : 'danger') }}">
-                                    {{ $booking->payment_status === 'A' ? 'تم الدفع' : ($booking->payment_status === 'H' ? 'في انتظار الدفع' : ($booking->payment_status === 'V' ? 'قيد التحقق' : 'فشل الدفع')) }}
+                                <span class="badge me-2 bg-{{ $booking->status === 'completed' ? 'success' : ($booking->status === 'pending' ? 'warning' : ($booking->status === 'cancelled' ? 'danger' : 'info')) }}">
+                                    {{ $booking->status === 'completed' ? 'مكتمل' : ($booking->status === 'pending' ? 'قيد الانتظار' : ($booking->status === 'cancelled' ? 'ملغي' : 'جديد')) }}
                                 </span>
                             </div>
                         </div>

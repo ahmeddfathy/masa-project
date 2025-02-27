@@ -1,6 +1,6 @@
 /* About Header */
 .page-header {
-    background: var(--gradient-primary);
+    background: var(--primary-color);
     color: var(--light-color);
     padding: 8rem 0 12rem;
     position: relative;
@@ -83,7 +83,7 @@
     right: 0;
     width: 80px;
     height: 4px;
-    background: var(--gradient-primary);
+    background: var(--primary-color);
     border-radius: 2px;
 }
 
@@ -132,7 +132,7 @@
     right: 0;
     width: 80px;
     height: 4px;
-    background: var(--gradient-primary);
+    background: var(--primary-color);
     border-radius: 2px;
 }
 

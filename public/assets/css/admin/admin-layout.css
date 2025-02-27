@@ -29,7 +29,7 @@
     --warning-color: #F39C12;
     --info-color: #3498DB;
     --sidebar-width: 280px;
-    --header-height: 140px;
+    --header-height: 70px;
 }
 
 body {
@@ -90,10 +90,10 @@ body {
 }
 
 .sidebar-logo img {
-    width: 160px;
-    height: 160px;
+    width: 100px;
+    height: 50px;
     object-fit: contain;
-    padding: 10px;
+    padding: 5px;
 }
 
 .sidebar-logo:hover {
@@ -110,7 +110,7 @@ body {
 }
 
 .nav-section {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .nav-section-title {
@@ -122,18 +122,18 @@ body {
 }
 
 .nav-item {
-    padding: 0.25rem 1.5rem;
+    padding: 0.15rem 1rem;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 0.75rem;
     color: #1F2937;
     border-radius: 0.5rem;
     text-decoration: none;
     transition: all 0.2s ease;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     white-space: nowrap;
 }
 
@@ -185,7 +185,7 @@ body {
     top: 0;
     z-index: 999;
     flex-shrink: 0;
-    padding: 0.5rem 1.5rem;
+    padding: 0.5rem 1rem;
 }
 
 .navbar .container-fluid {
@@ -202,10 +202,10 @@ body {
 }
 
 .navbar-brand img {
-    width: 120px;
-    height: 120px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
-    margin-left: 20px;
+    margin-left: 10px;
 }
 
 /* Content Container */

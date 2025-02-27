@@ -22,7 +22,7 @@
         <aside class="sidebar shadow-sm" id="sidebar">
             <div class="sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="مدير ماديل" style="width: 60px; height: 60px; object-fit: contain;">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="لوحة التحكم">
                 </a>
             </div>
 
@@ -176,8 +176,8 @@
                 <div class="container-fluid">
                     <div class="d-flex align-items-center">
                         <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-                            <img src="{{ asset('assets/images/logo.png') }}" alt="مدير ماديل">
-                            <span>@yield('page_title', 'لوحة التحكم')</span>
+                            <img src="{{ asset('assets/images/logo.png') }}" alt="لوحة التحكم">
+                            <span class="ms-2">@yield('page_title', 'لوحة التحكم')</span>
                         </a>
                     </div>
 

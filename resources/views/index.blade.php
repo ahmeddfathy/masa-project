@@ -44,6 +44,57 @@
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/index.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}">
+    <style>
+        /* تحسين الناف بار في الموبايل */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: rgba(33, 179, 176, 0.95) !important;
+                padding: 1rem;
+                border-radius: 15px;
+                margin-top: 1rem;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                max-height: 80vh;
+                overflow-y: auto;
+            }
+
+            .navbar-nav .nav-item {
+                margin: 0.5rem 0;
+            }
+
+            .navbar-nav .nav-link {
+                padding: 0.8rem 1.2rem !important;
+                border-radius: 10px;
+                transition: all 0.3s ease;
+                font-size: 1.1rem;
+                font-weight: 500;
+                color: white !important;
+                background: rgba(255, 255, 255, 0.1);
+                margin: 0.3rem 0;
+            }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link.active {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateX(-5px);
+            }
+
+            .navbar-toggler {
+                border: none !important;
+                padding: 0.6rem;
+                font-size: 1.2rem;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                color: white;
+            }
+
+            .navbar-toggler:focus {
+                box-shadow: none;
+                outline: none;
+            }
+        }
+    </style>
 </head>
 <body>
     @include('parts.navbar')
@@ -167,7 +218,7 @@
                 @endforeach
             </div>
             <div class="text-center mt-5">
-                <a href="{{ route('gallery') }}" class="btn btn">شاهد المزيد من أعمالنا</a>
+                <a href="{{ route('gallery') }}" class="btn btn-primary">شاهد المزيد من أعمالنا</a>
             </div>
         </div>
     </section>
