@@ -15,7 +15,7 @@
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="متجر عدسة سوما | البومات صور ومجسمات ثري دي">
     <meta property="og:description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في الرياض.">
-    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta property="og:image" content="/assets/images/logo.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="متجر عدسة سوما | البومات صور ومجسمات ثري دي">
     <meta name="twitter:description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في الرياض.">
-    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -35,7 +35,7 @@
     <title>متجر عدسة سوما | البومات صور ومجسمات ثري دي في الرياض</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/customer/products.css') }}">
+    <link rel="stylesheet" href="/assets/css/customer/products.css">
 </head>
 <body class="{{ auth()->check() ? 'user-logged-in' : '' }}">
     <!-- Fixed Buttons Group -->
@@ -57,7 +57,7 @@
     <nav class="navbar navbar-expand-lg glass-navbar sticky-top">
       <div class="container">
             <a class="navbar-brand" href="/">
-               <img src="{{ asset('assets/images/logo.png') }}" alt="Madil" height="70">
+               <img src="/assets/images/logo.png" alt="Madil" height="70">
             </a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
               <span class="navbar-toggler-icon"></span>
@@ -174,11 +174,11 @@
                         <div class="product-card">
                             <a href="{{ route('products.show', $product->slug) }}" class="product-image-wrapper">
                                 @if($product->images->isNotEmpty())
-                                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
+                                    <img src="{{ url('storage/' . $product->images->first()->image_path) }}"
                                          alt="{{ $product->name }}"
                                          class="product-image">
                                 @else
-                                    <img src="{{ asset('images/placeholder.jpg') }}"
+                                    <img src="{{ url('images/placeholder.jpg') }}"
                                          alt="{{ $product->name }}"
                                          class="product-image">
                                 @endif
@@ -392,6 +392,6 @@
             }
         };
     </script>
-    <script src="{{ asset('assets/js/customer/products.js') }}"></script>
+    <script src="/assets/js/customer/products.js"></script>
 </body>
 </html>

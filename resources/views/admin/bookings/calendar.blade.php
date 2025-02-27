@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/admin/bookings.css') }}">
+    <link rel="stylesheet" href="/assets/css/admin/bookings.css">
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.css' rel='stylesheet' />
 <style>
     .fc-event {

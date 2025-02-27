@@ -15,7 +15,7 @@
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="احجز جلسة تصوير مع عدسة سوما | تصوير مواليد وأطفال">
     <meta property="og:description" content="احجز جلسة تصوير مع عدسة سوما - باقات متنوعة لتصوير المواليد والأطفال والعائلات. خدمة احترافية وأسعار مناسبة في الرياض. احجز موعدك الآن!">
-    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta property="og:image" content="/assets/images/logo.png" loading="lazy">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="احجز جلسة تصوير مع عدسة سوما | تصوير مواليد وأطفال">
     <meta name="twitter:description" content="احجز جلسة تصوير مع عدسة سوما - باقات متنوعة لتصوير المواليد والأطفال والعائلات. خدمة احترافية وأسعار مناسبة في الرياض. احجز موعدك الآن!">
-    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -40,8 +40,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/booking.css') }}">
+    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
+    <link rel="stylesheet" href="/assets/css/studio-client/booking.css">
     <style>
         :root {
             --primary-color: #21B3B0 !important;
@@ -125,7 +125,10 @@
             <div class="carousel-inner">
                 @foreach($galleryImages as $key => $image)
                 <div class="carousel-item {{ $key === 0 ? 'active' : '' }}">
-                    <img src="{{ Storage::url($image->image_url) }}" class="d-block w-100" alt="Gallery Image">
+                    <img src="{{ url('storage/' . $image->image_url) }}"
+                         class="d-block w-100"
+                         alt="Gallery Image"
+                         loading="{{ $key === 0 ? 'eager' : 'lazy' }}">
                 </div>
                 @endforeach
             </div>
@@ -184,7 +187,7 @@
                                         </li>
                                         <li><i class="fas fa-images me-2"></i>عدد الصور: {{ $package->num_photos }}</li>
                                         <li><i class="fas fa-palette me-2"></i>عدد الثيمات: {{ $package->themes_count }}</li>
-                                        <li><i class="fas fa-tag me-2"></i>السعر: {{ $package->base_price }} درهم</li>
+                                        <li><i class="fas fa-tag me-2"></i>السعر: {{ $package->base_price }} ريال</li>
                                     </ul>
                                 </div>
                             </div>
@@ -210,7 +213,7 @@
                                             <label class="form-check-label" for="addon-{{ $addon->id }}">
                                                 <h6>{{ $addon->name }}</h6>
                                                 <p class="text-muted small mb-2">{{ $addon->description }}</p>
-                                                <span class="badge bg-primary">{{ $addon->price }} درهم</span>
+                                                <span class="badge bg-primary">${addon.price} ريال</span>
                                             </label>
                                         </div>
                                     </div>
@@ -314,7 +317,7 @@
                         <input type="checkbox" name="terms_consent" class="form-check-input" id="termsConsent"
                                value="1" required {{ old('terms_consent') ? 'checked' : '' }}>
                         <label class="form-check-label" for="termsConsent">
-                            أوافق على <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">الشروط والسياسات</a> الخاصة بالاستوديو <span class="text-danger">*</span>
+                            أوافق على <a href="{{ route('policy') }}">الشروط والسياسات</a> الخاصة بالاستوديو <span class="text-danger">*</span>
                         </label>
                     </div>
                 </div>
@@ -539,7 +542,7 @@
                                                     ? `${Math.floor(pkg.duration / 60)} ساعة${pkg.duration % 60 > 0 ? ` و ${pkg.duration % 60} دقيقة` : ''}`
                                                     : `${pkg.duration} دقيقة`
                                                 }</li>
-                                                <li><i class="fas fa-tag me-1"></i>السعر: ${pkg.base_price} درهم</li>
+                                                <li><i class="fas fa-tag me-1"></i>السعر: ${pkg.base_price} ريال</li>
                                                 <li><i class="fas fa-calendar-check me-1"></i>المواعيد المتاحة: ${alt.available_slots.length}</li>
                                             </ul>
                                             <button onclick="selectPackage(${pkg.id}, ${selectedServiceId})" class="btn btn-warning btn-sm">
@@ -690,7 +693,7 @@
                                         <label class="form-check-label" for="addon-${addon.id}">
                                             <h6>${addon.name}</h6>
                                             <p class="text-muted small mb-2">${addon.description}</p>
-                                            <span class="badge bg-primary">${addon.price} درهم</span>
+                                            <span class="badge bg-primary">${addon.price} ريال</span>
                                         </label>
                                     </div>
                                 </div>
@@ -731,7 +734,7 @@
                                 }</li>
                                 <li><i class="fas fa-images me-2"></i>عدد الصور: ${pkg.num_photos}</li>
                                 <li><i class="fas fa-palette me-2"></i>عدد الثيمات: ${pkg.themes_count}</li>
-                                <li><i class="fas fa-tag me-2"></i>السعر: ${pkg.base_price} درهم</li>
+                                <li><i class="fas fa-tag me-2"></i>السعر: ${pkg.base_price} ريال</li>
                             </ul>
                         </div>
                     </div>

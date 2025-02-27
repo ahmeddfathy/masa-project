@@ -15,7 +15,7 @@
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="خدمات عدسة سوما - تصوير احترافي وخدمات متكاملة للعائلات">
     <meta property="og:description" content="خدمات تصوير فوتوغرافي احترافي، مجسمات ثري دي، البومات أطفال، وصور مطبوعة فاخرة. خدمات متكاملة للعائلات والأطفال في الرياض.">
-    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta property="og:image" content="/assets/images/logo.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="خدمات عدسة سوما - تصوير احترافي وخدمات متكاملة للعائلات">
     <meta name="twitter:description" content="خدمات تصوير فوتوغرافي احترافي، مجسمات ثري دي، البومات أطفال، وصور مطبوعة فاخرة. خدمات متكاملة للعائلات والأطفال في الرياض.">
-    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -39,9 +39,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/services.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}">
+    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
+    <link rel="stylesheet" href="/assets/css/studio-client/services.css">
+    <link rel="stylesheet" href="/assets/css/studio-client/responsive.css">
 </head>
 <body>
     @include('parts.navbar')

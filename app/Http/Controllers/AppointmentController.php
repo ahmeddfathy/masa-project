@@ -27,11 +27,6 @@ class AppointmentController extends Controller
         return view('appointments.index', compact('appointments'));
     }
 
-    public function create()
-    {
-        return view('appointments.create');
-    }
-
     public function store(Request $request)
     {
         if (!Auth::check()) {
@@ -232,6 +227,30 @@ class AppointmentController extends Controller
             Log::error('خطأ في إلغاء الموعد: ' . $e->getMessage());
             return back()
                 ->with('error', 'حدث خطأ أثناء إلغاء الموعد. الرجاء المحاولة مرة أخرى.');
+        }
+    }
+
+    public function checkAvailability(Request $request)
+    {
+        $date = $request->get('date');
+        if (!$date) {
+            return response()->json(['error' => 'التاريخ مطلوب'], 400);
+        }
+
+        try {
+            $appointments = Appointment::where('appointment_date', $date)
+                ->where('status', '!=', 'cancelled')
+                ->get()
+                ->map(function ($appointment) {
+                    return [
+                        'time' => $appointment->appointment_time->format('H:i')
+                    ];
+                });
+
+            return response()->json($appointments);
+        } catch (\Exception $e) {
+            Log::error('Error checking appointment availability: ' . $e->getMessage());
+            return response()->json(['error' => 'حدث خطأ أثناء التحقق من المواعيد المتاحة'], 500);
         }
     }
 }

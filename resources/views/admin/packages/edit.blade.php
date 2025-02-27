@@ -125,5 +125,5 @@
 @endsection
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/admin/packages.css') }}">
+    <link rel="stylesheet" href="/assets/css/admin/packages.css">
 @endsection

@@ -89,7 +89,7 @@
                                         <div class="product-card shadow-sm">
                                             <div class="product-image-container">
                                                 @if($product->primary_image)
-                                                <img src="{{ Storage::url($product->primary_image->image_path) }}"
+                                                <img src="{{ url('storage/' . $product->primary_image->image_path) }}"
                                                     alt="{{ $product->name }}"
                                                     class="product-image" />
                                                 @else
@@ -184,5 +184,5 @@
 @endsection
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('assets/css/admin/products.css') }}">
+<link rel="stylesheet" href="/assets/css/admin/products.css">
 @endsection

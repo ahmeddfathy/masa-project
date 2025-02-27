@@ -3,8 +3,7 @@
 @section('title', 'تفاصيل الحجز')
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('assets/css/booking/show.css') }}">
-
+<link rel="stylesheet" href="/assets/css/booking/show.css">
 @endsection
 
 @section('content')
@@ -37,24 +36,73 @@
                 </p>
             </div>
             <div class="text-end">
-                <span class="booking-status badge bg-{{ $booking->status === 'confirmed' ? 'success' : ($booking->status === 'pending' ? 'warning' : 'danger') }}">
-                    {{ $booking->status === 'confirmed' ? 'تم الدفع' : ($booking->status === 'pending' ? 'قيد المعالجة' : 'فشل الدفع') }}
-                </span>
+                @switch($booking->status)
+                    @case('pending')
+                        <span class="badge bg-warning">
+                            <i class="fas fa-clock me-1"></i>
+                            في انتظار التأكيد
+                        </span>
+                        @break
+                    @case('confirmed')
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i>
+                            تم تأكيد الحجز
+                        </span>
+                        @break
+                    @case('completed')
+                        <span class="badge bg-info">
+                            <i class="fas fa-check-double me-1"></i>
+                            تم إكمال الجلسة
+                        </span>
+                        @break
+                    @case('cancelled')
+                        <span class="badge bg-danger">
+                            <i class="fas fa-times-circle me-1"></i>
+                            تم إلغاء الحجز
+                        </span>
+                        @break
+                    @default
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-question-circle me-1"></i>
+                            غير معروف
+                        </span>
+                @endswitch
             </div>
         </div>
 
-        <div class="booking-body">
-            @if($booking->status === 'pending')
+        <!-- Status Message -->
+        @switch($booking->status)
+            @case('pending')
                 <div class="alert alert-warning mb-4">
-                    <i class="fas fa-clock me-2"></i>
-                    الحجز قيد المعالجة. سيتم تحديث حالة الحجز تلقائياً عند اكتمال عملية الدفع.
+                    <i class="fas fa-info-circle me-2"></i>
+                    حجزك في انتظار المراجعة والتأكيد من قبل الاستوديو. سيتم التواصل معك قريباً.
                 </div>
-            @elseif($booking->status !== 'confirmed')
+                @break
+            @case('confirmed')
+                <div class="alert alert-success mb-4">
+                    <i class="fas fa-check-circle me-2"></i>
+                    تم تأكيد حجزك. نتطلع لرؤيتك في الموعد المحدد.
+                </div>
+                @break
+            @case('completed')
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-check-double me-2"></i>
+                    تم إكمال الجلسة بنجاح. شكراً لاختيارك عدسة سوما.
+                </div>
+                @break
+            @case('cancelled')
                 <div class="alert alert-danger mb-4">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    فشلت عملية الدفع. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.
+                    <i class="fas fa-times-circle me-2"></i>
+                    تم إلغاء هذا الحجز.
+                    @if($booking->cancellation_reason)
+                        <br>
+                        <small>السبب: {{ $booking->cancellation_reason }}</small>
+                    @endif
                 </div>
-            @endif
+                @break
+        @endswitch
+
+        <div class="booking-body">
             <div class="row">
                 <!-- Session Details -->
                 <div class="col-md-6">
@@ -120,9 +168,6 @@
                         </div>
                         <div class="text-end">
                             <p class="mb-0">{{ $addon->pivot->quantity }} × {{ $addon->pivot->price_at_booking }} درهم</p>
-                            <p class="mb-0 text-primary">
-                                الإجمالي: {{ $addon->pivot->quantity * $addon->pivot->price_at_booking }} درهم
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -130,37 +175,16 @@
             </div>
             @endif
 
-            <!-- Price Details -->
-            <div class="price-details">
-                <h5>تفاصيل السعر</h5>
-                <div class="price-row">
-                    <span>سعر الباقة الأساسي</span>
-                    <span>{{ $booking->package->base_price }} درهم</span>
-                </div>
-                @if($booking->addons->count() > 0)
-                <div class="price-row">
-                    <span>الإضافات</span>
-                    <span>{{ $booking->addons->sum(function($addon) {
-                        return $addon->pivot->quantity * $addon->pivot->price_at_booking;
-                    }) }} درهم</span>
-                </div>
-                @endif
-                <div class="total-price d-flex justify-content-between">
-                    <span>الإجمالي</span>
-                    <span>{{ $booking->total_amount }} درهم</span>
-                </div>
-            </div>
-
             <!-- Notes -->
             @if($booking->notes)
-            <div class="consent-section">
+            <div class="mt-4">
                 <h5>ملاحظات إضافية</h5>
                 <p class="mb-0">{{ $booking->notes }}</p>
             </div>
             @endif
 
             <!-- Consent Information -->
-            <div class="consent-section">
+            <div class="mt-4">
                 <h5>الموافقات</h5>
                 <div class="row">
                     <div class="col-md-6">
@@ -170,7 +194,7 @@
                                 @if($booking->image_consent)
                                     <span class="text-success">
                                         <i class="fas fa-check-circle me-1"></i>
-                                        تمت الموافقة على عرض الصور في معرض الاستوديو ومواقع التواصل الاجتماعي
+                                        تمت الموافقة على عرض الصور
                                     </span>
                                 @else
                                     <span class="text-danger">
@@ -181,23 +205,12 @@
                             </p>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="info-group mb-0">
-                            <h6><i class="fas fa-file-contract me-1"></i> الموافقة على الشروط والسياسات</h6>
-                            <p class="mb-0">
-                                <span class="text-success">
-                                    <i class="fas fa-check-circle me-1"></i>
-                                    تمت الموافقة على الشروط والسياسات
-                                </span>
-                            </p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Actions -->
-            <div class="actions">
-                <a href="{{ route('client.bookings.my') }}" class="btn-back">
+            <div class="actions mt-4">
+                <a href="{{ route('client.bookings.my') }}" class="btn btn-primary">
                     <i class="fas fa-arrow-right me-1"></i>
                     العودة للحجوزات
                 </a>

@@ -10,7 +10,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/css/admin/admin-layout.css') }}">
+    <link rel="stylesheet" href="/assets/css/admin/admin-layout.css">
     @yield('styles')
 </head>
 <body class="h-100">
@@ -22,7 +22,7 @@
         <aside class="sidebar shadow-sm" id="sidebar">
             <div class="sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="لوحة التحكم">
+                    <img src="/assets/images/logo.png" alt="لوحة التحكم">
                 </a>
             </div>
 
@@ -176,7 +176,7 @@
                 <div class="container-fluid">
                     <div class="d-flex align-items-center">
                         <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-                            <img src="{{ asset('assets/images/logo.png') }}" alt="لوحة التحكم">
+                            <img src="/assets/images/logo.png" alt="لوحة التحكم">
                             <span class="ms-2">@yield('page_title', 'لوحة التحكم')</span>
                         </a>
                     </div>

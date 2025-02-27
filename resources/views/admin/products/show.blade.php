@@ -43,7 +43,7 @@
                                             <i class="fas fa-images text-primary me-2"></i>
                                             صور المنتج
                                         </h5>
-                                        <img src="{{ Storage::url($product->primary_image->image_path) }}"
+                                        <img src="{{ url('storage/' . $product->primary_image->image_path) }}"
                                              alt="{{ $product->name }}"
                                              class="product-image mb-3"
                                              id="mainImage">
@@ -51,10 +51,10 @@
                                         @if($product->images->count() > 1)
                                         <div class="d-flex gap-2 flex-wrap">
                                             @foreach($product->images as $image)
-                                            <img src="{{ Storage::url($image->image_path) }}"
+                                            <img src="{{ url('storage/' . $image->image_path) }}"
                                                  alt="صورة المنتج"
                                                  class="thumbnail {{ $image->is_primary ? 'active' : '' }}"
-                                                 onclick="updateMainImage(this, '{{ Storage::url($image->image_path) }}')">
+                                                 onclick="updateMainImage(this, '{{ url('storage/' . $image->image_path) }}')">
                                             @endforeach
                                         </div>
                                         @endif

@@ -15,7 +15,7 @@
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="عدسة سوما - استوديو التصوير العائلي في الرياض">
     <meta property="og:description" content="استوديو تصوير احترافي للعائلات والأطفال في الرياض. نقدم خدمات التصوير الفوتوغرافي، مجسمات ثري دي، والبومات مطبوعة بجودة عالية.">
-    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta property="og:image" content="/assets/images/logo.png" loading="lazy">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="عدسة سوما - استوديو التصوير العائلي في الرياض">
     <meta name="twitter:description" content="استوديو تصوير احترافي للعائلات والأطفال في الرياض. نقدم خدمات التصوير الفوتوغرافي، مجسمات ثري دي، والبومات مطبوعة بجودة عالية.">
-    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -41,9 +41,9 @@
     <!-- Lightbox CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/index.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}">
+    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
+    <link rel="stylesheet" href="/assets/css/studio-client/index.css">
+    <link rel="stylesheet" href="/assets/css/studio-client/responsive.css">
     <style>
         /* تحسين الناف بار في الموبايل */
         @media (max-width: 991.98px) {
@@ -203,12 +203,12 @@
                 @foreach($latestImages as $image)
                     <div class="col-md-4">
                         <div class="gallery-item glass-effect">
-                            <img src="{{ Storage::url($image->image_url) }}" alt="{{ $image->caption }}" class="img-fluid">
+                            <img src="{{ url('storage/' . $image->image_url) }}" alt="{{ $image->caption }}" class="img-fluid" loading="lazy">
                             <div class="gallery-overlay">
                                 <div class="gallery-info">
                                     <h4>{{ $image->caption }}</h4>
                                     <p>{{ $image->category }}</p>
-                                    <a href="{{ Storage::url($image->image_url) }}" data-lightbox="gallery" class="gallery-icon">
+                                    <a href="{{ url('storage/' . $image->image_url) }}" data-lightbox="gallery" class="gallery-icon">
                                         <i class="fas fa-expand"></i>
                                     </a>
                                 </div>
@@ -237,7 +237,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="about-image">
-                        <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32" alt="استوديو أركان" class="img-fluid rounded-3 shadow">
+                        <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32" alt="استوديو أركان" class="img-fluid rounded-3 shadow" loading="lazy">
                     </div>
                 </div>
             </div>

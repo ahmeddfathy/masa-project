@@ -4,7 +4,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="{{ asset('assets/css/customer/orders.css') }}">
+<link rel="stylesheet" href="/assets/css/customer/orders.css">
 @endsection
 
 @section('content')
@@ -77,7 +77,7 @@
                             @foreach($order->items as $item)
                             <div class="order-item">
                                 @if($item->product->images->first())
-                                <img src="{{ Storage::url($item->product->images->first()->image_path) }}"
+                                <img src="{{ url('storage/' . $item->product->images->first()->image_path) }}"
                                     alt="{{ $item->product->name }}"
                                     class="item-image">
                                 @endif

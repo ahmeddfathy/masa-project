@@ -14,7 +14,7 @@
         height: 300px;
     }
 </style>
-<link rel="stylesheet" href="{{ asset('assets/css/admin/bookings.css') }}">
+<link rel="stylesheet" href="/assets/css/admin/bookings.css">
 @endsection
 
 @section('content')

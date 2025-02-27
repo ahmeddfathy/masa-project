@@ -51,7 +51,6 @@ return [
         'messaging_sender_id' => env('FIREBASE_MESSAGING_SENDER_ID'),
         'app_id' => env('FIREBASE_APP_ID'),
         'vapid_key' => env('FIREBASE_VAPID_KEY'),
-        'credentials' => storage_path('app/firebase/your-service-account-file.json'),
     ],
 
 ];

@@ -286,6 +286,42 @@ $(document).ready(function() {
             }
         }, 250);
     });
+
+    // تحميل بيانات رقم الهاتف للتعديل
+    $('.edit-phone').on('click', function() {
+        const id = $(this).data('id');
+
+        $.get(`/phones/${id}`)
+            .done(function(phone) {
+                const form = $('#editPhoneForm');
+                form.find('input[name="phone"]').val(phone.phone);
+                form.find('select[name="type"]').val(phone.type);
+                form.find('input[name="phone_id"]').val(phone.id);
+            })
+            .fail(function() {
+                alert('حدث خطأ أثناء تحميل بيانات رقم الهاتف');
+            });
+    });
+
+    // تعديل رقم الهاتف
+    $('#editPhoneForm').on('submit', function(e) {
+        e.preventDefault();
+        const id = $(this).find('input[name="phone_id"]').val();
+        const formData = $(this).serialize();
+
+        $.ajax({
+            url: `/phones/${id}`,
+            type: 'PUT',
+            data: formData,
+            success: function(response) {
+                $('#editPhoneModal').modal('hide');
+                location.reload();
+            },
+            error: function(xhr) {
+                alert(xhr.responseJSON?.message || 'حدث خطأ أثناء تعديل رقم الهاتف');
+            }
+        });
+    });
 });
 
 // إضافة تأثيرات حركية CSS

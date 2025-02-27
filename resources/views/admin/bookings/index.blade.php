@@ -251,55 +251,6 @@ document.querySelectorAll('.clear-search').forEach(button => {
 @endpush
 
 @section('styles')
-<style>
-/* Avatar Styles */
-.avatar {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.avatar-initial {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-}
-
-/* Status Select Styles */
-.status-select {
-    min-width: 140px;
-}
-
-/* Page Header Styles */
-.page-header {
-    padding: 1.5rem 0;
-}
-
-.page-header-title {
-    font-size: 1.75rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 0.25rem;
-}
-
-.page-header-subtitle {
-    color: #6c757d;
-    font-size: 1rem;
-}
-
-.status-form {
-    min-width: 200px;
-}
-
-.status-form .btn {
-    padding: 0.25rem 0.5rem;
-}
-</style>
+<link rel="stylesheet" href="/assets/css/admin/bookings.css">
 @endsection
 @endsection

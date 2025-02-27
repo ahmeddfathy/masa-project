@@ -3,7 +3,7 @@
 @section('title', 'تعديل الصورة')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/admin/gallery.css') }}">
+    <link rel="stylesheet" href="/assets/css/admin/gallery.css">
 @endsection
 
 @section('content')
@@ -67,7 +67,7 @@
                     <div class="col-md-4">
                         <div class="current-image mb-3">
                             <label class="form-label">الصورة الحالية</label>
-                            <img src="{{ Storage::url($gallery->image_url) }}"
+                            <img src="{{ url('storage/' . $gallery->image_url) }}"
                                  alt="{{ $gallery->caption }}"
                                  class="img-fluid rounded">
                         </div>

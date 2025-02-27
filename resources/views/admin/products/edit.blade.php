@@ -160,7 +160,7 @@
                                                     @foreach($product->images as $image)
                                                     <div class="col-auto">
                                                         <div class="position-relative">
-                                                            <img src="{{ Storage::url($image->image_path) }}"
+                                                            <img src="{{ url('storage/' . $image->image_path) }}"
                                                                  alt="صورة المنتج"
                                                                  class="rounded"
                                                                  style="width: 80px; height: 80px; object-fit: cover;">
@@ -435,7 +435,7 @@
 @endsection
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('assets/css/admin/products.css') }}">
+<link rel="stylesheet" href="/assets/css/admin/products.css">
 @endsection
 
 @section('scripts')

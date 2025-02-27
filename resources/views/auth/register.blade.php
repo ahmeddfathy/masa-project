@@ -53,8 +53,11 @@
                             <span class="input-group-text">
                                 <i class="fas fa-phone"></i>
                             </span>
-                            <input type="tel" class="form-control" name="phone" :value="old('phone')" placeholder="05xxxxxxxx" required>
+                            <input type="tel" class="form-control" name="phone" :value="old('phone')" placeholder="مثال: +1234567890" dir="ltr" required>
                         </div>
+                        <small class="form-text text-muted">
+                            أدخل رقم الهاتف مع رمز الدولة (مثال: +20 لمصر، +966 للسعودية)
+                        </small>
                     </div>
 
                     <div class="form-group">
@@ -73,7 +76,17 @@
                             <span class="input-group-text">
                                 <i class="fas fa-lock"></i>
                             </span>
-                            <input type="password" class="form-control" name="password" placeholder="********" required>
+                            <input type="password" class="form-control" name="password" placeholder="مثال: Abc@1234" required>
+                        </div>
+                        <div class="password-requirements mt-2">
+                            <small class="text-muted">كلمة المرور يجب أن تحتوي على:</small>
+                            <ul class="mt-1">
+                                <li><i class="fas fa-circle text-muted"></i> 8 أحرف على الأقل</li>
+                                <li><i class="fas fa-circle text-muted"></i> حرف كبير (A-Z)</li>
+                                <li><i class="fas fa-circle text-muted"></i> حرف صغير (a-z)</li>
+                                <li><i class="fas fa-circle text-muted"></i> رقم (0-9)</li>
+                                <li><i class="fas fa-circle text-muted"></i> رمز خاص مثل @ # $ % ^ & *</li>
+                            </ul>
                         </div>
                     </div>
 

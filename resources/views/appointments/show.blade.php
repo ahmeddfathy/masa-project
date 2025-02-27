@@ -4,7 +4,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="{{ asset('assets/css/customer/appointments.css') }}">
+<link rel="stylesheet" href="/assets/css/customer/appointments.css">
 <style>
     .custom-design-badge {
         background-color: #6c5ce7;

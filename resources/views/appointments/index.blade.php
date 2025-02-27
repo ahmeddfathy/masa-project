@@ -4,17 +4,13 @@
 
 @section('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="{{ asset('assets/css/customer/appointments.css') }}">
+<link rel="stylesheet" href="/assets/css/customer/appointments.css">
 @endsection
 
 @section('content')
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="page-title mb-0">المواعيد</h2>
-        <a href="{{ route('appointments.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i>
-            حجز موعد جديد
-        </a>
     </div>
 
     <div class="filters">
@@ -99,10 +95,6 @@
                 </div>
                 <h3>لا توجد مواعيد</h3>
                 <p>لا توجد مواعيد مسجلة حالياً</p>
-                <a href="{{ route('appointments.create') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i>
-                    حجز موعد جديد
-                </a>
             </div>
         @endforelse
 

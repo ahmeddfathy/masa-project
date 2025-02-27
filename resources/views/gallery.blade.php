@@ -15,7 +15,7 @@
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="معرض صور عدسة سوما - صور احترافية للعائلات والأطفال">
     <meta property="og:description" content="معرض صور متنوع يضم أجمل لحظات العائلات والأطفال. تصوير مواليد، أطفال، وجلسات تصوير عائلية في الرياض.">
-    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta property="og:image" content="/assets/images/logo.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="معرض صور عدسة سوما - صور احترافية للعائلات والأطفال">
     <meta name="twitter:description" content="معرض صور متنوع يضم أجمل لحظات العائلات والأطفال. تصوير مواليد، أطفال، وجلسات تصوير عائلية في الرياض.">
-    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
+    <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -41,9 +41,26 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/gallery.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}">
+    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
+    <link rel="stylesheet" href="/assets/css/studio-client/gallery.css">
+    <link rel="stylesheet" href="/assets/css/studio-client/responsive.css">
+    <style>
+        .lazy {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 300px; /* أو الارتفاع المناسب */
+            object-fit: cover;
+        }
+
+        .gallery-item {
+            margin-bottom: 20px;
+            background-color: #f0f0f0; /* لون خلفية مؤقت أثناء تحميل الصورة */
+        }
+    </style>
 </head>
 <body>
     @include('parts.navbar')
@@ -149,19 +166,25 @@
                 @foreach($images as $category => $categoryImages)
                     @foreach($categoryImages as $image)
                         <div class="col-md-4" data-category="{{ $category }}">
-                    <div class="gallery-item">
-                                <img src="{{ Storage::url($image->image_url) }}" alt="{{ $image->caption }}" loading="lazy">
-                        <div class="gallery-overlay">
-                            <div class="gallery-info">
+                            <div class="gallery-item">
+                                <img
+                                    class="lazy"
+                                    src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                                    data-src="{{ url('storage/' . $image->image_url) }}"
+                                    alt="{{ $image->caption }}"
+                                    loading="lazy"
+                                >
+                                <div class="gallery-overlay">
+                                    <div class="gallery-info">
                                         <h4>{{ $image->caption }}</h4>
                                         <p>{{ $category }}</p>
-                                        <a href="{{ Storage::url($image->image_url) }}" data-lightbox="gallery" class="gallery-icon">
-                                    <i class="fas fa-expand"></i>
-                                </a>
+                                        <a href="{{ url('storage/' . $image->image_url) }}" data-lightbox="gallery" class="gallery-icon">
+                                            <i class="fas fa-expand"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                            </div>
                     @endforeach
                 @endforeach
             </div>
@@ -206,37 +229,38 @@
                 });
             });
 
-            // Initialize Lightbox with custom options
-            lightbox.option({
-                'resizeDuration': 200,
-                'wrapAround': true,
-                'showImageNumberLabel': false,
-                'fadeDuration': 300,
-                'imageFadeDuration': 300,
-                'alwaysShowNavOnTouchDevices': true
+            // تحسين Lazy Loading باستخدام Intersection Observer
+            const lazyImageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        img.onload = () => {
+                            img.style.opacity = 1;
+                        };
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: '50px',
+                threshold: 0.1
             });
 
-            // Add Intersection Observer for better lazy loading support
-            if ('IntersectionObserver' in window) {
-                const imageObserver = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            img.src = img.dataset.src;
-                            img.classList.remove('lazy');
-                            observer.unobserve(img);
-                        }
-                    });
-                });
+            // تطبيق المراقب على جميع الصور
+            document.querySelectorAll('img.lazy').forEach(img => {
+                lazyImageObserver.observe(img);
+            });
 
-                // Convert all images to use data-src and add lazy class
-                document.querySelectorAll('img[loading="lazy"]').forEach(img => {
-                    img.dataset.src = img.src;
-                    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // Tiny placeholder
-                    img.classList.add('lazy');
-                    imageObserver.observe(img);
-                });
-            }
+            // تحسين أداء Lightbox
+            lightbox.option({
+                'disableScrolling': true,
+                'fadeDuration': 300,
+                'resizeDuration': 300,
+                'imageFadeDuration': 300,
+                'wrapAround': true
+            });
         });
     </script>
 </body>

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use App\Notifications\BookingStatusUpdated;
 
 class BookingController extends Controller
 {
@@ -221,6 +222,46 @@ class BookingController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'حدث خطأ أثناء جلب المواعيد المتاحة: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * تحديث حالة الحجز
+     */
+    public function updateStatus(Booking $booking, Request $request)
+    {
+        try {
+            // التحقق من صحة البيانات
+            $validated = $request->validate([
+                'status' => 'required|in:pending,confirmed,cancelled,completed,no_show,rescheduled',
+                'notes' => 'nullable|string'
+            ]);
+
+            // تحديث حالة الحجز
+            $booking->status = $validated['status'];
+            if (isset($validated['notes'])) {
+                $booking->notes = $validated['notes'];
+            }
+            $booking->save();
+
+            // إرسال إشعار للمستخدم
+            $booking->user->notify(new BookingStatusUpdated($booking));
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم تحديث حالة الحجز بنجاح'
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error updating booking status: ' . $e->getMessage(), [
+                'booking_id' => $booking->id,
+                'request_data' => $request->all()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'حدث خطأ أثناء تحديث حالة الحجز'
             ], 500);
         }
     }

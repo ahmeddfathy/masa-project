@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
         <a class="navbar-brand" href="{{ route('home') }}">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="عدسة سوما">
+            <img src="/assets/images/logo.png" alt="عدسة سوما" loading="lazy">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -25,16 +25,14 @@
                     </ul>
                 </li>
 
-                <!-- Gallery & About Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle {{ request()->routeIs('gallery') || request()->routeIs('about') ? 'active' : '' }}"
-                       href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        من نحن
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
-                        <li><a class="dropdown-item {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">معرض الصور</a></li>
-                        <li><a class="dropdown-item {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">من نحن</a></li>
-                    </ul>
+                <!-- Gallery Link -->
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">معرض الصور</a>
+                </li>
+
+                <!-- About Link -->
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">من نحن</a>
                 </li>
 
                 <!-- Bookings Dropdown -->

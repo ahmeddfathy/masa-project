@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/css/customer/dashboard.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/customer-layout.css') }}">
+    <link rel="stylesheet" href="/assets/css/customer/dashboard.css">
+    <link rel="stylesheet" href="/assets/css/customer-layout.css">
     @yield('styles')
 </head>
 
@@ -26,7 +26,7 @@
     <nav class="navbar navbar-expand-lg glass-navbar sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Madil" height="120" >
+                <img src="/assets/images/logo.png" alt="Madil" height="120" >
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -87,7 +87,7 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <a href="/" class="d-block">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Madil" class="img-fluid">
+                <img src="/assets/images/logo.png" alt="Madil" class="img-fluid">
             </a>
         </div>
         <div class="sidebar-user-info">

@@ -7,8 +7,8 @@
     <title>{{ $product->name }} - Madil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('assets/css/customer/products-show.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/customer/products.css') }}">
+    <link rel="stylesheet" href="/assets/css/customer/products-show.css">
+    <link rel="stylesheet" href="/assets/css/customer/products.css">
 </head>
 <body>
     <!-- Fixed Buttons Group -->
@@ -31,7 +31,7 @@
     <nav class="navbar navbar-expand-lg glass-navbar sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Madil" height="70">
+                <img src="/assets/images/logo.png" alt="Madil" height="70">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -110,7 +110,7 @@
                     <div class="card-body">
                         @if($product->images->count() > 0)
                             <div class="main-image-wrapper mb-3">
-                                <img src="{{ Storage::url($product->primary_image->image_path) }}"
+                                <img src="{{ url('storage/' . $product->primary_image->image_path) }}"
                                     alt="{{ $product->name }}"
                                     class="main-product-image"
                                     id="mainImage">
@@ -119,8 +119,8 @@
                                 <div class="image-thumbnails">
                                     @foreach($product->images as $image)
                                         <div class="thumbnail-wrapper {{ $image->is_primary ? 'active' : '' }}"
-                                            onclick="updateMainImage('{{ Storage::url($image->image_path) }}', this)">
-                                            <img src="{{ Storage::url($image->image_path) }}"
+                                            onclick="updateMainImage('{{ url('storage/' . $image->image_path) }}', this)">
+                                            <img src="{{ url('storage/' . $image->image_path) }}"
                                                 alt="Product thumbnail"
                                                 class="thumbnail-image">
                                         </div>
@@ -416,6 +416,14 @@
                                        name="appointment_date" min="{{ date('Y-m-d') }}" required>
                             </div>
                             <div class="invalid-feedback" id="date-error"></div>
+                            <!-- إضافة عنصر لعرض اقتراح اليوم المتاح -->
+                            <div class="alert alert-info mt-2 d-none" id="dateSuggestion">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span id="suggestionText"></span>
+                                <button type="button" class="btn btn-link p-0 ms-2" id="acceptSuggestion">
+                                    اختيار هذا اليوم
+                                </button>
+                            </div>
                         </div>
 
                         <div class="mb-4">
@@ -434,10 +442,8 @@
                             <label for="location" class="form-label fw-bold">الموقع</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                                <select class="form-select form-select-lg" id="location" name="location"
-                                        required onchange="toggleAddress()">
+                                <select class="form-select form-select-lg" id="location" name="location" required>
                                     <option value="store">في المحل</option>
-                                    <option value="client_location">موقع العميل</option>
                                 </select>
                             </div>
                         </div>
@@ -528,6 +534,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{ asset('assets/js/customer/products-show.js') }}"></script>
+    <script src="/assets/js/customer/products-show.js"></script>
 </body>
 </html>

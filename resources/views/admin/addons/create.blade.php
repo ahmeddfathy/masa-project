@@ -83,7 +83,7 @@
 @endsection
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/admin/addons.css') }}">
+    <link rel="stylesheet" href="/assets/css/admin/addons.css">
     <style>
         .form-control {
             border: 1px solid #e2e8f0;

@@ -3,7 +3,7 @@
 @section('title', 'لوحة التحكم')
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+<link rel="stylesheet" href="/css/dashboard.css">
 @endsection
 
 @section('content')
@@ -598,7 +598,42 @@
                 <button type="button" class="btn-close ms-0 me-auto" data-bs-dismiss="modal"></button>
             </div>
             <form id="editAddressForm">
-                <!-- نفس محتوى نموذج إضافة العنوان -->
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label required">النوع</label>
+                        <select class="form-select" name="type" required>
+                            <option value="">اختر نوع العنوان</option>
+                            @foreach(App\Models\Address::TYPES as $value => $text)
+                                <option value="{{ $value }}">{{ $text }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">المدينة</label>
+                        <input type="text" class="form-control" name="city" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">المنطقة</label>
+                        <input type="text" class="form-control" name="area" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required">الشارع</label>
+                        <input type="text" class="form-control" name="street" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">رقم المبنى</label>
+                        <input type="text" class="form-control" name="building_no">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تفاصيل إضافية</label>
+                        <textarea class="form-control" name="details" rows="3"
+                                  placeholder="مثال: بجوار مسجد، خلف مدرسة، الخ..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+                </div>
                 <input type="hidden" name="address_id">
             </form>
         </div>
@@ -609,7 +644,7 @@
 @section('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{{ asset('js/dashboard.js') }}"></script>
+<script src="/js/dashboard.js"></script>
 
 <script>
     // تهيئة CSRF token

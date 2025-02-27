@@ -3,7 +3,7 @@
 @section('title', 'معرض الصور')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ asset('assets/css/admin/gallery.css') }}">
+    <link rel="stylesheet" href="/assets/css/admin/gallery.css">
 @endsection
 
 @section('content')
@@ -26,7 +26,7 @@
         @forelse($images as $image)
             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <div class="card h-100">
-                    <img src="{{ Storage::url($image->image_url) }}"
+                    <img src="{{ url('storage/' . $image->image_url) }}"
                          class="card-img-top"
                          alt="{{ $image->caption }}"
                          style="height: 200px; object-fit: cover;">

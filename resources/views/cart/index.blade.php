@@ -4,7 +4,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="{{ asset('assets/css/customer/cart.css') }}">
+<link rel="stylesheet" href="/assets/css/customer/cart.css">
 <style>
   .appointment-alert {
     border-right: 4px solid #ffc107;
@@ -43,7 +43,7 @@
           @php
           // Get any available image for the product, not just primary
           $productImage = $item->product->images->first();
-          $imagePath = $productImage ? Storage::url($productImage->image_path) : asset('images/no-image.png');
+          $imagePath = $productImage ? url('storage/' . $productImage->image_path) : url('images/no-image.png');
           @endphp
           <img src="{{ $imagePath }}" alt="{{ $item->product->name }}" class="cart-item-image">
           <div class="cart-item-details">
@@ -171,7 +171,7 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('assets/js/customer/products-show.js') }}"></script>
+<script src="/assets/js/customer/products-show.js"></script>
 <script>
 function showAlert(message, type = 'success') {
     const alertsContainer = document.getElementById('alerts-container');

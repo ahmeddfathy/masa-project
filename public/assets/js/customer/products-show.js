@@ -590,114 +590,70 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('cartToggle').addEventListener('click', toggleCart);
     document.getElementById('fixedCartBtn').addEventListener('click', toggleCart);
 
-    const appointmentDate = document.getElementById('appointment_date');
-    if (appointmentDate) {
+    const form = document.getElementById('appointmentForm');
+    const dateInput = document.getElementById('appointment_date');
+    const timeSelect = document.getElementById('appointment_time');
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = document.querySelector('.loading-spinner');
+    const errorDiv = document.getElementById('appointmentErrors');
+    const dateError = document.getElementById('date-error');
+    const timeError = document.getElementById('time-error');
+
+    if (dateInput) {
         const today = new Date();
         const maxDate = new Date();
         maxDate.setDate(today.getDate() + 30);
 
-        appointmentDate.min = today.toISOString().split('T')[0];
-        appointmentDate.max = maxDate.toISOString().split('T')[0];
+        dateInput.min = today.toISOString().split('T')[0];
+        dateInput.max = maxDate.toISOString().split('T')[0];
 
-        appointmentDate.addEventListener('change', function() {
+        // Handle date change
+        dateInput.addEventListener('change', async function() {
+            const selectedDate = this.value;
             const timeSelect = document.getElementById('appointment_time');
-            const dateError = document.getElementById('date-error');
+            const dateSuggestion = document.getElementById('dateSuggestion');
+            const suggestionText = document.getElementById('suggestionText');
+            const acceptSuggestion = document.getElementById('acceptSuggestion');
 
-            timeSelect.innerHTML = '<option value="">اختر الوقت المناسب</option>';
-            timeSelect.disabled = true;
-            dateError.textContent = '';
-            this.classList.remove('is-invalid');
+            try {
+                const response = await fetch(`/appointments/check-availability?date=${selectedDate}`);
+                const appointments = await response.json();
 
-            if (!this.value) return;
+                // تحديد الأوقات المحجوزة
+                const bookedTimes = appointments.map(app => app.time);
 
-            const [year, month, day] = this.value.split('-').map(Number);
-            const selectedDate = new Date(year, month - 1, day);
-            const dayOfWeek = selectedDate.getDay();
+                // التحقق من عدد المواعيد المتاحة
+                const availableSlots = getAvailableTimeSlots(selectedDate, bookedTimes);
 
-            const arabicDays = {
-                0: 'الأحد',
-                1: 'الإثنين',
-                2: 'الثلاثاء',
-                3: 'الأربعاء',
-                4: 'الخميس',
-                5: 'الجمعة',
-                6: 'السبت'
-            };
+                if (availableSlots.length === 0) {
+                    // البحث عن أقرب يوم متاح
+                    const nextAvailableDate = await findNextAvailableDate(selectedDate);
 
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            if (selectedDate < today) {
-                this.classList.add('is-invalid');
-                dateError.textContent = 'لا يمكن اختيار تاريخ في الماضي';
-                timeSelect.disabled = true;
-                return;
-            }
-
-            const slots = dayOfWeek === 5 ?
-                [{ start: '17:00', end: '23:00', label: 'الفترة المسائية' }] :
-                [
-                    { start: '11:00', end: '14:00', label: 'الفترة الصباحية' },
-                    { start: '17:00', end: '23:00', label: 'الفترة المسائية' }
-                ];
-
-            timeSelect.innerHTML = `<option value="">اختر الوقت المناسب ليوم ${arabicDays[dayOfWeek]}</option>`;
-
-            slots.forEach(slot => {
-                const group = document.createElement('optgroup');
-                group.label = slot.label;
-
-                let currentTime = new Date(`2000-01-01T${slot.start}`);
-                const endTime = new Date(`2000-01-01T${slot.end}`);
-
-                const isToday = selectedDate.toDateString() === new Date().toDateString();
-                const now = new Date();
-
-                while (currentTime < endTime) {
-                    const option = document.createElement('option');
-                    const hours = currentTime.getHours().toString().padStart(2, '0');
-                    const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-                    const timeValue = `${hours}:${minutes}`;
-
-                    if (isToday) {
-                        const slotTime = new Date(selectedDate);
-                        slotTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                        if (slotTime <= now) {
-                            currentTime.setMinutes(currentTime.getMinutes() + 30);
-                            continue;
-                        }
-                    }
-
-                    const timeString = new Date(`2000-01-01T${timeValue}`)
-                        .toLocaleTimeString('ar-SA', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: true
+                    if (nextAvailableDate) {
+                        dateSuggestion.classList.remove('d-none');
+                        const formattedDate = new Date(nextAvailableDate).toLocaleDateString('ar-SA', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
                         });
+                        suggestionText.textContent = `هذا اليوم مكتمل. أقرب يوم متاح هو ${formattedDate}`;
 
-                    option.value = timeValue;
-                    option.textContent = timeString;
-                    group.appendChild(option);
-
-                    currentTime.setMinutes(currentTime.getMinutes() + 30);
+                        // عند الضغط على زر القبول
+                        acceptSuggestion.onclick = function() {
+                            dateInput.value = nextAvailableDate;
+                            dateInput.dispatchEvent(new Event('change'));
+                            dateSuggestion.classList.add('d-none');
+                        };
+                    }
+                } else {
+                    dateSuggestion.classList.add('d-none');
+                    populateTimeSelect(timeSelect, availableSlots);
                 }
-
-                if (group.children.length > 0) {
-                    timeSelect.appendChild(group);
-                }
-            });
-
-            const hasSlots = timeSelect.querySelectorAll('option').length > 1;
-            timeSelect.disabled = !hasSlots;
-
-            if (!hasSlots && isToday) {
-                dateError.textContent = 'لا توجد مواعيد متاحة اليوم، يرجى اختيار يوم آخر';
-                this.classList.add('is-invalid');
+            } catch (error) {
+                console.error('Error checking availability:', error);
             }
         });
-
-        if (appointmentDate.value) {
-            appointmentDate.dispatchEvent(new Event('change'));
-        }
     }
 
     const useCustomColorCheckbox = document.getElementById('useCustomColor');
@@ -914,3 +870,70 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// دالة للبحث عن أقرب يوم متاح
+async function findNextAvailableDate(startDate) {
+    const maxTries = 30; // نبحث لمدة 30 يوم كحد أقصى
+    let currentDate = new Date(startDate);
+
+    for (let i = 1; i <= maxTries; i++) {
+        currentDate.setDate(currentDate.getDate() + 1);
+        const dateString = currentDate.toISOString().split('T')[0];
+
+        try {
+            const response = await fetch(`/appointments/check-availability?date=${dateString}`);
+            const appointments = await response.json();
+
+            // التحقق من توفر مواعيد في هذا اليوم
+            const bookedTimes = appointments.map(app => app.time);
+            const availableSlots = getAvailableTimeSlots(dateString, bookedTimes);
+
+            if (availableSlots.length > 0) {
+                return dateString;
+            }
+        } catch (error) {
+            console.error('Error checking next available date:', error);
+        }
+    }
+
+    return null;
+}
+
+// دالة لحساب المواعيد المتاحة في يوم معين
+function getAvailableTimeSlots(date, bookedTimes) {
+    const workingHours = {
+        start: 10, // 10 AM
+        end: 18    // 6 PM
+    };
+
+    const slots = [];
+    const selectedDate = new Date(date);
+    const dayOfWeek = selectedDate.getDay();
+
+    // التحقق من أيام العمل (من السبت إلى الخميس)
+    if (dayOfWeek !== 5) { // الجمعة = 5
+        for (let hour = workingHours.start; hour < workingHours.end; hour++) {
+            for (let minute = 0; minute < 60; minute += 30) {
+                const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                if (!bookedTimes.includes(timeString)) {
+                    slots.push(timeString);
+                }
+            }
+        }
+    }
+
+    return slots;
+}
+
+// دالة لتعبئة قائمة الأوقات المتاحة
+function populateTimeSelect(selectElement, availableSlots) {
+    selectElement.innerHTML = '<option value="">اختر الوقت</option>';
+    selectElement.disabled = false;
+
+    availableSlots.forEach(slot => {
+        const option = document.createElement('option');
+        option.value = slot;
+        option.textContent = slot;
+        selectElement.appendChild(option);
+    });
+}
