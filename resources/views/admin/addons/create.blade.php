@@ -39,19 +39,26 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-medium mb-3">الخدمات المتاحة</label>
+                            <label class="form-label fw-medium mb-3">الباقات المتاحة</label>
                             <div class="row g-3">
                                 @foreach($packages as $package)
-                                    <div class="col-md-4">
-                                        <div class="form-check">
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check package-item p-3 border rounded">
                                             <input type="checkbox"
                                                    class="form-check-input"
                                                    name="package_ids[]"
                                                    id="package_{{ $package->id }}"
                                                    value="{{ $package->id }}"
                                                    {{ in_array($package->id, old('package_ids', [])) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="package_{{ $package->id }}">
-                                                {{ $package->name }}
+                                            <label class="form-check-label d-block" for="package_{{ $package->id }}">
+                                                <strong>{{ $package->name }}</strong>
+                                                <div class="mt-2">
+                                                    <small class="text-muted">الخدمات:
+                                                        @foreach($package->services as $service)
+                                                            <span class="badge bg-success me-1">{{ $service->name }}</span>
+                                                        @endforeach
+                                                    </small>
+                                                </div>
                                             </label>
                                         </div>
                                     </div>
@@ -110,6 +117,17 @@
         .form-check-label {
             cursor: pointer;
             padding-right: 0.5rem;
+        }
+        .package-item {
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        .package-item:hover {
+            background-color: #e9ecef;
+            border-color: #3b82f6 !important;
+        }
+        .form-check-input:checked + .form-check-label .badge {
+            background-color: #3b82f6 !important;
         }
     </style>
 @endsection

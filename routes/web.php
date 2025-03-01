@@ -187,6 +187,10 @@ Route::middleware([
         });
 
         Route::get('/admin/studio-reports', [StudioReportsController::class, 'index'])->name('studio-reports.index');
+
+        // مسارات الإعدادات
+        Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
     });
 });
 
@@ -228,11 +232,6 @@ Route::name('client.')->middleware(['auth'])->group(function () {
 Route::name('client.bookings.payment.')->group(function () {
     Route::post('/client/bookings/payment/callback', [BookingController::class, 'paymentCallback'])->name('callback');
     Route::get('/client/bookings/payment/return', [BookingController::class, 'paymentReturn'])->name('return');
-});
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/settings', [SettingController::class, 'index'])->name('admin.settings.index');
-    Route::post('/admin/settings', [SettingController::class, 'update'])->name('admin.settings.update');
 });
 
 Route::post('/client/bookings/available-slots', [BookingController::class, 'getAvailableTimeSlots'])

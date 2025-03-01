@@ -46,6 +46,53 @@
                     <small class="form-text text-muted">هذا الرقم يحدد عدد الحجوزات المسموح بها في نفس الوقت</small>
                 </div>
 
+                <!-- إضافة إعدادات ساعات العمل -->
+                <div class="card mb-4 border-left-info">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-info">ساعات العمل اليومية</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="studio_start_time" class="font-weight-bold">
+                                        وقت بداية العمل
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="time"
+                                           class="form-control @error('studio_start_time') is-invalid @enderror"
+                                           id="studio_start_time"
+                                           name="studio_start_time"
+                                           value="{{ old('studio_start_time', $settings['studio_start_time'] ?? '10:00') }}">
+                                    @error('studio_start_time')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="studio_end_time" class="font-weight-bold">
+                                        وقت نهاية العمل
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="time"
+                                           class="form-control @error('studio_end_time') is-invalid @enderror"
+                                           id="studio_end_time"
+                                           name="studio_end_time"
+                                           value="{{ old('studio_end_time', $settings['studio_end_time'] ?? '18:00') }}">
+                                    @error('studio_end_time')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">
+                            <i class="fas fa-info-circle"></i>
+                            يمكنك تحديد ساعات عمل تمتد عبر منتصف الليل (مثل: من 8:30 مساءً إلى 2:00 صباحاً).
+                        </small>
+                    </div>
+                </div>
+
                 <div class="form-group mb-3">
                     <div class="custom-control custom-switch">
                         <input type="checkbox"

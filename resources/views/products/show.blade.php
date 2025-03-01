@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/customer/products-show.css">
     <link rel="stylesheet" href="/assets/css/customer/products.css">
+    <link rel="stylesheet" href="/assets/css/customer/quantity-pricing.css">
 </head>
 <body>
     <!-- Fixed Buttons Group -->
@@ -243,9 +244,41 @@
                                 @foreach($product->sizes as $size)
                                     <div class="size-option {{ $size->is_available ? 'available' : 'disabled' }}"
                                          onclick="{{ $size->is_available ? 'selectSize(this)' : 'return false' }}"
-                                         data-size="{{ $size->size }}">
+                                         data-size="{{ $size->size }}"
+                                         data-price="{{ $size->price }}">
                                         <i class="fas fa-check"></i>
                                         <span class="size-label">{{ $size->size }}</span>
+                                        @if($size->price > 0)
+                                            <span class="size-price">{{ number_format($size->price, 2) }} ر.س</span>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Quantity Pricing Section -->
+                    @if($product->enable_quantity_pricing && $product->quantities->isNotEmpty())
+                        <div class="quantity-pricing mb-4">
+                            <h4>
+                                <i class="fas fa-cubes"></i>
+                                خيارات الكمية
+                            </h4>
+                            <div class="quantity-options">
+                                @foreach($product->quantities as $quantity)
+                                    <div class="quantity-option {{ $quantity->is_available ? 'available' : 'disabled' }}"
+                                         onclick="{{ $quantity->is_available ? 'selectQuantityOption(this)' : 'return false' }}"
+                                         data-quantity-id="{{ $quantity->id }}"
+                                         data-quantity-value="{{ $quantity->quantity_value }}"
+                                         data-price="{{ $quantity->price }}">
+                                        <i class="fas fa-check"></i>
+                                        <div class="quantity-details">
+                                            <span class="quantity-value">{{ $quantity->quantity_value }}</span>
+                                            <span class="quantity-price">{{ number_format($quantity->price, 2) }} ر.س</span>
+                                            @if($quantity->description)
+                                                <small class="quantity-description">{{ $quantity->description }}</small>
+                                            @endif
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
@@ -326,7 +359,7 @@
     </div>
 
     <!-- Footer -->
- 
+
 <footer class="glass-footer">
       <div class="container">
         <div class="row">
@@ -335,9 +368,9 @@
               <h5>عن الاستوديو</h5>
               <p>نقدم خدمات التصوير الاحترافي وطباعة الصور والألبومات بأعلى جودة، مع التركيز على توثيق أجمل لحظات حياتكم</p>
               <div class="social-links">
-          
+
                 <a href="/https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#"><i class="fab fa-instagram"></i></a>
-            
+
               </div>
             </div>
           </div>
@@ -362,7 +395,7 @@
                 </li>
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-envelope ms-2"></i>
-                  <a href="mailto:info@somalens.com" class="text-decoration-none">lens_soma@outlook.sa 
+                  <a href="mailto:info@somalens.com" class="text-decoration-none">lens_soma@outlook.sa
 </a>
                 </li>
                 <li class="d-flex align-items-center">
@@ -399,7 +432,7 @@
                     <div class="alert alert-info mb-4">
                         <i class="fas fa-info-circle me-2"></i>
                         مواعيد العمل:
-                   <ul class='mb-0'> 
+                   <ul class='mb-0'>
                       <li>من السبت إلى الخميس: ١٠ صباحاً إلى ٦ مساءً</li></ul>
                     </div>
 
@@ -520,6 +553,9 @@
 
     <!-- Add this hidden input for product ID -->
     <input type="hidden" id="product-id" value="{{ $product->id }}">
+
+    <!-- Add this hidden input for original product price -->
+    <input type="hidden" id="original-price" value="{{ $product->price }}">
 
     <!-- Add this hidden input after product-id -->
     <input type="hidden" id="appointmentsEnabled" value="{{ $showStoreAppointments ? 'true' : 'false' }}">

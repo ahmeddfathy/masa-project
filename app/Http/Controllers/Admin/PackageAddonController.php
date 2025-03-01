@@ -11,13 +11,13 @@ class PackageAddonController extends Controller
 {
     public function index()
     {
-        $addons = PackageAddon::with('packages')->latest()->paginate(10);
+        $addons = PackageAddon::with(['packages.services'])->latest()->paginate(10);
         return view('admin.addons.index', compact('addons'));
     }
 
     public function create()
     {
-        $packages = Package::where('is_active', true)->get();
+        $packages = Package::with('services')->where('is_active', true)->get();
         return view('admin.addons.create', compact('packages'));
     }
 
@@ -47,7 +47,7 @@ class PackageAddonController extends Controller
 
     public function edit(PackageAddon $addon)
     {
-        $packages = Package::where('is_active', true)->get();
+        $packages = Package::with('services')->where('is_active', true)->get();
         return view('admin.addons.edit', compact('addon', 'packages'));
     }
 

@@ -10,8 +10,36 @@ use Illuminate\Support\Collection;
 
 class AvailabilityService
 {
-    protected const STUDIO_START_TIME = '10:00';
-    protected const STUDIO_END_TIME = '18:00';
+    protected function getStudioStartTime(): string
+    {
+        // طريقة أكثر أماناً للحصول على وقت البداية مع التأكد من صحة التنسيق
+        $startTime = Setting::get('studio_start_time');
+
+        // التحقق من صحة التنسيق
+        if (!$startTime || !preg_match('/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/', $startTime)) {
+            // السجل للمساعدة في تشخيص المشكلة
+            \Log::debug('Invalid studio_start_time format or missing value', ['value' => $startTime]);
+            return '10:00'; // القيمة الافتراضية
+        }
+
+        return $startTime;
+    }
+
+    protected function getStudioEndTime(): string
+    {
+        // طريقة أكثر أماناً للحصول على وقت النهاية مع التأكد من صحة التنسيق
+        $endTime = Setting::get('studio_end_time');
+
+        // التحقق من صحة التنسيق
+        if (!$endTime || !preg_match('/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/', $endTime)) {
+            // السجل للمساعدة في تشخيص المشكلة
+            \Log::debug('Invalid studio_end_time format or missing value', ['value' => $endTime]);
+            return '18:00'; // القيمة الافتراضية
+        }
+
+        return $endTime;
+    }
+
     protected const MAX_DAYS_AHEAD = 30;
 
     public function getCurrentBookings(): Collection
@@ -147,8 +175,36 @@ class AvailabilityService
     public function getAvailableTimeSlotsForDate(Carbon $date, Package $package, bool $checkAlternatives = true): array
     {
         try {
-            $studioStart = Carbon::createFromFormat('H:i', self::STUDIO_START_TIME);
-            $studioEnd = Carbon::createFromFormat('H:i', self::STUDIO_END_TIME);
+            // تسجيل القيم المستخدمة للمساعدة في التشخيص
+            \Log::debug('Studio hours from settings', [
+                'start_time' => $this->getStudioStartTime(),
+                'end_time' => $this->getStudioEndTime(),
+            ]);
+
+            $studioStartTime = $this->getStudioStartTime();
+            $studioEndTime = $this->getStudioEndTime();
+
+            // التحقق مما إذا كان جدول العمل يمتد عبر منتصف الليل
+            $isOvernightSchedule = Carbon::createFromFormat('H:i', $studioEndTime)->format('H:i') <
+                                  Carbon::createFromFormat('H:i', $studioStartTime)->format('H:i');
+
+            $studioStart = Carbon::parse($date->format('Y-m-d') . ' ' . $studioStartTime);
+
+            // إذا كان الجدول الليلي، فإن وقت النهاية يكون في اليوم التالي
+            if ($isOvernightSchedule) {
+                $studioEnd = Carbon::parse($date->format('Y-m-d') . ' ' . $studioEndTime)->addDay();
+            } else {
+                $studioEnd = Carbon::parse($date->format('Y-m-d') . ' ' . $studioEndTime);
+            }
+
+            // تسجيل تفاصيل التوقيت للتشخيص
+            \Log::debug('Studio hours calculated', [
+                'date' => $date->format('Y-m-d'),
+                'is_overnight' => $isOvernightSchedule,
+                'start_datetime' => $studioStart->format('Y-m-d H:i'),
+                'end_datetime' => $studioEnd->format('Y-m-d H:i'),
+            ]);
+
             $durationInMinutes = $package->duration;
             $maxConcurrentBookings = (int)Setting::get('max_concurrent_bookings', 1);
 
@@ -263,11 +319,28 @@ class AvailabilityService
 
     protected function isWithinWorkingHours(Carbon $start, Carbon $end): bool
     {
-        $studioStart = Carbon::createFromFormat('H:i', self::STUDIO_START_TIME);
-        $studioEnd = Carbon::createFromFormat('H:i', self::STUDIO_END_TIME);
+        $studioStart = Carbon::createFromFormat('H:i', $this->getStudioStartTime());
+        $studioEnd = Carbon::createFromFormat('H:i', $this->getStudioEndTime());
 
-        return $start->format('H:i') >= $studioStart->format('H:i') &&
-               $end->format('H:i') <= $studioEnd->format('H:i');
+        // التحقق مما إذا كان جدول العمل يمتد عبر منتصف الليل
+        $isOvernightSchedule = $studioEnd->format('H:i') < $studioStart->format('H:i');
+
+        // استخراج ساعات ودقائق الأوقات المطلوبة للمقارنة
+        $startTimeFormatted = $start->format('H:i');
+        $endTimeFormatted = $end->format('H:i');
+        $studioStartFormatted = $studioStart->format('H:i');
+        $studioEndFormatted = $studioEnd->format('H:i');
+
+        // إذا كان جدول العمل عبر منتصف الليل
+        if ($isOvernightSchedule) {
+            // الحالة 1: الوقت المطلوب بعد وقت البدء أو قبل وقت النهاية
+            // مثال: إذا كان العمل من 20:30 إلى 02:00، فإن 22:00 و 01:00 كلاهما ضمن ساعات العمل
+            return ($startTimeFormatted >= $studioStartFormatted || $startTimeFormatted <= $studioEndFormatted) &&
+                   ($endTimeFormatted >= $studioStartFormatted || $endTimeFormatted <= $studioEndFormatted);
+        } else {
+            // الحالة العادية: الوقت المطلوب بين وقت البدء ووقت النهاية
+            return $startTimeFormatted >= $studioStartFormatted && $endTimeFormatted <= $studioEndFormatted;
+        }
     }
 
     /**
@@ -295,13 +368,14 @@ class AvailabilityService
     {
         $hour = (int)substr($time, 0, 2);
         $minute = substr($time, 3, 2);
-        $period = 'صباحاً';
 
+        // تبسيط الفترات الزمنية إلى صباحاً ومساءً فقط
         if ($hour >= 12) {
             $displayHour = $hour > 12 ? $hour - 12 : 12;
-            $period = $hour >= 12 && $hour < 15 ? 'ظهراً' : 'عصراً';
+            $period = 'مساءً';
         } else {
-            $displayHour = $hour;
+            $displayHour = $hour == 0 ? 12 : $hour;
+            $period = 'صباحاً';
         }
 
         return sprintf('%d:%s %s', $displayHour, $minute, $period);
@@ -310,14 +384,41 @@ class AvailabilityService
     public function findAvailablePackages(Carbon $date, Package $requestedPackage): ?array
     {
         try {
-            // إنشاء كائنات للوقت
-            $studioStart = Carbon::createFromFormat('H:i', self::STUDIO_START_TIME);
-            $studioEnd = Carbon::createFromFormat('H:i', self::STUDIO_END_TIME);
+            // تسجيل المعلومات للتشخيص
+            \Log::debug('Finding available packages', [
+                'date' => $date->format('Y-m-d'),
+                'requested_package_id' => $requestedPackage->id,
+                'requested_package_duration' => $requestedPackage->duration
+            ]);
+
+            // الحصول على ساعات العمل من الإعدادات
+            $studioStartTime = $this->getStudioStartTime();
+            $studioEndTime = $this->getStudioEndTime();
+
+            // التحقق مما إذا كان جدول العمل يمتد عبر منتصف الليل
+            $isOvernightSchedule = Carbon::createFromFormat('H:i', $studioEndTime)->format('H:i') <
+                                  Carbon::createFromFormat('H:i', $studioStartTime)->format('H:i');
+
+            // إنشاء كائنات للوقت مع معالجة الحالة الليلية
+            $studioStart = Carbon::parse($date->format('Y-m-d') . ' ' . $studioStartTime);
+
+            if ($isOvernightSchedule) {
+                $studioEnd = Carbon::parse($date->format('Y-m-d') . ' ' . $studioEndTime)->addDay();
+            } else {
+                $studioEnd = Carbon::parse($date->format('Y-m-d') . ' ' . $studioEndTime);
+            }
+
             $maxConcurrentBookings = (int)Setting::get('max_concurrent_bookings', 1);
 
             // جلب جميع الحجوزات في التاريخ المطلوب وترتيبها حسب الوقت
             $existingBookings = Booking::where('status', '!=', 'cancelled')
-                ->where('session_date', $date->format('Y-m-d'))
+                ->where(function($query) use ($date, $isOvernightSchedule) {
+                    $query->where('session_date', $date->format('Y-m-d'));
+                    // إذا كان جدول العمل ليلي، نحتاج أيضًا للحجوزات في اليوم التالي
+                    if ($isOvernightSchedule) {
+                        $query->orWhere('session_date', $date->copy()->addDay()->format('Y-m-d'));
+                    }
+                })
                 ->with('package:id,duration')
                 ->get()
                 ->sortBy(function($booking) {
@@ -347,10 +448,16 @@ class AvailabilityService
             foreach ($existingBookings as $booking) {
                 if (empty($booking->session_time)) continue;
 
+                $bookingDate = Carbon::parse($booking->session_date);
                 $startTime = Carbon::parse($booking->session_time);
-                $endTime = $startTime->copy()->addMinutes($booking->package->duration);
+                $bookingStartTime = $bookingDate->copy()
+                    ->setHour($startTime->hour)
+                    ->setMinute($startTime->minute)
+                    ->setSecond(0);
 
-                $currentSlot = $startTime->copy();
+                $endTime = $bookingStartTime->copy()->addMinutes($booking->package->duration);
+
+                $currentSlot = $bookingStartTime->copy();
                 while ($currentSlot < $endTime && $currentSlot < $studioEnd) {
                     $slotKey = $currentSlot->format('H:i');
                     if (isset($workingHours[$slotKey])) {

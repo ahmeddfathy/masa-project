@@ -19,6 +19,7 @@
                                     <th>#</th>
                                     <th>الاسم</th>
                                     <th>الباقات</th>
+                                    <th>الخدمات</th>
                                     <th>الوصف</th>
                                     <th>السعر</th>
                                     <th>الحالة</th>
@@ -33,6 +34,19 @@
                                         <td>
                                             @foreach($addon->packages as $package)
                                                 <span class="badge bg-info me-1">{{ $package->name }}</span>
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            @php
+                                                $services = collect();
+                                                foreach($addon->packages as $package) {
+                                                    $services = $services->merge($package->services);
+                                                }
+                                                $uniqueServices = $services->unique('id');
+                                            @endphp
+
+                                            @foreach($uniqueServices as $service)
+                                                <span class="badge bg-success me-1">{{ $service->name }}</span>
                                             @endforeach
                                         </td>
                                         <td>{{ Str::limit($addon->description, 50) }}</td>
@@ -60,7 +74,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center">لا توجد إضافات</td>
+                                        <td colspan="8" class="text-center">لا توجد إضافات</td>
                                     </tr>
                                 @endforelse
                             </tbody>
