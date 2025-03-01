@@ -18,15 +18,15 @@
 
 <body>
     <!-- Sidebar Toggle Button -->
-    <button class="sidebar-toggle" type="button" aria-label="Toggle Sidebar">
+    <button class="sidebar-toggle" type="button" arimage.pngia-label="Toggle Sidebar">
         <i class="fas fa-bars"></i>
     </button>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg glass-navbar sticky-top">
+    <nav class="navbar navbar-expand-lg glass-navbar">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="/assets/images/logo.png" alt="Madil" height="120" >
+                <img src="/assets/images/logo.png" alt="Madil">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -188,17 +188,33 @@
             }
         });
 
-        // Add Sidebar Toggle Functionality
+        // Add Sidebar and Navbar Toggle Functionality
         $(document).ready(function() {
+            // Sidebar Toggle
             $('.sidebar-toggle').on('click', function() {
                 $('.sidebar').toggleClass('show');
             });
 
-            // Close sidebar when clicking outside on mobile
+            // Navbar Toggle
+            $('.navbar-toggler').on('click', function() {
+                if ($('.navbar-collapse').hasClass('show')) {
+                    $('.navbar-collapse').collapse('hide');
+                } else {
+                    $('.navbar-collapse').collapse('show');
+                }
+            });
+
+            // Close sidebar and navbar when clicking outside
             $(document).on('click', function(e) {
                 if ($(window).width() < 992) {
+                    // Close sidebar
                     if (!$(e.target).closest('.sidebar').length && !$(e.target).closest('.sidebar-toggle').length) {
                         $('.sidebar').removeClass('show');
+                    }
+
+                    // Close navbar
+                    if (!$(e.target).closest('.navbar-collapse').length && !$(e.target).closest('.navbar-toggler').length) {
+                        $('.navbar-collapse').collapse('hide');
                     }
                 }
             });

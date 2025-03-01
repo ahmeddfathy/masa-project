@@ -326,18 +326,18 @@
     </div>
 
     <!-- Footer -->
-    <footer class="glass-footer">
+ 
+<footer class="glass-footer">
       <div class="container">
         <div class="row">
           <div class="col-lg-4">
             <div class="footer-about">
-              <h5>عن المتجر</h5>
-              <p>نقدم خدمات التفصيل والخياطة بأعلى جودة وأفضل الأسعار مع الالتزام بالمواعيد</p>
+              <h5>عن الاستوديو</h5>
+              <p>نقدم خدمات التصوير الاحترافي وطباعة الصور والألبومات بأعلى جودة، مع التركيز على توثيق أجمل لحظات حياتكم</p>
               <div class="social-links">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
+          
+                <a href="/https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#"><i class="fab fa-instagram"></i></a>
+            
               </div>
             </div>
           </div>
@@ -346,9 +346,9 @@
               <h5>روابط سريعة</h5>
               <ul>
                 <li><a href="/">الرئيسية</a></li>
-                <li><a href="/products">المنتجات</a></li>
+                <li><a href="/products">منتجاتنا</a></li>
                 <li><a href="/about">من نحن</a></li>
-                <li><a href="#contact">تواصل معنا</a></li>
+                <li><a href="#contact">احجز موعد</a></li>
               </ul>
             </div>
           </div>
@@ -358,15 +358,16 @@
               <ul class="list-unstyled">
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-phone-alt ms-2"></i>
-                  <span dir="ltr">054 315 4437</span>
+                  <span dir="ltr">0561667885</span>
                 </li>
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-envelope ms-2"></i>
-                  <a href="mailto:info@madil-sa.com" class="text-decoration-none">info@madil-sa.com</a>
+                  <a href="mailto:info@somalens.com" class="text-decoration-none">lens_soma@outlook.sa 
+</a>
                 </li>
                 <li class="d-flex align-items-center">
                   <i class="fas fa-map-marker-alt ms-2"></i>
-                  <span>شارع الملك فهد، الرياض، المملكة العربية السعودية</span>
+                  <span>أبها . المحالة</span>
                 </li>
               </ul>
             </div>
@@ -375,10 +376,11 @@
       </div>
       <div class="footer-bottom">
         <div class="container">
-          <p>جميع الحقوق محفوظة &copy; {{ date('Y') }} Madil</p>
+          <p>جميع الحقوق محفوظة &copy; {{ date('Y') }} عدسة سوما</p>
         </div>
       </div>
     </footer>
+
 
     <!-- Modal for Appointment -->
     <div class="modal fade" id="appointmentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -397,10 +399,8 @@
                     <div class="alert alert-info mb-4">
                         <i class="fas fa-info-circle me-2"></i>
                         مواعيد العمل:
-                        <ul class="mb-0">
-                            <li>من السبت إلى الخميس: ١١ صباحاً إلى ٢ ظهراً، و٥ عصراً إلى ١١ مساءً</li>
-                            <li>يوم الجمعة: ٥ عصراً إلى ١١ مساءً</li>
-                        </ul>
+                   <ul class='mb-0'> 
+                      <li>من السبت إلى الخميس: ١٠ صباحاً إلى ٦ مساءً</li></ul>
                     </div>
 
                     <form id="appointmentForm" class="appointment-form" data-url="{{ route('appointments.store') }}">

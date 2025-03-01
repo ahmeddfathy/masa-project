@@ -48,14 +48,42 @@ class BookingController extends Controller
     public function updateStatus(Request $request, Booking $booking)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,completed,cancelled'
+            'status' => 'required|in:pending,confirmed,completed,cancelled,no_show,rescheduled'
         ]);
+
+        // حفظ الحالة القديمة للمقارنة
+        $oldStatus = $booking->status;
 
         $booking->update([
             'status' => $validated['status']
         ]);
 
-        return redirect()->back()->with('success', 'تم تحديث حالة الحجز بنجاح');
+        // إرسال إشعار للعميل
+        try {
+            $booking->user->notify(new \App\Notifications\BookingStatusUpdated($booking));
+
+            // تحضير رسالة نجاح مناسبة
+            $statusText = match($validated['status']) {
+                'pending' => 'قيد الانتظار',
+                'confirmed' => 'مؤكد',
+                'completed' => 'مكتمل',
+                'cancelled' => 'ملغي',
+                'no_show' => 'لم يحضر',
+                'rescheduled' => 'معاد جدولته',
+                default => $validated['status']
+            };
+
+            return redirect()->back()->with('success', "تم تحديث حالة الحجز إلى {$statusText} بنجاح وتم إرسال إشعار للعميل");
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error sending booking status notification', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()
+                ->with('success', "تم تحديث حالة الحجز بنجاح")
+                ->with('warning', "لم نتمكن من إرسال الإشعار للعميل");
+        }
     }
 
     public function calendar()

@@ -65,7 +65,6 @@
 <body>
     @include('parts.navbar')
 
-    <!-- Gallery Carousel -->
     <section class="gallery-carousel-section">
         <div id="galleryCarousel" class="carousel slide" data-bs-ride="carousel">
             <!-- Carousel Indicators -->
@@ -82,7 +81,7 @@
                 <!-- Newborn Photo -->
                 <div class="carousel-item active">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba" class="d-block w-100" alt="تصوير المواليد" loading="lazy">
+                        <img src="{{ asset('assets/images/gallery/4.jpg') }}" class="d-block w-100" alt="تصوير المواليد" loading="lazy">
                         <div class="carousel-caption">
                             <h3>تصوير المواليد</h3>
                             <p>توثيق أجمل لحظات الطفولة المبكرة</p>
@@ -93,7 +92,7 @@
                 <!-- Baby Photo -->
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1555252333-9f8e92e65df9" class="d-block w-100" alt="تصوير الرضع" loading="lazy">
+                        <img src="{{ asset('assets/images/gallery/15.jpg') }}" class="d-block w-100" alt="تصوير الرضع" loading="lazy">
                         <div class="carousel-caption">
                             <h3>تصوير الرضع</h3>
                             <p>ابتسامات وضحكات الأطفال الصغار</p>
@@ -104,7 +103,7 @@
                 <!-- Toddler Photo -->
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74" class="d-block w-100" alt="تصوير الأطفال" loading="lazy">
+                        <img src="{{ asset('assets/images/gallery/16.jpg') }}" class="d-block w-100" alt="تصوير الأطفال" loading="lazy">
                         <div class="carousel-caption">
                             <h3>تصوير الأطفال</h3>
                             <p>لحظات اللعب والمرح</p>
@@ -115,7 +114,7 @@
                 <!-- Birthday Photo -->
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce" class="d-block w-100" alt="أعياد ميلاد الأطفال" loading="lazy">
+                        <img src="{{ asset('assets/images/gallery/23.jpg') }}" class="d-block w-100" alt="أعياد ميلاد الأطفال" loading="lazy">
                         <div class="carousel-caption">
                             <h3>أعياد ميلاد الأطفال</h3>
                             <p>احتفالات مميزة لأطفالنا</p>
@@ -126,7 +125,7 @@
                 <!-- Children Group Photo -->
                 <div class="carousel-item">
                     <div class="carousel-image-container">
-                        <img src="https://images.unsplash.com/photo-1472162072942-cd5147eb3902" class="d-block w-100" alt="تصوير مجموعات الأطفال" loading="lazy">
+                        <img src="{{ asset('assets/images/gallery/15.jpg') }}" class="d-block w-100" alt="تصوير مجموعات الأطفال" loading="lazy">
                         <div class="carousel-caption">
                             <h3>تصوير مجموعات الأطفال</h3>
                             <p>ذكريات جماعية سعيدة</p>

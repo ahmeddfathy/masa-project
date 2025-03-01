@@ -332,10 +332,9 @@
               <h5>عن المتجر</h5>
               <p>نقدم خدمات التفصيل والخياطة بأعلى جودة وأفضل الأسعار مع الالتزام بالمواعيد</p>
               <div class="social-links">
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-whatsapp"></i></a>
+             
+                <a href="https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#"><i class="fab fa-instagram"></i></a>
+
               </div>
             </div>
           </div>
@@ -346,7 +345,7 @@
                 <li><a href="/">الرئيسية</a></li>
                 <li><a href="/products">المنتجات</a></li>
                 <li><a href="/about">من نحن</a></li>
-                <li><a href="#contact">تواصل معنا</a></li>
+             
               </ul>
             </div>
           </div>
@@ -356,15 +355,17 @@
               <ul class="list-unstyled">
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-phone-alt ms-2"></i>
-                  <span dir="ltr">054 315 4437</span>
+                  <span dir="ltr">0561667885</span>
                 </li>
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-envelope ms-2"></i>
-                  <a href="mailto:info@madil-sa.com" class="text-decoration-none">info@madil-sa.com</a>
+                  <a href="mailto:lens_soma@outlook.sa 
+" class="text-decoration-none">lens_soma@outlook.sa 
+</a>
                 </li>
                 <li class="d-flex align-items-center">
                   <i class="fas fa-map-marker-alt ms-2"></i>
-                  <span>شارع الملك فهد، الرياض، المملكة العربية السعودية</span>
+                  <span>أبها . المحالة</span>
                 </li>
               </ul>
             </div>

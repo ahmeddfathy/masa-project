@@ -10,16 +10,16 @@
             <div class="col-md-4">
                 <h3>تواصل معنا</h3>
                 <p>
-                    <i class="fas fa-phone"></i> +966 50 000 0000<br>
-                    <i class="fas fa-envelope"></i> info@soma-lens.com
+                    <i class="fas fa-phone"></i> 0561667885<br>
+                    <i class="fas fa-envelope"></i> lens_soma@outlook.sa 
+
                 </p>
             </div>
             <div class="col-md-4">
                 <h3>تابعنا على</h3>
                 <div class="social-links">
-                    <a href="#" class="me-2"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="me-2"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="me-2"><i class="fab fa-snapchat"></i></a>
+                    <a href="/https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#" class="me-2"><i class="fab fa-instagram"></i></a>
+             
                 </div>
             </div>
         </div>
@@ -30,7 +30,7 @@
 </footer>
 
 <!-- WhatsApp Fixed Button -->
-<a href="https://wa.me/201122881051" class="whatsapp-float" target="_blank">
+<a href="https://wa.me/0561667885" class="whatsapp-float" target="_blank">
     <i class="fab fa-whatsapp"></i>
 </a>
 

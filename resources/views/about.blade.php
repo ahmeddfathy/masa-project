@@ -47,7 +47,7 @@
     @include('parts.navbar')
 
     <!-- Page Header -->
-    <section class="page-header" style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e') no-repeat center center; background-size: cover; padding: 150px 0; color: white; text-align: center;">
+    <section class="page-header" style="background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('assets/images/about/1.jpg') no-repeat center center; background-size: cover; padding: 150px 0; color: white; text-align: center;" >
         <div class="container">
             <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 1.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">من نحن</h1>
             <p style="font-size: 1.25rem; max-width: 800px; margin: 0 auto; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">عدسة سوما - استوديو تصوير مختص بالعائلة والأطفال في المملكة العربية السعودية</p>
@@ -60,14 +60,14 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="content-wrapper">
-                        <h2>قصتنا</h2>
-                        <p>نحن استوديو تصوير مختص تحت مسمى "عدسة سوما" في أحد مدن المملكة العربية السعودية. يقوم الاستوديو بتقديم خدمات التصوير الفوتوغرافي للأطفال والعائلات.</p>
-                        <p>نقدم خدماتنا للفئة الأولى من الأطفال من الولادة إلى 14 يوم، والفئة الثانية للأطفال من عمر 3 أشهر إلى 5 أشهر. في الفئة الثالثة نقدم خدمات مؤسسة فاخرة وإلكترونية للميلاد والولادة في الموقع المشروع.</p>
-                        <p>نتميز بتقديم تجربة فريدة وتكنولوجيا متقدمة لتحقيق أفضل النتائج، ونسعى للجمع والاطلاع على الجديد وتوسيع المشروع ليصبح سلسلة متكاملة.</p>
+                        <h2>نبذة عنا</h2>
+                        <p>سمية الشهري، أم لأجمل طفلتين، مؤسسة أول استديو احترافي متخصص في تصوير المواليد والنساء والحوامل وتصوير المستشفى والأطفال على مستوى المنطقة الجنوبية.</p>
+                        <p>تأسس الاستديو في عام ٢٠١٨ في مدينة أبها، حيث تقوم الفوتغرافية سمية الشهري بالتصوير بنفسها مع فريق العمل المتخصص.</p>
+                        <p>نحرص على تقديم تجربة تصوير فريدة لكل عائلة تزورنا، ونسعى لتخليد ذكرياتهم الثمينة للأبد بأسلوب مميز واحترافي.</p>
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <img src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e" alt="استوديو التصوير" class="img-fluid">
+                    <img src="assets/images/about/23.jpg" alt="استوديو التصوير" class="img-fluid" loading="lazy">
                 </div>
             </div>
         </div>

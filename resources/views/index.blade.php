@@ -111,12 +111,13 @@
             <div class="carousel-inner">
                 <!-- التصوير الفوتوغرافي -->
                 <div class="carousel-item active">
-                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1533483595632-c5f0e57a1936?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');">
+                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('assets/images/home/30.jpg');">
                         <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">التصوير الفوتوغرافي</h2>
                                 <p class="lead mb-4">خدمات تصوير احترافية للعائلات والأطفال</p>
-                                <a href="services.html" class="btn btn-primary btn-lg">اكتشف المزيد</a>
+                                <a href="{{ route('services') }}" class="btn btn-primary btn-lg">اكتشف المزيد</a>
+
                             </div>
                         </div>
                     </div>
@@ -124,12 +125,13 @@
 
                 <!-- مجسمات ثري دي -->
                 <div class="carousel-item">
-                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1635399860495-2a2802a6df5e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');">
+                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('assets/images/home/3D.jpg');">
                         <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">مجسمات ثري دي</h2>
                                 <p class="lead mb-4">تصميم وتنفيذ مجسمات ثري دي للذكريات العائلية</p>
-                                <a href="services.html" class="btn btn-primary btn-lg">اكتشف المزيد</a>
+                                                       <a href="{{ route('services') }}" class="btn btn-primary btn-lg">اكتشف المزيد</a>
+>
                             </div>
                         </div>
                     </div>
@@ -137,12 +139,13 @@
 
                 <!-- الصور المطبوعة -->
                 <div class="carousel-item">
-                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1542038784456-1ea8e935640e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');">
+                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('assets/images/home/33.jpg');">
                         <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">الصور المطبوعة الفاخرة</h2>
                                 <p class="lead mb-4">طباعة الصور بجودة عالية وخيارات متعددة</p>
-                                <a href="services.html" class="btn btn-primary btn-lg">اكتشف المزيد</a>
+                                                           <a href="{{ route('services') }}" class="btn btn-primary btn-lg">اكتشف المزيد</a>
+>
                             </div>
                         </div>
                     </div>
@@ -150,12 +153,13 @@
 
                 <!-- البومات الأطفال -->
                 <div class="carousel-item">
-                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1516627145497-ae6968895b74?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1440&q=80');">
+                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('assets/images/home/15.jpg');">
                         <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">البومات الأطفال</h2>
                                 <p class="lead mb-4">ألبومات مخصصة لتوثيق ذكريات الأطفال</p>
-                                <a href="services.html" class="btn btn-primary btn-lg">اكتشف المزيد</a>
+                                                             <a href="{{ route('services') }}" class="btn btn-primary btn-lg">اكتشف المزيد</a>
+
                             </div>
                         </div>
                     </div>
@@ -237,7 +241,7 @@
                 </div>
                 <div class="col-lg-6">
                     <div class="about-image">
-                        <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32" alt="استوديو أركان" class="img-fluid rounded-3 shadow" loading="lazy">
+                        <img src="assets/images/home/30.jpg" alt="استوديو سوما" class="img-fluid rounded-3 shadow" loading="lazy">
                     </div>
                 </div>
             </div>
@@ -268,8 +272,8 @@
                             </div>
                             <div class="contact-info-content">
                                 <h4>اتصل بنا</h4>
-                                <p>0533445566</p>
-                                <p>0544556677</p>
+                                <p>0561667885</p>
+
                             </div>
                         </div>
 
@@ -280,7 +284,7 @@
                             <div class="contact-info-content">
                                 <h4>ساعات العمل</h4>
                                 <p>السبت - الخميس</p>
-                                <p>9:00 صباحاً - 11:00 مساءً</p>
+                              <p>10:00 صباحاً - 6:00 مساءً</p>
                             </div>
                         </div>
 
@@ -290,16 +294,16 @@
                             </div>
                             <div class="contact-info-content">
                                 <h4>البريد الإلكتروني</h4>
-                                <p>info@somalens.com</p>
-                                <p>support@somalens.com</p>
+                                <p>lens_soma@outlook.sa
+</p>
+
                             </div>
                         </div>
 
                         <div class="social-links-contact">
-                            <a href="https://wa.me/966533445566" target="_blank" title="واتساب"><i class="fab fa-whatsapp"></i></a>
-                            <a href="https://instagram.com/somalens" target="_blank" title="انستغرام"><i class="fab fa-instagram"></i></a>
-                            <a href="https://twitter.com/somalens" target="_blank" title="تويتر"><i class="fab fa-twitter"></i></a>
-                            <a href="https://snapchat.com/add/somalens" target="_blank" title="سناب شات"><i class="fab fa-snapchat-ghost"></i></a>
+                            <a href="https://wa.me/0561667885" target="_blank" title="واتساب"><i class="fab fa-whatsapp"></i></a>
+                            <a href="/https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#" target="_blank" title="انستغرام"><i class="fab fa-instagram"></i></a>
+                         i></a>
                         </div>
                     </div>
                 </div>
@@ -400,11 +404,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
     <script>
-        // Counter Up Animation
-        $('.counter').counterUp({
-            delay: 10,
-            time: 1000
-        });
+
     </script>
 </body>
 </html>

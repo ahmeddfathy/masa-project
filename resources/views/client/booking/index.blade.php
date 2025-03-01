@@ -330,14 +330,26 @@
                             <div class="card bg-light">
                                 <div class="card-body">
                                     <h6 class="mb-3">تعليمات الحجز والدفع:</h6>
+                                    <ul class="list-unstyled text-start mb-4">
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            يرجى تحويل المبلغ المطلوب على أحد الحسابات التالية:
+                                        </li>
+                                    </ul>
+
+                                    <div class="bank-accounts bg-white p-3 rounded mb-4">
+                                        <div class="account-info mb-3 text-start">
+                                            <h6 class="text-primary mb-2">البنك الأهلي السعودي:</h6>
+                                            <p class="mb-1"><strong>رقم الحساب:</strong> 18900000406701</p>
+                                            <p class="mb-1"><strong>الآيبان (IBAN):</strong> SA8710000018900000406701</p>
+                                            <p class="mb-0"><strong>رمز السويفت:</strong> NCBKSAJE</p>
+                                        </div>
+                                    </div>
+
                                     <ul class="list-unstyled text-start mb-0">
                                         <li class="mb-2">
                                             <i class="fas fa-check-circle text-success me-2"></i>
-                                            بعد تأكيد الحجز، سيتم إرسال رقم الحساب البنكي إليك
-                                        </li>
-                                        <li class="mb-2">
-                                            <i class="fas fa-check-circle text-success me-2"></i>
-                                            يرجى تحويل المبلغ المطلوب وإرسال صورة الإيصال على الواتساب
+                                            يرجى إرسال صورة الإيصال على الواتساب
                                         </li>
                                         <li class="mb-2">
                                             <i class="fas fa-check-circle text-success me-2"></i>
@@ -362,10 +374,7 @@
                             <i class="fas fa-calendar-check me-2"></i>تأكيد الحجز
                         </button>
                         <div class="mt-3">
-                            <small class="text-muted">
-                                <i class="fas fa-info-circle me-1"></i>
-                                سيتم إرسال تفاصيل التحويل البنكي بعد تأكيد الحجز
-                            </small>
+
                         </div>
                     @else
                         <div class="alert alert-info">

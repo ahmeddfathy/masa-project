@@ -3,6 +3,7 @@
     --sidebar-width: 280px;
     --header-height: 90px;
     --icon-size: 20px;
+    --logo-height: 110px;
 
     /* نفس الألوان من dashboard.css */
     --primary-color: #ff1493;
@@ -35,10 +36,20 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
+
 .navbar-brand img {
-    height: 70px;
+    height: var(--logo-height);
     width: auto;
+    object-fit: contain;
     transition: transform 0.3s ease;
+    max-width: none;
 }
 
 .navbar-brand:hover img {
@@ -292,16 +303,24 @@ body {
     .glass-navbar {
         padding-right: 270px !important;
     }
+    :root {
+        --logo-height: 75px;
+    }
 }
 
 @media (max-width: 992px) {
     :root {
         --sidebar-width: 0px;
+        --logo-height: 70px;
     }
 
     .glass-navbar {
         right: 0;
-        padding-right: 4rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    .navbar > .container {
+        padding: 0 3rem 0 1rem;
     }
 
     .sidebar {
@@ -323,13 +342,19 @@ body {
     :root {
         --header-height: 80px;
         --icon-size: 18px;
+        --logo-height: 65px;
+    }
+
+    .glass-navbar {
+        padding: 0.5rem !important;
+    }
+
+    .navbar > .container {
+        padding: 0 3rem 0 0.5rem;
     }
 
     .navbar-brand img {
-        height: 60px;
-    }
-    .glass-navbar {
-        padding: 0.5rem 1rem !important;
+        height: var(--logo-height);
     }
     .nav-buttons {
         margin-top: 1rem;
@@ -368,13 +393,17 @@ body {
 @media (max-width: 576px) {
     :root {
         --header-height: 70px;
+        --logo-height: 60px;
     }
 
     .navbar-brand img {
-        height: 50px;
+        height: var(--logo-height);
     }
     .glass-navbar {
-        padding: 0.8rem 3.5rem 0.8rem 1rem !important;
+        padding: 0.5rem !important;
+    }
+    .navbar > .container {
+        padding: 0 3rem 0 0.5rem;
     }
     .main-content {
         padding: 1rem;
@@ -475,4 +504,37 @@ body {
 .sidebar::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
+}
+
+/* Add these new styles for navbar collapse */
+.navbar-collapse {
+    transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 1rem;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-collapse.collapsing {
+        height: 0;
+        overflow: hidden;
+    }
+
+    .navbar-collapse.show {
+        height: auto;
+    }
+
+    .navbar-nav {
+        padding-bottom: 0.5rem;
+    }
 }

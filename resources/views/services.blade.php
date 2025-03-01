@@ -48,7 +48,7 @@
 
     <!-- Services Header -->
     <section class="hero-section">
-        <div class="hero-image" style="background-image: url('https://images.unsplash.com/photo-1533483595632-c5f0e57a1936?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');"></div>
+        <div class="hero-image" style="background-image: url('assets/images/services/10.jpg');"></div>
         <div class="container">
             <div class="hero-content">
                 <h1 class="text-center text-white mb-3">خدماتنا</h1>
@@ -65,7 +65,7 @@
                 <div class="col-lg-6">
                     <div class="service-detail">
                         <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1581952976147-5a2d15560349?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80" alt="تصوير الأطفال">
+                            <img src="assets/images/services/30.jpg" alt="تصوير الأطفال">
                         </div>
                         <div class="icon-wrapper">
                             <i class="fas fa-camera"></i>
@@ -85,7 +85,7 @@
                 <div class="col-lg-6">
                     <div class="service-detail">
                         <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1535572290543-960a8046f5af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="مجسمات ثري دي">
+                            <img src="assets/images/services/3D.jpg" alt="مجسمات ثري دي">
                         </div>
                         <div class="icon-wrapper">
                             <i class="fas fa-cube"></i>
@@ -105,7 +105,7 @@
                 <div class="col-lg-6">
                     <div class="service-detail">
                         <div class="service-image">
-                            <img src="https://images.unsplash.com/photo-1506619216599-9d16d0903dfd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80" alt="صور مطبوعة">
+                            <img src="assets/images/services/28.jpg" alt="صور مطبوعة">
                         </div>
                         <div class="icon-wrapper">
                             <i class="fas fa-images"></i>
