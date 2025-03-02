@@ -117,6 +117,32 @@ function toggleAddress() {
     }
 }
 
+function updatePrice() {
+    const priceElement = document.getElementById('product-price');
+    const originalPrice = parseFloat(document.getElementById('original-price').value);
+    let currentPrice = originalPrice;
+
+    // إذا تم اختيار مقاس له سعر خاص
+    if (selectedSize) {
+        const sizeElement = document.querySelector(`.size-option[data-size="${selectedSize}"]`);
+        if (sizeElement && sizeElement.dataset.price) {
+            currentPrice = parseFloat(sizeElement.dataset.price);
+        }
+    }
+
+    // تحديث السعر المعروض
+    priceElement.textContent = currentPrice.toFixed(2) + ' ر.س';
+}
+
+document.querySelectorAll('.size-option').forEach(el => {
+    el.addEventListener('click', function() {
+        selectedSize = this.dataset.size;
+        document.querySelectorAll('.size-option').forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+        updatePrice();
+    });
+});
+
 function addToCart() {
     const productId = document.getElementById('product-id').value;
     const quantity = parseInt(document.getElementById('quantity').value);
@@ -252,19 +278,21 @@ function addToCart() {
     addToCartBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الإضافة...';
     addToCartBtn.disabled = true;
 
+    const data = {
+        product_id: productId,
+        quantity: quantity,
+        color: colorValue,
+        size: sizeValue,
+        needs_appointment: needsAppointment
+    };
+
     fetch('/cart/add', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({
-            product_id: productId,
-            quantity: quantity,
-            color: colorValue,
-            size: sizeValue,
-            needs_appointment: needsAppointment
-        })
+        body: JSON.stringify(data)
     })
     .then(response => response.json())
     .then(data => {
@@ -805,44 +833,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    document.getElementById('cancelAppointment')?.addEventListener('click', function() {
-        if (confirm('هل أنت متأكد من إلغاء حجز الموعد؟ سيتم إزالة المنتج من السلة.')) {
-            const cartItemId = document.getElementById('cart_item_id').value;
-
-            fetch(`/cart/remove/${cartItemId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelectorAll('.cart-count').forEach(el => {
-                        el.textContent = data.cart_count;
-                    });
-
-                    showNotification('تم إلغاء الموعد وإزالة المنتج من السلة', 'success');
-
-                    const urlParams = new URLSearchParams(window.location.search);
-                    if (urlParams.has('pending_appointment')) {
-                        window.location.href = '/cart';
-                    } else {
-                        bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
-                        loadCartItems();
-                    }
-                } else {
-                    throw new Error(data.message || 'حدث خطأ أثناء إلغاء الموعد');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification(error.message, 'error');
-            });
-        }
-    });
-
     const productId = document.getElementById('product-id').value;
     fetch(`/products/${productId}/details`)
         .then(response => response.json())
@@ -868,6 +858,53 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!appointmentsEnabled && measurementsSection) {
             measurementsSection.style.display = 'none';
         }
+    }
+
+    // إضافة معالج حدث لزر إلغاء الموعد
+    const cancelAppointmentBtn = document.getElementById('cancelAppointment');
+
+    if (cancelAppointmentBtn) {
+        cancelAppointmentBtn.addEventListener('click', function() {
+            if (confirm('هل أنت متأكد من إلغاء حجز الموعد؟ سيتم إزالة المنتج من السلة.')) {
+                const cartItemId = document.getElementById('cart_item_id').value;
+
+                fetch(`/cart/remove/${cartItemId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // تحديث عدد عناصر السلة
+                        document.querySelectorAll('.cart-count').forEach(el => {
+                            el.textContent = data.count;
+                        });
+
+                        // عرض رسالة نجاح
+                        showNotification('تم إلغاء الموعد وإزالة المنتج من السلة', 'success');
+
+                        // إعادة التوجيه حسب السياق
+                        const urlParams = new URLSearchParams(window.location.search);
+                        if (urlParams.has('pending_appointment')) {
+                            window.location.href = '/cart';
+                        } else {
+                            // إغلاق النافذة المنبثقة وتحديث السلة
+                            bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
+                            loadCartItems();
+                        }
+                    } else {
+                        throw new Error(data.message || 'حدث خطأ أثناء إلغاء الموعد');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification(error.message, 'error');
+                });
+            }
+        });
     }
 });
 

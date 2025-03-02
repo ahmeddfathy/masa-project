@@ -13,15 +13,23 @@ class ProductSize extends Model
     protected $fillable = [
         'product_id',
         'size',
+        'price',
         'is_available'
     ];
 
     protected $casts = [
-        'is_available' => 'boolean'
+        'is_available' => 'boolean',
+        'price' => 'decimal:2'
     ];
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    // إذا لم يتم تعيين سعر للمقاس، نستخدم سعر المنتج
+    public function getPriceAttribute($value)
+    {
+        return $value ?? $this->product->price;
     }
 }

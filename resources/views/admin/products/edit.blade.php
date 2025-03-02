@@ -309,6 +309,7 @@
                                                     <div class="input-group mb-2 shadow-sm">
                                                         <input type="hidden" name="size_ids[]" value="{{ $size->id }}">
                                                         <input type="text" name="sizes[]" class="form-control" placeholder="المقاس" value="{{ $size->size }}">
+                                                        <input type="number" name="size_prices[]" class="form-control" placeholder="السعر" step="0.01" value="{{ $size->price }}">
                                                         <div class="input-group-text">
                                                             <label class="mb-0">
                                                                 <input type="checkbox" name="size_available[]" value="1" {{ $size->is_available ? 'checked' : '' }} class="me-1">
@@ -507,6 +508,7 @@ function addSizeInput() {
     div.innerHTML = `
         <input type="hidden" name="size_ids[]" value="">
         <input type="text" name="sizes[]" class="form-control" placeholder="المقاس">
+        <input type="number" name="size_prices[]" class="form-control" placeholder="السعر" step="0.01">
         <div class="input-group-text">
             <label class="mb-0">
                 <input type="checkbox" name="size_available[]" value="1" checked class="me-1">

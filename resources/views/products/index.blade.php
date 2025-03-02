@@ -332,7 +332,7 @@
               <h5>عن المتجر</h5>
               <p>نقدم خدمات التفصيل والخياطة بأعلى جودة وأفضل الأسعار مع الالتزام بالمواعيد</p>
               <div class="social-links">
-             
+
                 <a href="https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#"><i class="fab fa-instagram"></i></a>
 
               </div>
@@ -345,7 +345,7 @@
                 <li><a href="/">الرئيسية</a></li>
                 <li><a href="/products">المنتجات</a></li>
                 <li><a href="/about">من نحن</a></li>
-             
+
               </ul>
             </div>
           </div>
@@ -359,8 +359,8 @@
                 </li>
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-envelope ms-2"></i>
-                  <a href="mailto:lens_soma@outlook.sa 
-" class="text-decoration-none">lens_soma@outlook.sa 
+                  <a href="mailto:lens_soma@outlook.sa
+" class="text-decoration-none">lens_soma@outlook.sa
 </a>
                 </li>
                 <li class="d-flex align-items-center">

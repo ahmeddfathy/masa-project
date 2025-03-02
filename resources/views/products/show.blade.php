@@ -236,22 +236,25 @@
                     <!-- Available Sizes Section -->
                     @if($product->allow_size_selection && $product->sizes->isNotEmpty())
                         <div class="available-sizes mb-4">
-                            <h4>
-                                <i class="fas fa-ruler"></i>
-                                المقاسات المتاحة
-                            </h4>
-                            <div class="sizes-list">
+                            <h5 class="fw-bold mb-3">المقاسات المتاحة</h5>
+                            <div class="d-flex flex-wrap gap-2">
                                 @foreach($product->sizes as $size)
-                                    <div class="size-option {{ $size->is_available ? 'available' : 'disabled' }}"
-                                         onclick="{{ $size->is_available ? 'selectSize(this)' : 'return false' }}"
-                                         data-size="{{ $size->size }}"
-                                         data-price="{{ $size->price }}">
-                                        <i class="fas fa-check"></i>
-                                        <span class="size-label">{{ $size->size }}</span>
-                                        @if($size->price > 0)
-                                            <span class="size-price">{{ number_format($size->price, 2) }} ر.س</span>
+                                    @if($size->is_available)
+                                    <button type="button"
+                                        class="size-option btn"
+                                        data-size="{{ $size->size }}"
+                                        data-price="{{ $size->price }}"
+                                        onclick="selectSize(this)">
+                                        {{ $size->size }}
+                                        @if($size->price != null)
+                                            <span class="ms-2 badge bg-primary">{{ number_format($size->price, 2) }} ر.س</span>
                                         @endif
-                                    </div>
+                                    </button>
+                                    @else
+                                    <button type="button" class="size-option btn disabled">
+                                        {{ $size->size }} (غير متوفر)
+                                    </button>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
@@ -512,12 +515,15 @@
                         <div id="appointmentErrors" class="alert alert-danger d-none"></div>
 
                         <div class="d-flex gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1" id="submitAppointment">
-                                <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true"></span>
-                                تأكيد الحجز
+                            <button type="button" class="btn btn-outline-danger flex-grow-1" id="cancelAppointment">
+                                <i class="fas fa-times me-1"></i>
+                                إلغاء الموعد والمنتج
                             </button>
-                            <button type="button" class="btn btn-danger btn-lg" id="cancelAppointment">
-                                إلغاء
+                            <button type="submit" class="btn btn-primary flex-grow-1" id="submitBtn">
+                                <span class="loading-spinner d-none">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                </span>
+                                حجز الموعد
                             </button>
                         </div>
                     </form>

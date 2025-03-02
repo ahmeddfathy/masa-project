@@ -269,6 +269,11 @@
                                                                        class="form-control @error('sizes.'.$index) is-invalid @enderror"
                                                                        placeholder="المقاس"
                                                                        value="{{ $size }}">
+                                                                <input type="number"
+                                                                       name="size_prices[]"
+                                                                       class="form-control"
+                                                                       placeholder="السعر"
+                                                                       step="0.01">
                                                                 <div class="input-group-text">
                                                                     <label class="mb-0">
                                                                         <input type="checkbox"
@@ -287,6 +292,7 @@
                                                     @else
                                                         <div class="input-group mb-2 shadow-sm">
                                                             <input type="text" name="sizes[]" class="form-control" placeholder="المقاس">
+                                                            <input type="number" name="size_prices[]" class="form-control" placeholder="السعر" step="0.01">
                                                             <div class="input-group-text">
                                                                 <label class="mb-0">
                                                                     <input type="checkbox" name="size_available[]" value="1" checked class="me-1">
@@ -464,6 +470,7 @@ function addSizeInput() {
     div.className = 'input-group mb-2 shadow-sm';
     div.innerHTML = `
         <input type="text" name="sizes[]" class="form-control" placeholder="المقاس">
+        <input type="number" name="size_prices[]" class="form-control" placeholder="السعر" step="0.01">
         <div class="input-group-text">
             <label class="mb-0">
                 <input type="checkbox" name="size_available[]" value="1" checked class="me-1">

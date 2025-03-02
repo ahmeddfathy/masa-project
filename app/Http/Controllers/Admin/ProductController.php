@@ -129,12 +129,18 @@ class ProductController extends Controller
             }
 
             // Store sizes if enabled
-            if ($request->has('has_sizes') && $request->has('sizes')) {
+            if ($request->enable_size_selection && isset($request->sizes)) {
                 foreach ($request->sizes as $index => $size) {
                     if (!empty($size)) {
+                        $price = null;
+                        if (isset($request->size_prices[$index]) && !empty($request->size_prices[$index])) {
+                            $price = $request->size_prices[$index];
+                        }
+
                         $product->sizes()->create([
                             'size' => $size,
-                            'is_available' => $request->size_available[$index] ?? true
+                            'price' => $price,
+                            'is_available' => isset($request->size_available[$index]) ? 1 : 0
                         ]);
                     }
                 }
