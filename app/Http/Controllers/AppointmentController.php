@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Models\Setting;
 
 class AppointmentController extends Controller
 {
@@ -247,10 +248,63 @@ class AppointmentController extends Controller
                     ];
                 });
 
-            return response()->json($appointments);
+            // إضافة أوقات العمل من الإعدادات
+            $studioHours = $this->getStudioWorkingHours();
+
+            return response()->json([
+                'appointments' => $appointments,
+                'workingHours' => $studioHours
+            ]);
         } catch (\Exception $e) {
             Log::error('Error checking appointment availability: ' . $e->getMessage());
             return response()->json(['error' => 'حدث خطأ أثناء التحقق من المواعيد المتاحة'], 500);
+        }
+    }
+
+    /**
+     * استرجاع أوقات عمل الاستوديو من الإعدادات
+     *
+     * @return array
+     */
+    private function getStudioWorkingHours(): array
+    {
+        try {
+            // استخدام نفس الدوال الموجودة في AvailabilityService
+            $startTime = Setting::get('studio_start_time', '10:00');
+            $endTime = Setting::get('studio_end_time', '18:00');
+
+            // التحقق من صحة التنسيق
+            if (!preg_match('/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/', $startTime)) {
+                $startTime = '10:00'; // القيمة الافتراضية
+            }
+
+            if (!preg_match('/^([0-1][0-9]|2[0-3]):[0-5][0-9]$/', $endTime)) {
+                $endTime = '18:00'; // القيمة الافتراضية
+            }
+
+            // تحويل الوقت إلى ساعات فقط للاستخدام في JS
+            $startHour = (int)explode(':', $startTime)[0];
+            $endHour = (int)explode(':', $endTime)[0];
+
+            // التحقق مما إذا كان جدول العمل يمتد عبر منتصف الليل
+            $isOvernightSchedule = $endHour < $startHour;
+
+            return [
+                'start' => $startHour,
+                'end' => $endHour,
+                'startFormatted' => $startTime,
+                'endFormatted' => $endTime,
+                'isOvernight' => $isOvernightSchedule
+            ];
+        } catch (\Exception $e) {
+            Log::error('Error retrieving studio working hours: ' . $e->getMessage());
+            return [
+                'start' => 10,
+                'end' => 18,
+                'startFormatted' => '10:00',
+                'endFormatted' => '18:00',
+                'isOvernight' => false
+            ];
         }
     }
 }

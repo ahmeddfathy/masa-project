@@ -20,7 +20,8 @@ class CartItem extends Model
     'needs_appointment',
     'color',
     'size',
-    'appointment_id'
+    'appointment_id',
+    'quantity_option_id'
   ];
 
   protected $casts = [
@@ -48,5 +49,10 @@ class CartItem extends Model
   public function needsAppointment(): bool
   {
     return $this->needs_appointment && !$this->appointment()->exists();
+  }
+
+  public function quantityOption()
+  {
+    return $this->belongsTo(ProductQuantity::class, 'quantity_option_id');
   }
 }

@@ -138,15 +138,16 @@
 
                     <div class="filter-section">
                         <h4>نطاق السعر</h4>
-                        <div class="price-range">
+                        <div class="form-group mb-4">
+                            <label for="priceRange" class="form-label">السعر</label>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>{{ number_format($priceRange['min']) }} ر.س</span>
+                                <span id="priceValue">{{ number_format($priceRange['max']) }} ر.س</span>
+                            </div>
                             <input type="range" class="form-range" id="priceRange"
                                 min="{{ $priceRange['min'] }}"
                                 max="{{ $priceRange['max'] }}"
                                 value="{{ $priceRange['max'] }}">
-                            <div class="price-labels">
-                                <span>{{ number_format($priceRange['min']) }} ر.س</span>
-                                <span id="priceValue">{{ number_format($priceRange['max']) }} ر.س</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -192,7 +193,13 @@
                                     <div class="stars" style="--rating: {{ $product['rating'] }}"></div>
                                     <span class="reviews">({{ $product['reviews'] }} تقييم)</span>
                                 </div>
-                                <p class="product-price">{{ number_format($product->price, 2) }} ر.س</p>
+                                <p class="product-price">
+                                    @if($product->min_price == $product->max_price)
+                                        {{ number_format($product->min_price, 2) }} ر.س
+                                    @else
+                                        {{ number_format($product->min_price, 2) }} - {{ number_format($product->max_price, 2) }} ر.س
+                                    @endif
+                                </p>
                                 <div class="product-actions">
                                     <a href="{{ route('products.show', $product->slug) }}" class="order-product-btn">
                                         <i class="fas fa-shopping-cart me-2"></i>

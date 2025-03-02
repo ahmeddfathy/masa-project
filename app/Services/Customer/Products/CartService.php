@@ -121,26 +121,55 @@ class CartService
 
     public function findOrCreateCartItem($cart, $product, $request)
     {
+        // البحث عن العنصر في السلة مع مراعاة خيار الكمية
         $cartItem = CartItem::where('cart_id', $cart->id)
             ->where('product_id', $product->id)
+            ->where('quantity_option_id', $request->quantity_option_id)
             ->where('needs_appointment', $request->needs_appointment)
             ->where(function($query) use ($request) {
-                $query->where('color', $request->color)
-                      ->orWhereNull('color');
+                $query->where('color', $request->color)->orWhereNull('color');
             })
             ->where(function($query) use ($request) {
-                $query->where('size', $request->size)
-                      ->orWhereNull('size');
+                $query->where('size', $request->size)->orWhereNull('size');
             })
             ->first();
 
-        $itemPrice = $product->price;
+        // تحديد السعر بناءً على خيار الكمية أو المقاس
+        $itemPrice = 0; // Default price is 0 if no price source is found
+        $sizePrice = 0;
+        $quantityPrice = 0;
 
-        if ($request->size) {
+        // جمع سعر الكمية إذا تم اختيارها
+        if ($request->quantity_option_id) {
+            $quantityOption = $product->quantities()->find($request->quantity_option_id);
+            if ($quantityOption) {
+                $quantityPrice = $quantityOption->price;
+            }
+        }
+
+        // جمع سعر المقاس إذا تم اختياره
+        if ($request->size && $product->enable_size_selection) {
             $size = $product->sizes->where('size', $request->size)->first();
             if ($size && $size->price) {
-                $itemPrice = $size->price;
+                $sizePrice = $size->price;
             }
+        }
+
+        // إذا تم اختيار كلاهما، نجمع السعرين معًا
+        if ($quantityPrice > 0 && $sizePrice > 0) {
+            $itemPrice = $quantityPrice + $sizePrice;
+        }
+        // إذا تم اختيار واحد فقط، نستخدم سعره
+        elseif ($quantityPrice > 0) {
+            $itemPrice = $quantityPrice;
+        }
+        elseif ($sizePrice > 0) {
+            $itemPrice = $sizePrice;
+        }
+        // إذا لم يتم اختيار أي منهما، نستخدم أقل سعر متاح
+        else {
+            $priceRange = $product->getPriceRange();
+            $itemPrice = $priceRange['min'];
         }
 
         if ($cartItem) {
@@ -157,6 +186,7 @@ class CartService
                 'subtotal' => $request->quantity * $itemPrice,
                 'color' => $request->color,
                 'size' => $request->size,
+                'quantity_option_id' => $request->quantity_option_id,
                 'needs_appointment' => $request->needs_appointment
             ]);
         }

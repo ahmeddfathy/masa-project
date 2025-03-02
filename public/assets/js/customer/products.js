@@ -195,7 +195,13 @@ function updateProductGrid(products) {
                         <div class="stars" style="--rating: ${product.rating || 0}"></div>
                         <span class="reviews">(${product.reviews || 0} تقييم)</span>
                     </div>
-                    <p class="product-price">${product.price} ر.س</p>
+                    <p class="product-price">${product.price_display || (
+                        product.price_range ? (
+                            product.price_range.min === product.price_range.max ?
+                            `${product.price_range.min.toLocaleString()} ر.س` :
+                            `${product.price_range.min.toLocaleString()} - ${product.price_range.max.toLocaleString()} ر.س`
+                        ) : '0 ر.س'
+                    )}</p>
                     <div class="product-actions">
                         <a href="/products/${product.slug}" class="order-product-btn">
                             <i class="fas fa-shopping-cart me-2"></i>

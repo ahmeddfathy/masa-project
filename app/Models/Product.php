@@ -19,7 +19,6 @@ class Product extends Model
     'name',
     'slug',
     'description',
-    'price',
     'stock',
     'is_available',
     'category_id',
@@ -27,7 +26,8 @@ class Product extends Model
     'enable_custom_size',
     'enable_color_selection',
     'enable_size_selection',
-    'enable_appointments'
+    'enable_appointments',
+    'enable_quantity_pricing'
   ];
 
   protected $casts = [
@@ -37,7 +37,8 @@ class Product extends Model
     'enable_custom_size' => 'boolean',
     'enable_color_selection' => 'boolean',
     'enable_size_selection' => 'boolean',
-    'enable_appointments' => 'boolean'
+    'enable_appointments' => 'boolean',
+    'enable_quantity_pricing' => 'boolean'
   ];
 
   protected $searchableFields = [
@@ -86,6 +87,11 @@ class Product extends Model
   public function orderItems(): HasMany
   {
     return $this->hasMany(OrderItem::class);
+  }
+
+  public function quantities()
+  {
+    return $this->hasMany(ProductQuantity::class);
   }
 
   public function scopePriceRange(Builder $query, $min = null, $max = null): Builder
@@ -161,6 +167,70 @@ class Product extends Model
   {
     $array = parent::toArray();
     $array['category_name'] = $this->category->name ?? null;
+    $array['price_range'] = $this->getPriceRange();
     return $array;
+  }
+
+  /**
+   * Get the minimum price for this product
+   * Based on sizes and quantities
+   */
+  public function getMinPriceAttribute()
+  {
+    $prices = [];
+
+    if ($this->enable_size_selection && $this->sizes->isNotEmpty()) {
+      $sizesPrices = $this->sizes->pluck('price')->filter()->toArray();
+      if (!empty($sizesPrices)) {
+        $prices[] = min($sizesPrices);
+      }
+    }
+
+    if ($this->enable_quantity_pricing && $this->quantities->isNotEmpty()) {
+      $quantityPrices = $this->quantities->pluck('price')->filter()->toArray();
+      if (!empty($quantityPrices)) {
+        $prices[] = min($quantityPrices);
+      }
+    }
+
+    // If no sizes or quantities with prices, return 0
+    return !empty($prices) ? min($prices) : 0;
+  }
+
+  /**
+   * Get the maximum price for this product
+   * Based on sizes and quantities
+   */
+  public function getMaxPriceAttribute()
+  {
+    $prices = [];
+
+    if ($this->enable_size_selection && $this->sizes->isNotEmpty()) {
+      $sizesPrices = $this->sizes->pluck('price')->filter()->toArray();
+      if (!empty($sizesPrices)) {
+        $prices[] = max($sizesPrices);
+      }
+    }
+
+    if ($this->enable_quantity_pricing && $this->quantities->isNotEmpty()) {
+      $quantityPrices = $this->quantities->pluck('price')->filter()->toArray();
+      if (!empty($quantityPrices)) {
+        $prices[] = max($quantityPrices);
+      }
+    }
+
+    // If no sizes or quantities with prices, return 0
+    return !empty($prices) ? max($prices) : 0;
+  }
+
+  /**
+   * Get the price range for this product
+   */
+  public function getPriceRange()
+  {
+    return [
+      'min' => $this->min_price,
+      'max' => $this->max_price
+    ];
   }
 }

@@ -148,9 +148,17 @@
                         {{ $product->category->name }}
                     </div>
 
-                    <div class="product-price mb-4">
-                        <span class="currency">ر.س</span>
-                        <span class="amount">{{ number_format($product->price, 2) }}</span>
+                    <!-- Product Price -->
+                    <div class="price-container">
+                        <div class="product-price">
+                            @if($product->min_price == $product->max_price)
+                                <span class="amount">{{ number_format($product->min_price, 2) }}</span>
+                                <span class="currency">ر.س</span>
+                            @else
+                                <span class="amount">{{ number_format($product->min_price, 2) }} - {{ number_format($product->max_price, 2) }}</span>
+                                <span class="currency">ر.س</span>
+                            @endif
+                        </div>
                     </div>
 
                     <div class="stock-info mb-4">
@@ -266,17 +274,27 @@
                             <h4>
                                 <i class="fas fa-cubes"></i>
                                 خيارات الكمية
+                                <span class="badge bg-primary ms-2">مطلوب</span>
                             </h4>
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                يرجى اختيار أحد خيارات الكمية المتاحة
+                            </div>
+                            <div id="quantity-error-alert" class="alert alert-danger d-none">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>تنبيه:</strong> يجب عليك اختيار إحدى خيارات الكمية المتاحة قبل إضافة المنتج إلى السلة
+                                <button type="button" class="btn-close float-end" onclick="this.parentElement.classList.add('d-none')"></button>
+                            </div>
                             <div class="quantity-options">
                                 @foreach($product->quantities as $quantity)
                                     <div class="quantity-option {{ $quantity->is_available ? 'available' : 'disabled' }}"
-                                         onclick="{{ $quantity->is_available ? 'selectQuantityOption(this)' : 'return false' }}"
-                                         data-quantity-id="{{ $quantity->id }}"
-                                         data-quantity-value="{{ $quantity->quantity_value }}"
-                                         data-price="{{ $quantity->price }}">
+                                        onclick="{{ $quantity->is_available ? 'selectQuantityOption(this)' : 'return false' }}"
+                                        data-quantity-id="{{ $quantity->id }}"
+                                        data-quantity-value="{{ $quantity->quantity_value }}"
+                                        data-price="{{ $quantity->price }}">
                                         <i class="fas fa-check"></i>
                                         <div class="quantity-details">
-                                            <span class="quantity-value">{{ $quantity->quantity_value }}</span>
+                                            <span class="quantity-value">{{ $quantity->quantity_value }} قطعة</span>
                                             <span class="quantity-price">{{ number_format($quantity->price, 2) }} ر.س</span>
                                             @if($quantity->description)
                                                 <small class="quantity-description">{{ $quantity->description }}</small>
@@ -436,7 +454,8 @@
                         <i class="fas fa-info-circle me-2"></i>
                         مواعيد العمل:
                    <ul class='mb-0'>
-                      <li>من السبت إلى الخميس: ١٠ صباحاً إلى ٦ مساءً</li></ul>
+                      <li>من السبت إلى الخميس: <span id="studioStartTime">١٠ صباحاً</span> إلى <span id="studioEndTime">٦ مساءً</span></li>
+                   </ul>
                     </div>
 
                     <form id="appointmentForm" class="appointment-form" data-url="{{ route('appointments.store') }}">

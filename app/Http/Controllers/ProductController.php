@@ -78,6 +78,21 @@ class ProductController extends Controller
     public function filter(Request $request)
     {
         try {
+            // Ensure we get the maxPrice parameter from the request
+            $validatedData = $request->validate([
+                'categories' => 'nullable|array',
+                'minPrice' => 'nullable|numeric|min:0',
+                'maxPrice' => 'nullable|numeric|min:0',
+                'sort' => 'nullable|string|in:newest,price-low,price-high'
+            ]);
+
+            // Merge the validated data back to the request so it's accessible in the service
+            $request->merge([
+                'max_price' => $validatedData['maxPrice'] ?? null,
+                'category' => !empty($validatedData['categories']) ? $validatedData['categories'][0] : null,
+                'sort' => $validatedData['sort'] ?? 'newest'
+            ]);
+
             $products = $this->productService->getFilteredProducts($request);
 
             return response()->json([

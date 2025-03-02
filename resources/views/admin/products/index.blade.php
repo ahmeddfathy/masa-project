@@ -120,8 +120,12 @@
                                                 <p class="product-description text-muted">
                                                     {{ Str::limit($product->description, 100) }}
                                                 </p>
-                                                <div class="product-price fw-bold text-primary">
-                                                    {{ number_format($product->price, 0) }} ريال
+                                                <div class="product-price fw-bold text-primary mt-2">
+                                                    @if($product->min_price == $product->max_price)
+                                                        {{ number_format($product->min_price, 0) }} ريال
+                                                    @else
+                                                        {{ number_format($product->min_price, 0) }} - {{ number_format($product->max_price, 0) }} ريال
+                                                    @endif
                                                 </div>
                                                 <div class="product-status mt-2">
                                                     @if($product->is_available)

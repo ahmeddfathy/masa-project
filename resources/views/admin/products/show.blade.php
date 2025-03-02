@@ -91,7 +91,13 @@
                                             <div class="col-6">
                                                 <div class="detail-item">
                                                     <dt><i class="fas fa-money-bill text-primary"></i> السعر</dt>
-                                                    <dd class="text-primary fw-bold">{{ number_format($product->price, 0) }} ريال</dd>
+                                                    <dd class="text-primary fw-bold">
+                                                        @if($product->min_price == $product->max_price)
+                                                            {{ number_format($product->min_price, 0) }} ريال
+                                                        @else
+                                                            {{ number_format($product->min_price, 0) }} - {{ number_format($product->max_price, 0) }} ريال
+                                                        @endif
+                                                    </dd>
                                                 </div>
                                             </div>
                                             <div class="col-12">
@@ -148,10 +154,51 @@
                                         <div class="row g-3">
                                             @foreach($product->sizes as $size)
                                             <div class="col-md-6">
-                                                <div class="size-item d-flex align-items-center p-3 rounded border">
-                                                    <span>{{ $size->size }}</span>
-                                                    <span class="ms-auto">
+                                                <div class="size-item d-flex align-items-center justify-content-between p-3 rounded border">
+                                                    <div>
+                                                        <span class="fw-semibold">{{ $size->size }}</span>
+                                                        @if($size->price)
+                                                            <div class="mt-1 text-primary fw-bold">{{ number_format($size->price, 0) }} ريال</div>
+                                                        @endif
+                                                    </div>
+                                                    <span>
                                                         @if($size->is_available)
+                                                            <i class="fas fa-check text-success"></i>
+                                                        @else
+                                                            <i class="fas fa-times text-danger"></i>
+                                                        @endif
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+
+                            <!-- Quantities -->
+                            @if($product->enable_quantity_pricing && $product->quantities && $product->quantities->isNotEmpty())
+                            <div class="col-md-6">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-4">
+                                            <i class="fas fa-cubes text-primary me-2"></i>
+                                            خيارات الكميات والأسعار
+                                        </h5>
+                                        <div class="row g-3">
+                                            @foreach($product->quantities as $quantity)
+                                            <div class="col-md-6">
+                                                <div class="quantity-item d-flex align-items-center justify-content-between p-3 rounded border">
+                                                    <div>
+                                                        <span class="fw-semibold">{{ $quantity->quantity_value }} قطعة</span>
+                                                        @if($quantity->description)
+                                                            <div class="small text-muted">{{ $quantity->description }}</div>
+                                                        @endif
+                                                        <div class="mt-1 text-primary fw-bold">{{ number_format($quantity->price, 0) }} ريال</div>
+                                                    </div>
+                                                    <span>
+                                                        @if($quantity->is_available)
                                                             <i class="fas fa-check text-success"></i>
                                                         @else
                                                             <i class="fas fa-times text-danger"></i>

@@ -1,5 +1,8 @@
 let selectedColor = null;
 let selectedSize = null;
+let selectedQuantityId = null;
+let selectedQuantityValue = null;
+let selectedQuantityPrice = null;
 
 function getAppointmentsStatus() {
     return document.getElementById('appointmentsEnabled')?.value === 'true';
@@ -18,11 +21,18 @@ function updateMainImage(src, thumbnail) {
 function selectColor(element) {
     if (!element.classList.contains('available')) return;
 
+    if (element.classList.contains('active')) {
+        element.classList.remove('active');
+        selectedColor = null;
+        return;
+    }
+
     const useCustomColorCheckbox = document.getElementById('useCustomColor');
     if (useCustomColorCheckbox) {
         useCustomColorCheckbox.checked = false;
         document.getElementById('customColorGroup').classList.add('d-none');
         document.getElementById('customColor').value = '';
+        document.getElementById('customColor').disabled = true;
     }
 
     document.querySelectorAll('.color-item').forEach(item => {
@@ -36,11 +46,20 @@ function selectColor(element) {
 function selectSize(element) {
     if (!element.classList.contains('available')) return;
 
+    if (element.classList.contains('active')) {
+        element.classList.remove('active');
+        selectedSize = null;
+
+        updatePrice();
+        return;
+    }
+
     const useCustomSizeCheckbox = document.getElementById('useCustomSize');
     if (useCustomSizeCheckbox) {
         useCustomSizeCheckbox.checked = false;
         document.getElementById('customSizeGroup').classList.add('d-none');
         document.getElementById('customSize').value = '';
+        document.getElementById('customSize').disabled = true;
     }
 
     document.querySelectorAll('.size-option').forEach(item => {
@@ -49,6 +68,8 @@ function selectSize(element) {
 
     element.classList.add('active');
     selectedSize = element.dataset.size;
+
+    updatePrice();
 
     document.getElementById('needsAppointment').checked = false;
 }
@@ -60,6 +81,35 @@ function updatePageQuantity(change) {
 
     if (newQuantity >= 1 && newQuantity <= maxStock) {
         quantityInput.value = newQuantity;
+    }
+}
+
+function updateWorkingHoursDisplay() {
+    if (window.studioWorkingHours) {
+        // تحديث النص في شاشة الحجز
+        const startTime = window.studioWorkingHours.startFormatted || '10:00';
+        const endTime = window.studioWorkingHours.endFormatted || '18:00';
+
+        // تنسيق الوقت بطريقة عربية
+        const formatTimeArabic = (timeStr) => {
+            const [hours, minutes] = timeStr.split(':');
+            const hour = parseInt(hours);
+
+            if (hour < 12) {
+                return `${hour}${minutes !== '00' ? `:${minutes}` : ''} صباحاً`;
+            } else if (hour === 12) {
+                return `${hour}${minutes !== '00' ? `:${minutes}` : ''} ظهراً`;
+            } else {
+                return `${hour - 12}${minutes !== '00' ? `:${minutes}` : ''} مساءً`;
+            }
+        };
+
+        // تحديث العناصر في واجهة المستخدم
+        const startTimeEl = document.getElementById('studioStartTime');
+        const endTimeEl = document.getElementById('studioEndTime');
+
+        if (startTimeEl) startTimeEl.textContent = formatTimeArabic(startTime);
+        if (endTimeEl) endTimeEl.textContent = formatTimeArabic(endTime);
     }
 }
 
@@ -77,6 +127,9 @@ function showAppointmentModal(cartItemId) {
                 document.getElementById('addressField').classList.add('d-none');
                 document.getElementById('appointmentErrors').classList.add('d-none');
 
+                // تحميل أوقات العمل مسبقاً
+                fetchWorkingHours();
+
                 const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
                 modal.show();
             } else {
@@ -88,6 +141,33 @@ function showAppointmentModal(cartItemId) {
         .catch(error => {
             console.error('Error:', error);
             showNotification('حدث خطأ أثناء التحقق من حالة الموعد', 'error');
+        });
+}
+
+// دالة جديدة لتحميل أوقات العمل
+function fetchWorkingHours() {
+    // استخدام تاريخ اليوم فقط لجلب أوقات العمل
+    const today = new Date().toISOString().split('T')[0];
+    fetch(`/appointments/check-availability?date=${today}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.workingHours) {
+                // تحديد ما إذا كان جدول العمل يمتد عبر منتصف الليل
+                const startHour = data.workingHours.start;
+                const endHour = data.workingHours.end;
+                const isOvernight = endHour < startHour;
+
+                window.studioWorkingHours = {
+                    ...data.workingHours,
+                    isOvernight: isOvernight
+                };
+
+                console.log("Studio working hours:", window.studioWorkingHours);
+                updateWorkingHoursDisplay();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching working hours:', error);
         });
 }
 
@@ -121,16 +201,38 @@ function updatePrice() {
     const priceElement = document.getElementById('product-price');
     const originalPrice = parseFloat(document.getElementById('original-price').value);
     let currentPrice = originalPrice;
+    let sizePrice = 0;
+    let quantityPrice = 0;
 
-    // إذا تم اختيار مقاس له سعر خاص
+    // حساب سعر المقاس إذا تم اختياره
     if (selectedSize) {
         const sizeElement = document.querySelector(`.size-option[data-size="${selectedSize}"]`);
         if (sizeElement && sizeElement.dataset.price) {
-            currentPrice = parseFloat(sizeElement.dataset.price);
+            sizePrice = parseFloat(sizeElement.dataset.price);
         }
     }
 
-    // تحديث السعر المعروض
+    // حساب سعر الكمية إذا تم اختيارها
+    if (selectedQuantityPrice) {
+        quantityPrice = parseFloat(selectedQuantityPrice);
+    }
+
+    // إذا تم اختيار كلاهما، نجمع السعرين معًا
+    if (selectedSize && selectedQuantityId) {
+        currentPrice = sizePrice + quantityPrice;
+    }
+    // إذا تم اختيار واحد فقط، نستخدم سعره
+    else if (selectedSize) {
+        currentPrice = sizePrice;
+    }
+    else if (selectedQuantityId) {
+        currentPrice = quantityPrice;
+    }
+    // وإلا نستخدم السعر الأصلي
+    else {
+        currentPrice = originalPrice;
+    }
+
     priceElement.textContent = currentPrice.toFixed(2) + ' ر.س';
 }
 
@@ -145,7 +247,7 @@ document.querySelectorAll('.size-option').forEach(el => {
 
 function addToCart() {
     const productId = document.getElementById('product-id').value;
-    const quantity = parseInt(document.getElementById('quantity').value);
+    const quantity = document.getElementById('quantity')?.value || 1;
     const needsAppointment = document.getElementById('needsAppointment')?.checked || false;
 
     const appointmentsEnabled = getAppointmentsStatus();
@@ -156,6 +258,7 @@ function addToCart() {
     }
 
     const errorMessage = document.getElementById('errorMessage');
+    errorMessage.classList.add('d-none');
 
     const hasColorSelectionEnabled = document.querySelector('.colors-section') !== null;
     const hasCustomColorEnabled = document.getElementById('customColor') !== null;
@@ -163,7 +266,31 @@ function addToCart() {
     const hasCustomSizeEnabled = document.getElementById('customSize') !== null;
     const hasAppointmentEnabled = document.querySelector('.custom-measurements-section') !== null;
 
-    errorMessage.classList.add('d-none');
+    const quantityOptions = document.querySelectorAll('.quantity-option');
+    const quantityErrorAlert = document.getElementById('quantity-error-alert');
+
+    if (quantityOptions.length > 0 && !selectedQuantityId) {
+        showNotification('يرجى اختيار إحدى خيارات الكمية المتاحة', 'error');
+
+        if (quantityErrorAlert) {
+            quantityErrorAlert.classList.remove('d-none');
+        }
+
+        document.querySelector('.quantity-pricing').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        const firstAvailableOption = document.querySelector('.quantity-option.available');
+        if (firstAvailableOption) {
+            firstAvailableOption.classList.add('highlight');
+            setTimeout(() => {
+                firstAvailableOption.classList.remove('highlight');
+            }, 2000);
+        }
+        return;
+    }
+
+    if (quantityErrorAlert) {
+        quantityErrorAlert.classList.add('d-none');
+    }
 
     let colorValue = null;
     if (hasColorSelectionEnabled && selectedColor) {
@@ -283,6 +410,7 @@ function addToCart() {
         quantity: quantity,
         color: colorValue,
         size: sizeValue,
+        quantity_option_id: selectedQuantityId,
         needs_appointment: needsAppointment
     };
 
@@ -635,7 +763,6 @@ document.addEventListener('DOMContentLoaded', function() {
         dateInput.min = today.toISOString().split('T')[0];
         dateInput.max = maxDate.toISOString().split('T')[0];
 
-        // Handle date change
         dateInput.addEventListener('change', async function() {
             const selectedDate = this.value;
             const timeSelect = document.getElementById('appointment_time');
@@ -644,17 +771,52 @@ document.addEventListener('DOMContentLoaded', function() {
             const acceptSuggestion = document.getElementById('acceptSuggestion');
 
             try {
-                const response = await fetch(`/appointments/check-availability?date=${selectedDate}`);
-                const appointments = await response.json();
+                // التحقق ما إذا كان اليوم المختار هو يوم الجمعة
+                const selectedDay = new Date(selectedDate).getDay();
+                if (selectedDay === 5) { // 5 = الجمعة
+                    dateSuggestion.classList.remove('d-none');
+                    suggestionText.textContent = `يوم الجمعة هو يوم الراحة الأسبوعية. يرجى اختيار يوم آخر.`;
 
-                // تحديد الأوقات المحجوزة
+                    // العثور على اليوم التالي المتاح
+                    const nextAvailableDate = await findNextAvailableDate(selectedDate);
+                    if (nextAvailableDate) {
+                        const formattedDate = new Date(nextAvailableDate).toLocaleDateString('ar-SA', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        });
+
+                        suggestionText.textContent += ` أقرب يوم متاح هو ${formattedDate}`;
+
+                        acceptSuggestion.onclick = function() {
+                            dateInput.value = nextAvailableDate;
+                            dateInput.dispatchEvent(new Event('change'));
+                            dateSuggestion.classList.add('d-none');
+                        };
+                    }
+
+                    return;
+                }
+
+                const response = await fetch(`/appointments/check-availability?date=${selectedDate}`);
+                const data = await response.json();
+
+                // استخدام الهيكل الجديد للبيانات المرسلة من الخادم
+                const appointments = data.appointments || [];
+                // حفظ أوقات العمل المستلمة من الخادم في متغير عالمي
+                if (data.workingHours) {
+                    window.studioWorkingHours = data.workingHours;
+                    // تحديث عرض أوقات العمل في مودال الحجز
+                    updateWorkingHoursDisplay();
+                }
+
                 const bookedTimes = appointments.map(app => app.time);
 
-                // التحقق من عدد المواعيد المتاحة
                 const availableSlots = getAvailableTimeSlots(selectedDate, bookedTimes);
 
                 if (availableSlots.length === 0) {
-                    // البحث عن أقرب يوم متاح
+                    // هنا يعني أن جميع الفترات محجوزة (لأننا تحققنا قبل ذلك أن اليوم ليس يوم الجمعة)
                     const nextAvailableDate = await findNextAvailableDate(selectedDate);
 
                     if (nextAvailableDate) {
@@ -667,7 +829,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                         suggestionText.textContent = `هذا اليوم مكتمل. أقرب يوم متاح هو ${formattedDate}`;
 
-                        // عند الضغط على زر القبول
                         acceptSuggestion.onclick = function() {
                             dateInput.value = nextAvailableDate;
                             dateInput.dispatchEvent(new Event('change'));
@@ -777,8 +938,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (appointmentForm) {
             appointmentForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const submitBtn = document.getElementById('submitAppointment');
-                const spinner = submitBtn.querySelector('.spinner-border');
+                const submitBtn = document.getElementById('submitBtn');
+                const spinner = submitBtn.querySelector('.loading-spinner');
                 const errorDiv = document.getElementById('appointmentErrors');
 
                 submitBtn.disabled = true;
@@ -848,11 +1009,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showAppointmentModal(pendingAppointment);
     }
 
-    // إخفاء/إظهار العناصر المرتبطة بالمواعيد بناءً على حالة الميزة
     const appointmentsEnabled = getAppointmentsStatus();
     const needsAppointmentCheckbox = document.getElementById('needsAppointment');
 
-    // إذا كان عنصر زر حجز المواعيد موجود وكانت الميزة معطلة
     if (needsAppointmentCheckbox) {
         const measurementsSection = document.querySelector('.custom-measurements-section');
         if (!appointmentsEnabled && measurementsSection) {
@@ -860,7 +1019,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // إضافة معالج حدث لزر إلغاء الموعد
     const cancelAppointmentBtn = document.getElementById('cancelAppointment');
 
     if (cancelAppointmentBtn) {
@@ -878,20 +1036,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // تحديث عدد عناصر السلة
                         document.querySelectorAll('.cart-count').forEach(el => {
                             el.textContent = data.count;
                         });
 
-                        // عرض رسالة نجاح
                         showNotification('تم إلغاء الموعد وإزالة المنتج من السلة', 'success');
 
-                        // إعادة التوجيه حسب السياق
                         const urlParams = new URLSearchParams(window.location.search);
                         if (urlParams.has('pending_appointment')) {
                             window.location.href = '/cart';
                         } else {
-                            // إغلاق النافذة المنبثقة وتحديث السلة
                             bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
                             loadCartItems();
                         }
@@ -906,22 +1060,44 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    const firstQuantityOption = document.querySelector('.quantity-option.available');
+    if (firstQuantityOption) {
+        selectQuantityOption(firstQuantityOption);
+    }
 });
 
-// دالة للبحث عن أقرب يوم متاح
 async function findNextAvailableDate(startDate) {
-    const maxTries = 30; // نبحث لمدة 30 يوم كحد أقصى
+    const maxTries = 30;
     let currentDate = new Date(startDate);
 
     for (let i = 1; i <= maxTries; i++) {
         currentDate.setDate(currentDate.getDate() + 1);
         const dateString = currentDate.toISOString().split('T')[0];
 
+        // تخطي أيام الجمعة
+        if (currentDate.getDay() === 5) { // 5 = الجمعة
+            continue; // تخطي هذا اليوم والانتقال للتالي
+        }
+
         try {
             const response = await fetch(`/appointments/check-availability?date=${dateString}`);
-            const appointments = await response.json();
+            const data = await response.json();
 
-            // التحقق من توفر مواعيد في هذا اليوم
+            // التعامل مع الهيكل الجديد للبيانات
+            const appointments = data.appointments || [];
+
+            // تحديث أوقات العمل إذا كانت موجودة في الاستجابة
+            if (data.workingHours) {
+                const startHour = data.workingHours.start;
+                const endHour = data.workingHours.end;
+                const isOvernight = endHour < startHour;
+
+                window.studioWorkingHours = data.workingHours;
+                // تحديث عرض أوقات العمل في مودال الحجز
+                updateWorkingHoursDisplay();
+            }
+
             const bookedTimes = appointments.map(app => app.time);
             const availableSlots = getAvailableTimeSlots(dateString, bookedTimes);
 
@@ -936,24 +1112,46 @@ async function findNextAvailableDate(startDate) {
     return null;
 }
 
-// دالة لحساب المواعيد المتاحة في يوم معين
 function getAvailableTimeSlots(date, bookedTimes) {
-    const workingHours = {
-        start: 10, // 10 AM
-        end: 18    // 6 PM
+    // استخدام المتغير العام للأوقات إذا كان موجوداً، وإلا استخدام القيم الافتراضية
+    const workingHours = window.studioWorkingHours || {
+        start: 10,
+        end: 18,
+        isOvernight: false
     };
 
     const slots = [];
     const selectedDate = new Date(date);
     const dayOfWeek = selectedDate.getDay();
 
-    // التحقق من أيام العمل (من السبت إلى الخميس)
-    if (dayOfWeek !== 5) { // الجمعة = 5
-        for (let hour = workingHours.start; hour < workingHours.end; hour++) {
+    // يوم الجمعة (dayOfWeek = 5) هو يوم الراحة الأسبوعية ولا تتوفر فيه مواعيد
+    if (dayOfWeek !== 5) {
+        // التحقق إذا كان جدول العمل يمتد عبر منتصف الليل
+        const isOvernight = workingHours.isOvernight || (workingHours.end < workingHours.start);
+
+        // بداية ساعات الدوام
+        let startHour = workingHours.start;
+        // نهاية ساعات الدوام (إذا كان عبر منتصف الليل، فسنستخدم 24 ساعة)
+        let endHour = isOvernight ? 24 : workingHours.end;
+
+        // إضافة الفترات من وقت البدء إلى منتصف الليل
+        for (let hour = startHour; hour < endHour; hour++) {
             for (let minute = 0; minute < 60; minute += 30) {
                 const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
                 if (!bookedTimes.includes(timeString)) {
                     slots.push(timeString);
+                }
+            }
+        }
+
+        // إذا كان جدول العمل يمتد عبر منتصف الليل، نضيف الفترات من 00:00 إلى وقت النهاية
+        if (isOvernight) {
+            for (let hour = 0; hour < workingHours.end; hour++) {
+                for (let minute = 0; minute < 60; minute += 30) {
+                    const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+                    if (!bookedTimes.includes(timeString)) {
+                        slots.push(timeString);
+                    }
                 }
             }
         }
@@ -962,7 +1160,6 @@ function getAvailableTimeSlots(date, bookedTimes) {
     return slots;
 }
 
-// دالة لتعبئة قائمة الأوقات المتاحة
 function populateTimeSelect(selectElement, availableSlots) {
     selectElement.innerHTML = '<option value="">اختر الوقت</option>';
     selectElement.disabled = false;
@@ -973,4 +1170,75 @@ function populateTimeSelect(selectElement, availableSlots) {
         option.textContent = slot;
         selectElement.appendChild(option);
     });
+}
+
+function selectQuantityOption(option) {
+    if (option.classList.contains('active')) {
+        option.classList.remove('active');
+        selectedQuantityId = null;
+        selectedQuantityValue = null;
+        selectedQuantityPrice = null;
+
+        updatePrice();
+        return;
+    }
+
+    document.querySelectorAll('.quantity-option').forEach(opt => {
+        opt.classList.remove('active');
+    });
+
+    option.classList.add('active');
+
+    selectedQuantityId = option.dataset.quantityId;
+    selectedQuantityValue = option.dataset.quantityValue;
+    selectedQuantityPrice = option.dataset.price;
+
+    updatePrice();
+
+    const quantityErrorAlert = document.getElementById('quantity-error-alert');
+    if (quantityErrorAlert) {
+        quantityErrorAlert.classList.add('d-none');
+    }
+}
+
+function toggleCustomSize(checkbox) {
+    const customSizeGroup = document.getElementById('customSizeGroup');
+    const customSizeInput = document.getElementById('customSize');
+
+    if (checkbox.checked) {
+        customSizeGroup.classList.remove('d-none');
+        customSizeInput.disabled = false;
+        customSizeInput.focus();
+
+        document.querySelectorAll('.size-option').forEach(item => {
+            item.classList.remove('active');
+        });
+        selectedSize = null;
+
+        updatePrice();
+    } else {
+        customSizeGroup.classList.add('d-none');
+        customSizeInput.value = '';
+        customSizeInput.disabled = true;
+    }
+}
+
+function toggleCustomColor(checkbox) {
+    const customColorGroup = document.getElementById('customColorGroup');
+    const customColorInput = document.getElementById('customColor');
+
+    if (checkbox.checked) {
+        customColorGroup.classList.remove('d-none');
+        customColorInput.disabled = false;
+        customColorInput.focus();
+
+        document.querySelectorAll('.color-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        selectedColor = null;
+    } else {
+        customColorGroup.classList.add('d-none');
+        customColorInput.value = '';
+        customColorInput.disabled = true;
+    }
 }

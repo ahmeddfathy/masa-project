@@ -78,14 +78,6 @@
                                             </div>
 
                                             <div class="mb-3">
-                                                <label class="form-label">السعر (ريال)</label>
-                                                <input type="number" name="price" class="form-control shadow-sm @error('price') is-invalid @enderror" value="{{ old('price') }}">
-                                                @error('price')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-
-                                            <div class="mb-3">
                                                 <label class="form-label">المخزون</label>
                                                 <input type="number" name="stock" class="form-control shadow-sm @error('stock') is-invalid @enderror" value="{{ old('stock') }}">
                                                 @error('stock')
@@ -394,6 +386,93 @@
                                     </div>
                                 </div>
 
+                                <!-- إضافة قسم تسعير الكميات بعد قسم المقاسات -->
+                                <div class="col-12 mt-4">
+                                    <div class="card card-body shadow-sm border-0">
+                                        <div class="card-title d-flex align-items-center justify-content-between">
+                                            <h5>خيارات الكمية والتسعير</h5>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input"
+                                                       type="checkbox"
+                                                       id="hasQuantities"
+                                                       name="enable_quantity_pricing"
+                                                       value="1"
+                                                       {{ old('enable_quantity_pricing') ? 'checked' : '' }}
+                                                       onchange="toggleQuantitiesSection(this)">
+                                                <label class="form-check-label" for="hasQuantities">تفعيل تسعير الكميات</label>
+                                            </div>
+                                        </div>
+                                        <div id="quantitiesSection" style="display: {{ old('enable_quantity_pricing') ? 'block' : 'none' }}">
+                                            @error('quantities.*')
+                                                <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
+                                            @error('quantity_prices.*')
+                                                <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
+                                            @error('quantity_descriptions.*')
+                                                <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
+                                            <div id="quantitiesContainer">
+                                                @if(old('quantities'))
+                                                    @foreach(old('quantities') as $index => $quantity)
+                                                        <div class="input-group mb-2 shadow-sm">
+                                                            <input type="number"
+                                                                   name="quantities[]"
+                                                                   class="form-control @error('quantities.'.$index) is-invalid @enderror"
+                                                                   placeholder="الكمية"
+                                                                   value="{{ $quantity }}">
+                                                            <input type="number"
+                                                                   name="quantity_prices[]"
+                                                                   class="form-control @error('quantity_prices.'.$index) is-invalid @enderror"
+                                                                   placeholder="السعر"
+                                                                   step="0.01"
+                                                                   value="{{ old('quantity_prices')[$index] ?? '' }}">
+                                                            <input type="text"
+                                                                   name="quantity_descriptions[]"
+                                                                   class="form-control"
+                                                                   placeholder="وصف (اختياري)"
+                                                                   value="{{ old('quantity_descriptions')[$index] ?? '' }}">
+                                                            <div class="input-group-text">
+                                                                <label class="mb-0">
+                                                                    <input type="checkbox"
+                                                                           name="quantity_available[]"
+                                                                           value="{{ $index }}"
+                                                                           {{ isset(old('quantity_available')[$index]) ? 'checked' : '' }}
+                                                                           class="me-1">
+                                                                    متوفر
+                                                                </label>
+                                                            </div>
+                                                            <button type="button" class="btn btn-light-danger" onclick="this.closest('.input-group').remove()">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    <!-- صف افتراضي إذا لم يكن هناك بيانات سابقة -->
+                                                    <div class="input-group mb-2 shadow-sm">
+                                                        <input type="number" name="quantities[]" class="form-control" placeholder="الكمية">
+                                                        <input type="number" name="quantity_prices[]" class="form-control" placeholder="السعر" step="0.01">
+                                                        <input type="text" name="quantity_descriptions[]" class="form-control" placeholder="وصف (اختياري)">
+                                                        <div class="input-group-text">
+                                                            <label class="mb-0">
+                                                                <input type="checkbox" name="quantity_available[]" value="0" checked class="me-1">
+                                                                متوفر
+                                                            </label>
+                                                        </div>
+                                                        <button type="button" class="btn btn-light-danger" onclick="this.closest('.input-group').remove()">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <button type="button" class="btn btn-light-secondary btn-sm" onclick="addQuantityInput()">
+                                                <i class="fas fa-plus"></i>
+                                                إضافة خيار كمية
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- Submit Button -->
                                 <div class="col-12">
                                     <div class="card border-0 shadow-sm">
@@ -514,6 +593,33 @@ function toggleSizesSection(checkbox) {
     } else if (document.querySelectorAll('#sizesContainer input[name="sizes[]"]').length === 0) {
         addSizeInput();
     }
+}
+
+function toggleQuantitiesSection(checkbox) {
+    const section = document.getElementById('quantitiesSection');
+    section.style.display = checkbox.checked ? 'block' : 'none';
+}
+
+function addQuantityInput() {
+    const container = document.getElementById('quantitiesContainer');
+    const index = container.children.length;
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2 shadow-sm';
+    div.innerHTML = `
+        <input type="number" name="quantities[]" class="form-control" placeholder="الكمية">
+        <input type="number" name="quantity_prices[]" class="form-control" placeholder="السعر" step="0.01">
+        <input type="text" name="quantity_descriptions[]" class="form-control" placeholder="وصف (اختياري)">
+        <div class="input-group-text">
+            <label class="mb-0">
+                <input type="checkbox" name="quantity_available[]" value="${index}" checked class="me-1">
+                متوفر
+            </label>
+        </div>
+        <button type="button" class="btn btn-light-danger" onclick="this.closest('.input-group').remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(div);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

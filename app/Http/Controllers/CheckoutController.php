@@ -110,8 +110,8 @@ class CheckoutController extends Controller
           $orderItem = $order->items()->create([
             'product_id' => $item->product_id,
             'quantity' => $item->quantity,
-            'unit_price' => $item->product->price,
-            'subtotal' => $item->product->price * $item->quantity,
+            'unit_price' => $item->unit_price,
+            'subtotal' => $item->subtotal,
             'appointment_id' => $appointment ? $appointment->id : null,
             'color' => $item->color,
             'size' => $item->size
