@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="احجز جلسة تصوير مع عدسة سوما - باقات متنوعة لتصوير المواليد والأطفال والعائلات. خدمة احترافية وأسعار مناسبة في الرياض. احجز موعدك الآن!">
-    <meta name="keywords" content="حجز تصوير، تصوير مواليد، تصوير أطفال، تصوير عائلي، استوديو تصوير، عدسة سوما، حجز موعد، الرياض">
+    <meta name="description" content="احجز جلسة تصوير مع عدسة سوما - باقات متنوعة لتصوير المواليد والأطفال والعائلات. خدمة احترافية وأسعار مناسبة في أبها، حي المحالة. احجز موعدك الآن!">
+    <meta name="keywords" content="حجز تصوير، تصوير مواليد، تصوير أطفال، تصوير عائلي، استوديو تصوير، عدسة سوما، حجز موعد، أبها، محالة">
     <meta name="author" content="عدسة سوما">
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
@@ -13,8 +13,8 @@
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:site_name" content="عدسة سوما">
-    <meta property="og:title" content="احجز جلسة تصوير مع عدسة سوما | تصوير مواليد وأطفال">
-    <meta property="og:description" content="احجز جلسة تصوير مع عدسة سوما - باقات متنوعة لتصوير المواليد والأطفال والعائلات. خدمة احترافية وأسعار مناسبة في الرياض. احجز موعدك الآن!">
+    <meta property="og:title" content="احجز جلسة تصوير مع عدسة سوما | تصوير مواليد وأطفال في أبها">
+    <meta property="og:description" content="احجز جلسة تصوير مع عدسة سوما - باقات متنوعة لتصوير المواليد والأطفال والعائلات. خدمة احترافية وأسعار مناسبة في أبها، حي المحالة. احجز موعدك الآن!">
     <meta property="og:image" content="/assets/images/logo.png" loading="lazy">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -24,15 +24,15 @@
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="احجز جلسة تصوير مع عدسة سوما | تصوير مواليد وأطفال">
-    <meta name="twitter:description" content="احجز جلسة تصوير مع عدسة سوما - باقات متنوعة لتصوير المواليد والأطفال والعائلات. خدمة احترافية وأسعار مناسبة في الرياض. احجز موعدك الآن!">
+    <meta name="twitter:title" content="احجز جلسة تصوير مع عدسة سوما | تصوير مواليد وأطفال في أبها">
+    <meta name="twitter:description" content="احجز جلسة تصوير مع عدسة سوما - باقات متنوعة لتصوير المواليد والأطفال والعائلات. خدمة احترافية وأسعار مناسبة في أبها، حي المحالة. احجز موعدك الآن!">
     <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>احجز جلسة تصوير مع عدسة سوما | تصوير مواليد وأطفال في الرياض</title>
+    <title>احجز جلسة تصوير مع عدسة سوما | تصوير مواليد وأطفال في أبها، حي المحالة</title>
     <!-- Bootstrap RTL CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <!-- Font Awesome -->

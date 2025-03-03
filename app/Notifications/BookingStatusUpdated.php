@@ -69,32 +69,78 @@ class BookingStatusUpdated extends Notification
                 default => $this->booking->status
             };
 
-            $message = (new MailMessage)
-                ->subject("{$statusEmoji} تحديث حالة الحجز #{$this->booking->booking_number}")
-                ->greeting("✨ مرحباً {$notifiable->name}!")
-                ->line("تم تحديث حالة حجزك إلى: {$statusEmoji} {$status}")
-                ->line('━━━━━━━━━━━━━━━━━━━━━━')
-                ->line("📋 رقم الحجز: #{$this->booking->booking_number}")
-                ->line('📦 تفاصيل الحجز:')
-                ->line("• الخدمة: {$this->booking->service->name}")
-                ->line("• الباقة: {$this->booking->package->name}")
-                ->line("• التاريخ: " . $this->booking->session_date->format('Y-m-d'))
-                ->line("• الوقت: " . $this->booking->session_time->format('H:i'));
+            $sections = [
+                [
+                    'title' => 'تفاصيل الحجز',
+                    'items' => [
+                        "• رقم الحجز: #{$this->booking->booking_number}",
+                        "• الخدمة: {$this->booking->service->name}",
+                        "• الباقة: {$this->booking->package->name}",
+                        "• التاريخ: " . $this->booking->session_date->format('Y-m-d'),
+                        "• الوقت: " . $this->booking->session_time->format('H:i'),
+                    ]
+                ],
+                [
+                    'title' => 'معلومات الدفع',
+                    'items' => [
+                        'المبلغ الإجمالي: 💰 ' . number_format($this->booking->total_amount, 2) . ' ر.س',
+                        'حالة الدفع: ' . ($this->booking->payment_status === 'paid' ? '✅ مدفوع' : '⏳ قيد الانتظار')
+                    ]
+                ]
+            ];
 
             if ($this->booking->notes) {
-                $message->line('━━━━━━━━━━━━━━━━━━━━━━')
-                        ->line("📝 ملاحظات: {$this->booking->notes}");
+                $sections[] = [
+                    'title' => 'ملاحظات',
+                    'items' => [
+                        $this->booking->notes
+                    ]
+                ];
             }
 
-            return $message
-                ->line('━━━━━━━━━━━━━━━━━━━━━━')
-                ->line('💳 معلومات الدفع:')
-                ->line('المبلغ الإجمالي: 💰 ' . number_format($this->booking->total_amount, 2) . ' ريال')
-                ->line('حالة الدفع: ' . ($this->booking->payment_status === 'paid' ? '✅ مدفوع' : '⏳ قيد الانتظار'))
-                ->action('👉 تفاصيل الحجز', route('client.bookings.show', $this->booking->uuid))
-                ->line('━━━━━━━━━━━━━━━━━━━━━━')
-                ->line('🙏 شكراً لاختيارك خدماتنا!')
-                ->line('📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.');
+            if ($this->booking->status === 'confirmed') {
+                $halfAmount = number_format($this->booking->total_amount / 2, 2);
+                $sections[] = [
+                    'title' => 'تذكير بمعلومات الدفع',
+                    'items' => [
+                        "• يرجى دفع نصف المبلغ ({$halfAmount} ر.س) مقدماً لتأكيد الحجز",
+                        "• يمكنك إرسال صورة إيصال التحويل على رقم الواتساب: 0561667885",
+                        "• بيانات الحساب البنكي:",
+                        "   - البنك الأهلي السعودي",
+                        "   - رقم الحساب: 18900000406701",
+                        "   - الآيبان (IBAN): SA8710000018900000406701",
+                        "   - رمز السويفت: NCBKSAJE"
+                    ]
+                ];
+
+                $sections[] = [
+                    'title' => 'تذكير بمعلومات الموقع',
+                    'items' => [
+                        "• موقع الاستوديو: أبها، حي المحالة",
+                        // معلومات إضافية عن كيفية الوصول للاستوديو
+                    ]
+                ];
+            }
+
+            return (new MailMessage)
+                ->subject("{$statusEmoji} تحديث حالة الحجز #{$this->booking->booking_number}")
+                ->view('emails.notification', [
+                    'title' => "{$statusEmoji} تحديث حالة الحجز",
+                    'name' => $notifiable->name,
+                    'greeting' => "مرحباً {$notifiable->name}!",
+                    'intro' => "تم تحديث حالة حجزك إلى: {$statusEmoji} {$status}",
+                    'content' => [
+                        'sections' => $sections,
+                        'action' => [
+                            'text' => '👉 تفاصيل الحجز',
+                            'url' => route('client.bookings.show', $this->booking->uuid)
+                        ],
+                        'outro' => [
+                            '🙏 شكراً لاختيارك خدماتنا!',
+                            '📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.'
+                        ]
+                    ]
+                ]);
         } catch (Throwable $e) {
             Log::error('Error preparing booking status email', [
                 'error' => $e->getMessage(),

@@ -22,11 +22,13 @@ class AppointmentStatusUpdated extends Notification
     private $appointmentTime;
     private $appointmentNotes;
     private $userId;
+    protected $isDateTimeUpdate;
 
-    public function __construct(Appointment $appointment)
+    public function __construct(Appointment $appointment, bool $isDateTimeUpdate = false)
     {
         try {
             $this->appointment = $appointment;
+            $this->isDateTimeUpdate = $isDateTimeUpdate;
 
             if (!$appointment->exists) {
                 throw new \Exception('Appointment model does not exist');
@@ -104,32 +106,71 @@ class AppointmentStatusUpdated extends Notification
                 default => ucfirst($this->appointmentStatus)
             };
 
-            $message = (new MailMessage)
-                ->subject("{$statusEmoji} تحديث حالة الموعد - {$this->appointment->reference_number}")
-                ->greeting("✨ مرحباً {$notifiable->name}!")
-                ->line("تم تحديث حالة موعدك إلى: {$statusEmoji} {$status}")
-                ->line('━━━━━━━━━━━━━━━━━━━━━━')
-                ->line("🔖 رقم المرجع: {$this->appointment->reference_number}");
-
-            if ($this->appointmentDate !== 'غير محدد') {
-                $message->line("📅 التاريخ: {$this->appointmentDate}");
-            }
-            if ($this->appointmentTime !== 'غير محدد') {
-                $message->line("⏰ الوقت: {$this->appointmentTime}");
-            }
+            $sections = [
+                [
+                    'title' => 'تفاصيل الموعد',
+                    'items' => [
+                        "🔖 رقم المرجع: {$this->appointment->reference_number}",
+                        "📅 التاريخ: " . Carbon::parse($this->appointment->date)->format('Y-m-d'),
+                        "⏰ الوقت: " . Carbon::parse($this->appointment->time)->format('H:i'),
+                        "📊 الحالة الجديدة: {$statusEmoji} {$status}"
+                    ]
+                ]
+            ];
 
             if ($this->appointmentNotes) {
-                $message->line('━━━━━━━━━━━━━━━━━━━━━━')
-                       ->line("📝 ملاحظات: {$this->appointmentNotes}");
+                $sections[] = [
+                    'title' => 'ملاحظات',
+                    'items' => [
+                        $this->appointmentNotes
+                    ]
+                ];
             }
 
-            return $message
-                ->line('━━━━━━━━━━━━━━━━━━━━━━')
-                ->action('👉 تفاصيل الموعد', route('appointments.show', $this->appointment->reference_number))
-                ->line('🙏 شكراً لاختيارك خدماتنا!')
-                ->line('📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.');
+            // إضافة معلومات الدفع إذا تم تأكيد الموعد
+            if ($this->appointmentStatus === 'approved') {
+                $sections[] = [
+                    'title' => 'معلومات الدفع',
+                    'items' => [
+                        "• طريقة الدفع: يتم دفع نصف المبلغ مقدماً والنصف الآخر نقداً عند الحضور",
+                        "• يرجى إرسال صورة إيصال التحويل على رقم الواتساب: 0561667885",
+                        "• بيانات الحساب البنكي:",
+                        "   - البنك الأهلي السعودي",
+                        "   - رقم الحساب: 18900000406701",
+                        "   - الآيبان (IBAN): SA8710000018900000406701",
+                        "   - رمز السويفت: NCBKSAJE"
+                    ]
+                ];
+
+                $sections[] = [
+                    'title' => 'موقع الاستوديو',
+                    'items' => [
+                        "• موقع الاستوديو: أبها، حي المحالة",
+                    ]
+                ];
+            }
+
+            return (new MailMessage)
+                ->subject("{$statusEmoji} تحديث حالة الموعد #{$this->appointment->reference_number}")
+                ->view('emails.notification', [
+                    'title' => "{$statusEmoji} تحديث حالة الموعد",
+                    'name' => $notifiable->name,
+                    'greeting' => "مرحباً {$notifiable->name}!",
+                    'intro' => "تم تحديث حالة موعدك إلى: {$statusEmoji} {$status}",
+                    'content' => [
+                        'sections' => $sections,
+                        'action' => [
+                            'text' => '👉 تفاصيل الموعد',
+                            'url' => route('appointments.show', $this->appointment->reference_number)
+                        ],
+                        'outro' => [
+                            '🙏 شكراً لاختيارك خدماتنا!',
+                            '📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.'
+                        ]
+                    ]
+                ]);
         } catch (Throwable $e) {
-            Log::error('Error preparing appointment status email', [
+            Log::error('Error preparing appointment status update email', [
                 'error' => $e->getMessage(),
                 'appointment_reference' => $this->appointment->reference_number
             ]);
@@ -139,42 +180,13 @@ class AppointmentStatusUpdated extends Notification
 
     public function toArray($notifiable): array
     {
-        try {
-            $status = match($this->appointmentStatus) {
-                'pending' => 'قيد الانتظار',
-                'confirmed' => 'مؤكد',
-                'cancelled' => 'ملغي',
-                'completed' => 'مكتمل',
-                'approved' => 'موافق عليه',
-                default => ucfirst($this->appointmentStatus)
-            };
-
-            $message = "تم تحديث حالة موعدك إلى {$status}";
-            if ($this->appointmentDate !== 'غير محدد' && $this->appointmentTime !== 'غير محدد') {
-                $message .= " (التاريخ: {$this->appointmentDate} الساعة {$this->appointmentTime})";
-            }
-
-            return [
-                'title' => 'تحديث حالة الموعد',
-                'message' => $message,
-                'type' => 'appointment_status_updated',
-                'reference_number' => $this->appointment->reference_number,
-                'status' => $this->appointmentStatus
-            ];
-        } catch (Throwable $e) {
-            Log::error('Error in toArray method', [
-                'error' => $e->getMessage(),
-                'appointment_id' => $this->appointmentId
-            ]);
-
-            return [
-                'title' => 'تحديث حالة الموعد',
-                'message' => 'حدث خطأ أثناء معالجة الإشعار',
-                'type' => 'appointment_status_updated',
-                'reference_number' => $this->appointment->reference_number,
-                'status' => $this->appointmentStatus ?? 'unknown'
-            ];
-        }
+        return [
+            'title' => 'تحديث حالة الموعد',
+            'message' => "تم تحديث حالة الموعد إلى: {$this->appointment->status}",
+            'type' => 'appointment_status_updated',
+            'appointment_reference' => $this->appointment->reference_number,
+            'status' => $this->appointment->status
+        ];
     }
 
     public function failed(Throwable $e)

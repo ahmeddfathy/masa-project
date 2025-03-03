@@ -40,7 +40,7 @@ class BookingConfirmation extends Notification
             $body .= "الباقة: {$booking->package->name}\n";
             $body .= "التاريخ: " . $booking->session_date->format('Y-m-d') . "\n";
             $body .= "الوقت: " . $booking->session_time->format('H:i') . "\n";
-            $body .= "المبلغ: $" . number_format($booking->total_amount, 2);
+            $body .= "المبلغ: " . number_format($booking->total_amount, 2) . " ر.س";
 
             if ($booking->baby_name) {
                 $body .= "\nاسم الطفل: {$booking->baby_name}";
@@ -69,48 +69,106 @@ class BookingConfirmation extends Notification
     {
         $this->booking->load(['service', 'package', 'addons']);
 
-        $addonsText = $this->booking->addons->map(function($addon) {
-            return "• {$addon->name} (الكمية: {$addon->pivot->quantity})";
-        })->join("\n");
+        $addonsArray = [];
+        if ($this->booking->addons->isNotEmpty()) {
+            $addonsArray = $this->booking->addons->map(function($addon) {
+                return "{$addon->name} (الكمية: {$addon->pivot->quantity})";
+            })->toArray();
+        }
+
+        $bookingDetails = [
+            "• الخدمة: {$this->booking->service->name}",
+            "• الباقة: {$this->booking->package->name}",
+            "• التاريخ: " . $this->booking->session_date->format('Y-m-d'),
+            "• الوقت: " . $this->booking->session_time->format('H:i')
+        ];
+
+        if ($this->booking->baby_name) {
+            $bookingDetails[] = "• اسم الطفل: {$this->booking->baby_name}";
+        }
+
+        if ($this->booking->baby_birth_date) {
+            $bookingDetails[] = "• تاريخ ميلاد الطفل: " . $this->booking->baby_birth_date->format('Y-m-d');
+        }
+
+        if ($this->booking->gender) {
+            $bookingDetails[] = "• الجنس: " . ($this->booking->gender === 'male' ? 'ذكر' : 'أنثى');
+        }
+
+        $halfAmount = number_format($this->booking->total_amount / 2, 2);
+        $sections = [
+            [
+                'title' => 'تفاصيل الحجز',
+                'items' => $bookingDetails
+            ],
+            [
+                'title' => 'معلومات التواصل',
+                'items' => [
+                    "الاسم: {$notifiable->name}",
+                    "رقم الهاتف: {$notifiable->phone}"
+                ]
+            ],
+            [
+                'title' => 'معلومات الدفع',
+                'items' => [
+                    'المبلغ الإجمالي: 💰 ' . number_format($this->booking->total_amount, 2) . ' ر.س',
+                    'حالة الدفع: ' . ($this->booking->payment_status === 'paid' ? '✅ مدفوع' : '⏳ قيد الانتظار')
+                ]
+            ],
+            [
+                'title' => 'معلومات الدفع',
+                'items' => [
+                    "• طريقة الدفع: يتم دفع نصف المبلغ مقدماً ({$halfAmount} ر.س) والنصف الآخر نقداً عند الحضور",
+                    "• يرجى إرسال صورة إيصال التحويل على رقم الواتساب: 0561667885",
+                    "• بيانات الحساب البنكي:",
+                    "   - البنك الأهلي السعودي",
+                    "   - رقم الحساب: 18900000406701",
+                    "   - الآيبان (IBAN): SA8710000018900000406701",
+                    "   - رمز السويفت: NCBKSAJE"
+                ]
+            ],
+            [
+                'title' => 'موقع الاستوديو',
+                'items' => [
+                    "العنوان: استوديو عدسة سوما - أبها، حي المحالة",
+                    // يمكن إضافة معلومات إضافية مثل الموقع الدقيق أو إحداثيات خرائط جوجل
+                ]
+            ]
+        ];
+
+        if (!empty($addonsArray)) {
+            $sections[] = [
+                'title' => 'الإضافات',
+                'items' => $addonsArray
+            ];
+        }
+
+        if ($this->booking->notes) {
+            $sections[] = [
+                'title' => 'ملاحظات',
+                'items' => [$this->booking->notes]
+            ];
+        }
 
         return (new MailMessage)
             ->subject('📸 تأكيد الحجز #' . $this->booking->booking_number)
-            ->greeting("✨ مرحباً {$notifiable->name}")
-            ->line('نشكرك على حجزك! تم تأكيد موعد التصوير بنجاح.')
-            ->line('━━━━━━━━━━━━━━━━━━━━━━')
-            ->line("📋 رقم الحجز: #{$this->booking->booking_number}")
-            ->line('📦 تفاصيل الحجز:')
-            ->line("• الخدمة: {$this->booking->service->name}")
-            ->line("• الباقة: {$this->booking->package->name}")
-            ->line("• التاريخ: " . $this->booking->session_date->format('Y-m-d'))
-            ->line("• الوقت: " . $this->booking->session_time->format('H:i'))
-            ->when($this->booking->baby_name, function($mail) {
-                return $mail->line("• اسم الطفل: {$this->booking->baby_name}");
-            })
-            ->when($this->booking->baby_birth_date, function($mail) {
-                return $mail->line("• تاريخ ميلاد الطفل: " . $this->booking->baby_birth_date->format('Y-m-d'));
-            })
-            ->when($this->booking->gender, function($mail) {
-                return $mail->line("• الجنس: " . ($this->booking->gender === 'male' ? 'ذكر' : 'أنثى'));
-            })
-            ->when($addonsText, function($mail) use ($addonsText) {
-                return $mail->line('📦 الإضافات:')->line($addonsText);
-            })
-            ->line('━━━━━━━━━━━━━━━━━━━━━━')
-            ->line('📍 معلومات التواصل:')
-            ->line("الاسم: {$notifiable->name}")
-            ->line("رقم الهاتف: {$notifiable->phone}")
-            ->line('━━━━━━━━━━━━━━━━━━━━━━')
-            ->line('💳 معلومات الدفع:')
-            ->line('المبلغ الإجمالي: 💰 $' . number_format($this->booking->total_amount, 2))
-            ->line('حالة الدفع: ' . ($this->booking->payment_status === 'paid' ? '✅ مدفوع' : '⏳ قيد الانتظار'))
-            ->action('👉 تفاصيل الحجز', route('client.bookings.show', $this->booking->uuid))
-            ->line('━━━━━━━━━━━━━━━━━━━━━━')
-            ->when($this->booking->notes, function($mail) {
-                return $mail->line('📝 ملاحظات:')->line($this->booking->notes);
-            })
-            ->line('🙏 شكراً لاختيارك خدماتنا!')
-            ->line('📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.');
+            ->view('emails.notification', [
+                'title' => '✨ تأكيد حجز التصوير',
+                'name' => $notifiable->name,
+                'greeting' => "مرحباً {$notifiable->name}!",
+                'intro' => 'نشكرك على حجزك! تم تأكيد موعد التصوير بنجاح.',
+                'content' => [
+                    'sections' => $sections,
+                    'action' => [
+                        'text' => '👉 تفاصيل الحجز',
+                        'url' => route('client.bookings.show', $this->booking->uuid)
+                    ],
+                    'outro' => [
+                        '🙏 شكراً لاختيارك خدماتنا!',
+                        '📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.'
+                    ]
+                ]
+            ]);
     }
 
     public function toArray($notifiable): array

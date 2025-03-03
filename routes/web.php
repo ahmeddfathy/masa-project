@@ -191,6 +191,10 @@ Route::middleware([
         // مسارات الإعدادات
         Route::get('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
         Route::post('/settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+
+        // تحديث تاريخ ووقت الموعد
+        Route::patch('/admin/appointments/{appointment}/update-datetime', [App\Http\Controllers\Admin\AppointmentController::class, 'updateDateTime'])
+            ->name('appointments.update-datetime');
     });
 });
 

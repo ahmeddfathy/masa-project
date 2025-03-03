@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="معرض صور عدسة سوما - مجموعة متنوعة من الصور الاحترافية للعائلات والأطفال. تصوير مواليد، أطفال، وجلسات تصوير عائلية في الرياض.">
-    <meta name="keywords" content="معرض صور، صور أطفال، صور عائلية، تصوير مواليد، استوديو تصوير، عدسة سوما، الرياض">
+    <meta name="description" content="معرض صور عدسة سوما - مجموعة متنوعة من الصور الاحترافية للعائلات والأطفال. تصوير مواليد، أطفال، وجلسات تصوير عائلية في ابها حي المحالة.">
+    <meta name="keywords" content="معرض صور، صور أطفال، صور عائلية، تصوير مواليد، استوديو تصوير، عدسة سوما، ابها، حي المحالة">
     <meta name="author" content="عدسة سوما">
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
@@ -14,7 +14,7 @@
     <!-- Open Graph Meta Tags -->
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="معرض صور عدسة سوما - صور احترافية للعائلات والأطفال">
-    <meta property="og:description" content="معرض صور متنوع يضم أجمل لحظات العائلات والأطفال. تصوير مواليد، أطفال، وجلسات تصوير عائلية في الرياض.">
+    <meta property="og:description" content="معرض صور متنوع يضم أجمل لحظات العائلات والأطفال. تصوير مواليد، أطفال، وجلسات تصوير عائلية في ابها حي المحالة.">
     <meta property="og:image" content="/assets/images/logo.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -25,13 +25,13 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="معرض صور عدسة سوما - صور احترافية للعائلات والأطفال">
-    <meta name="twitter:description" content="معرض صور متنوع يضم أجمل لحظات العائلات والأطفال. تصوير مواليد، أطفال، وجلسات تصوير عائلية في الرياض.">
+    <meta name="twitter:description" content="معرض صور متنوع يضم أجمل لحظات العائلات والأطفال. تصوير مواليد، أطفال، وجلسات تصوير عائلية في ابها حي المحالة.">
     <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
-    <title>معرض صور عدسة سوما - صور احترافية للعائلات والأطفال في الرياض</title>
+    <title>معرض صور عدسة سوما - صور احترافية للعائلات والأطفال في ابها حي المحالة</title>
     <!-- Bootstrap RTL CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <!-- Font Awesome -->

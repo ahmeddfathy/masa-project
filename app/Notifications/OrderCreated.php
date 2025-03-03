@@ -23,7 +23,7 @@ class OrderCreated extends Notification
       $firebaseService = App::make(FirebaseNotificationService::class);
 
       $title = "طلب جديد #{$order->order_number}";
-      $body = "تم إنشاء طلب جديد بقيمة $" . number_format($order->total_amount, 2);
+      $body = "تم إنشاء طلب جديد بقيمة " . number_format($order->total_amount, 2) . " ر.س";
 
       $itemsWithAppointments = $order->items->filter(function($item) {
         return $item->appointment !== null;
@@ -56,39 +56,77 @@ class OrderCreated extends Notification
   {
     $this->order->load(['items.product', 'items.appointment']);
 
-    $orderItems = $this->order->items->map(function($item) {
-        $itemText = "• {$item->product->name}\n";
-        $itemText .= "  الكمية: {$item->quantity}\n";
-        $itemText .= "  السعر: $" . number_format($item->subtotal, 2);
-
+    $orderItemsArray = $this->order->items->map(function($item) {
+        $text = "{$item->product->name} (الكمية: {$item->quantity})";
         if ($item->appointment) {
-            $itemText .= "\n  موعد المقاسات: " . $item->appointment->appointment_date->format('Y-m-d H:i');
-            $itemText .= "\n  رقم المرجع: " . $item->appointment->reference_number;
+            $text .= " - موعد المقاسات: " . $item->appointment->appointment_date->format('Y-m-d H:i');
         }
+        return $text;
+    })->toArray();
 
-        return $itemText;
-    })->join("\n\n");
+    $halfAmount = number_format($this->order->total_amount / 2, 2);
+    $sections = [
+        [
+            'title' => 'تفاصيل المنتجات',
+            'items' => $orderItemsArray
+        ],
+        [
+            'title' => 'معلومات التوصيل',
+            'items' => [
+                "العنوان: {$this->order->shipping_address}",
+                "رقم الهاتف: {$this->order->phone}"
+            ]
+        ],
+        [
+            'title' => 'معلومات الدفع',
+            'items' => [
+                "• طريقة الدفع: يتم دفع نصف المبلغ مقدماً ({$halfAmount} ر.س) والنصف الآخر نقداً عند الاستلام",
+                "• يرجى إرسال صورة إيصال التحويل على رقم الواتساب: 0561667885",
+                "• بيانات الحساب البنكي:",
+                "   - البنك الأهلي السعودي",
+                "   - رقم الحساب: 18900000406701",
+                "   - الآيبان (IBAN): SA8710000018900000406701",
+                "   - رمز السويفت: NCBKSAJE"
+            ]
+        ]
+    ];
+
+    // إضافة قسم للمواعيد إذا كان هناك منتجات مرتبطة بمواعيد مقاسات
+    $appointmentItems = $this->order->items->filter(function($item) {
+        return $item->appointment !== null;
+    });
+
+    if ($appointmentItems->isNotEmpty()) {
+        $appointmentDetails = $appointmentItems->map(function($item) {
+            return "{$item->product->name}: " . $item->appointment->appointment_date->format('Y-m-d H:i') .
+                   " (الرقم المرجعي: {$item->appointment->reference_number})";
+        })->toArray();
+
+        $sections[] = [
+            'title' => 'مواعيد المقاسات',
+            'items' => $appointmentDetails
+        ];
+    }
 
     return (new MailMessage)
         ->subject('🛍️ تأكيد الطلب #' . $this->order->order_number)
-        ->greeting("✨ مرحباً {$notifiable->name}")
-        ->line('نشكرك على ثقتك! تم استلام طلبك بنجاح.')
-        ->line('━━━━━━━━━━━━━━━━━━━━━━')
-        ->line("📦 رقم الطلب: #{$this->order->order_number}")
-        ->line('🛒 تفاصيل المنتجات:')
-        ->line($orderItems)
-        ->line('━━━━━━━━━━━━━━━━━━━━━━')
-        ->line('📍 معلومات التوصيل:')
-        ->line("العنوان: {$this->order->shipping_address}")
-        ->line("رقم الهاتف: {$this->order->phone}")
-        ->line('━━━━━━━━━━━━━━━━━━━━━━')
-        ->line('💳 معلومات الدفع:')
-        ->line('طريقة الدفع: ' . ($this->order->payment_method === 'card' ? '💳 بطاقة ائتمان' : '💵 نقداً عند الاستلام'))
-        ->line('إجمالي الطلب: 💰 $' . number_format($this->order->total_amount, 2))
-        ->action('👉 متابعة الطلب', route('orders.show', $this->order))
-        ->line('━━━━━━━━━━━━━━━━━━━━━━')
-        ->line('🙏 شكراً لتسوقك معنا!')
-        ->line('📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.');
+        ->view('emails.notification', [
+            'title' => '✨ تأكيد الطلب',
+            'name' => $notifiable->name,
+            'greeting' => "مرحباً {$notifiable->name}!",
+            'intro' => 'نشكرك على ثقتك! تم استلام طلبك بنجاح.',
+            'content' => [
+                'sections' => $sections,
+                'action' => [
+                    'text' => '👉 متابعة الطلب',
+                    'url' => route('orders.show', $this->order)
+                ],
+                'outro' => [
+                    '🙏 شكراً لتسوقك معنا!',
+                    '📞 إذا كان لديك أي استفسارات، لا تتردد في الاتصال بنا.'
+                ]
+            ]
+        ]);
   }
 
   public function toArray($notifiable): array
