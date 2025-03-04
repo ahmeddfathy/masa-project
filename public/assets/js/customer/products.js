@@ -492,10 +492,15 @@ function removeFromCart(button, cartItemId) {
             cartItem.style.opacity = '0';
             cartItem.style.transform = 'translateX(50px)';
 
+            // تحديث عرض السلة مباشرة
+            updateCartDisplay(data);
+
+            // إضافة تأخير قصير قبل إعادة تحميل عناصر السلة
             setTimeout(() => {
-                updateCartDisplay(data);
-                showNotification('تم حذف المنتج من السلة بنجاح', 'success');
+                loadCartItems();
             }, 300);
+
+            showNotification('تم حذف المنتج من السلة بنجاح', 'success');
         } else {
             cartItem.style.opacity = '1';
             showNotification(data.message || 'حدث خطأ أثناء حذف المنتج', 'error');

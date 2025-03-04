@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Appointment;
 
 class CartController extends Controller
 {
@@ -23,25 +24,24 @@ class CartController extends Controller
             return view('cart.index', [
                 'cart_items' => collect(),
                 'subtotal' => 0,
-                'total' => 0
+                'total' => 0,
+                'cart_items_count' => 0
             ]);
         }
 
         $cart_items = $cart->items()
-            ->with(['product.images', 'product.category', 'appointment'])
+            ->with(['product.images', 'product.category', 'appointment', 'product.sizes', 'product.quantities'])
             ->get();
 
-        $subtotal = $cart_items->sum(function ($item) {
-            return $item->product->price * $item->quantity;
-        });
-
+        $subtotal = $cart_items->sum('subtotal');
         $total = $subtotal;
 
-        return view('cart.index', compact(
-            'cart_items',
-            'subtotal',
-            'total'
-        ));
+        return view('cart.index', [
+            'cart_items' => $cart_items,
+            'subtotal' => $subtotal,
+            'total' => $total,
+            'cart_items_count' => $cart_items->sum('quantity')
+        ]);
     }
 
     public function add(Request $request, Product $product)
@@ -155,43 +155,126 @@ class CartController extends Controller
         }
     }
 
-    public function addToCart(Request $request, Product $product)
+    public function addToCart(Request $request)
     {
         if (!Auth::check()) {
-            return redirect()->route('login')
-                ->with('error', 'يجب تسجيل الدخول لإضافة المنتجات إلى السلة');
+            return response()->json([
+                'success' => false,
+                'message' => 'يجب تسجيل الدخول لإضافة المنتجات إلى السلة'
+            ], 401);
         }
 
         $request->validate([
+            'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'size' => 'nullable|string',
-            'color' => 'nullable|string'
+            'color' => 'nullable|string',
+            'quantity_option_id' => 'nullable|exists:product_quantity_options,id',
+            'needs_appointment' => 'required|boolean'
         ]);
 
-        $cart = Cart::firstOrCreate([
-            'user_id' => Auth::id()
-        ]);
+        try {
+            $product = Product::findOrFail($request->product_id);
 
-        $cartItem = CartItem::updateOrCreate(
-            [
-                'cart_id' => $cart->id,
+            if (!$product->is_available) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'المنتج غير متوفر حالياً'
+                ], 400);
+            }
+
+            $cart = Cart::firstOrCreate([
+                'user_id' => Auth::id()
+            ]);
+
+            // حساب السعر النهائي
+            $finalPrice = $this->calculateFinalPrice($product, $request);
+
+            // البحث عن عنصر مشابه في السلة
+            $cartItem = $cart->items()
+                ->where('product_id', $product->id)
+                ->where('size', $request->size)
+                ->where('color', $request->color)
+                ->where('quantity_option_id', $request->quantity_option_id)
+                ->first();
+
+            if ($cartItem) {
+                // تحديث الكمية إذا كان المنتج موجود
+                $cartItem->quantity += $request->quantity;
+                $cartItem->subtotal = $finalPrice * $cartItem->quantity;
+                $cartItem->save();
+            } else {
+                // إنشاء عنصر جديد
+                $cartItem = CartItem::create([
+                    'cart_id' => $cart->id,
+                    'product_id' => $product->id,
+                    'quantity' => $request->quantity,
+                    'size' => $request->size,
+                    'color' => $request->color,
+                    'unit_price' => $finalPrice,
+                    'subtotal' => $finalPrice * $request->quantity,
+                    'quantity_option_id' => $request->quantity_option_id,
+                    'needs_appointment' => $request->needs_appointment
+                ]);
+            }
+
+            // تحديث إجمالي السلة
+            $this->updateCartTotal($cart);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم إضافة المنتج إلى السلة بنجاح',
+                'cart_count' => $cart->items->sum('quantity'),
+                'cart_total' => number_format($cart->total_amount, 2),
+                'show_appointment' => $request->needs_appointment,
+                'product_name' => $product->name,
                 'product_id' => $product->id,
-                'size' => $request->size,
-                'color' => $request->color
-            ],
-            [
-                'quantity' => $request->quantity,
-                'unit_price' => $product->price,
-                'subtotal' => $product->price * $request->quantity
-            ]
-        );
+                'cart_item_id' => $cartItem->id,
+                'show_modal' => $request->needs_appointment
+            ]);
 
-        // تحديث إجمالي السلة
-        $cart->update([
-            'total_amount' => $cart->items->sum('subtotal')
-        ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء إضافة المنتج إلى السلة'
+            ], 500);
+        }
+    }
 
-        return back()->with('success', 'تم إضافة المنتج إلى السلة بنجاح');
+    protected function calculateFinalPrice($product, $request)
+    {
+        $basePrice = $product->price;
+
+        // إذا كان هناك خيار كمية محدد
+        if ($request->quantity_option_id) {
+            $quantityOption = $product->quantities()
+                ->where('id', $request->quantity_option_id)
+                ->first();
+
+            if ($quantityOption) {
+                return $quantityOption->price;
+            }
+        }
+
+        // إذا كان هناك مقاس محدد
+        if ($request->size) {
+            $sizeOption = $product->sizes()
+                ->where('size', $request->size)
+                ->first();
+
+            if ($sizeOption && $sizeOption->price) {
+                return $sizeOption->price;
+            }
+        }
+
+        return $basePrice;
+    }
+
+    protected function updateCartTotal($cart)
+    {
+        $cart->refresh();
+        $total = $cart->items->sum('subtotal');
+        $cart->update(['total_amount' => $total]);
     }
 
     public function getItems()
@@ -201,27 +284,35 @@ class CartController extends Controller
         if (!$cart) {
             return response()->json([
                 'items' => [],
-                'total' => 0
+                'total' => '0.00',
+                'count' => 0
             ]);
         }
 
         $items = $cart->items->map(function ($item) {
+            $product = $item->product;
+            $image = $product->images->first() ?
+                     asset('storage/' . $product->images->first()->image_path) :
+                     null;
+
             return [
                 'id' => $item->id,
-                'name' => $item->product->name,
-                'price' => $item->product->price,
+                'name' => $product->name,
+                'price' => number_format($item->unit_price, 2),
                 'quantity' => $item->quantity,
-                'image' => $item->product->images->first()->url ?? null,
+                'subtotal' => number_format($item->subtotal, 2),
+                'image' => $image,
+                'color' => $item->color,
+                'size' => $item->size,
+                'needs_appointment' => $item->needs_appointment,
+                'has_appointment' => $item->appointment()->exists()
             ];
-        });
-
-        $total = $items->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
         });
 
         return response()->json([
             'items' => $items,
-            'total' => $total
+            'total' => number_format($cart->total_amount, 2),
+            'count' => $cart->items->sum('quantity')
         ]);
     }
 
@@ -241,22 +332,27 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1'
         ]);
 
-        $cartItem->quantity = $request->quantity;
-        $cartItem->subtotal = $cartItem->quantity * $cartItem->unit_price;
-        $cartItem->save();
+        try {
+            $cartItem->quantity = $request->quantity;
+            $cartItem->subtotal = $cartItem->unit_price * $cartItem->quantity;
+            $cartItem->save();
 
-        // تحديث إجمالي السلة
-        $cart = $cartItem->cart;
-        $cart->total_amount = $cart->items->sum('subtotal');
-        $cart->save();
+            $cart = $cartItem->cart;
+            $this->updateCartTotal($cart);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'تم تحديث الكمية بنجاح',
-            'item_subtotal' => $cartItem->subtotal,
-            'cart_total' => $cart->total_amount,
-            'cart_count' => $cart->items->sum('quantity')
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث الكمية بنجاح',
+                'item_subtotal' => $cartItem->subtotal,
+                'cart_total' => $cart->total_amount,
+                'cart_count' => $cart->items->sum('quantity')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء تحديث الكمية'
+            ], 500);
+        }
     }
 
     /**
@@ -271,19 +367,29 @@ class CartController extends Controller
             ], 403);
         }
 
-        $cart = $cartItem->cart;
-        $cartItem->delete();
+        try {
+            $cart = $cartItem->cart;
 
-        // تحديث إجمالي السلة
-        $cart->total_amount = $cart->items->sum('subtotal');
-        $cart->save();
+            // حذف الموعد إذا كان موجود
+            if ($appointment = $cartItem->appointment) {
+                $appointment->delete();
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'تم حذف المنتج من السلة بنجاح',
-            'cart_total' => $cart->total_amount,
-            'cart_count' => $cart->items->sum('quantity')
-        ]);
+            $cartItem->delete();
+            $this->updateCartTotal($cart);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم حذف المنتج من السلة بنجاح',
+                'cart_total' => $cart->total_amount,
+                'cart_count' => $cart->items->sum('quantity')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء حذف المنتج'
+            ], 500);
+        }
     }
 
     public function checkAppointment(CartItem $cartItem)

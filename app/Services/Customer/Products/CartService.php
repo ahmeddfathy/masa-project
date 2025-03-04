@@ -5,6 +5,7 @@ namespace App\Services\Customer\Products;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -269,6 +270,14 @@ class CartService
                 'message' => 'غير مصرح بهذا الإجراء',
                 'status' => 403
             ];
+        }
+
+        // البحث عن الموعد المرتبط بعنصر السلة
+        $appointment = Appointment::where('cart_item_id', $cartItem->id)->first();
+
+        if ($appointment) {
+            // حذف الموعد نهائياً
+            $appointment->forceDelete();
         }
 
         $cart = $cartItem->cart;

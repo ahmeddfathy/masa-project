@@ -209,8 +209,8 @@
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.3);
+    transform: none;
+    box-shadow: none;
 }
 
 /* Error Messages */
@@ -469,10 +469,8 @@
 }
 
 .btn-primary:hover {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(26,115,232,0.2);
+    transform: none;
+    box-shadow: none;
 }
 
 .btn-secondary {
@@ -830,9 +828,9 @@ body.cart-open {
 }
 
 .category-badge:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-2px);
+    background: var(--glass-background);
+    color: var(--primary-color);
+    transform: none;
 }
 
 .product-price {
@@ -912,8 +910,8 @@ body.cart-open {
 .social-link:hover {
     background: var(--primary-color);
     color: white;
-    transform: translateY(-2px) rotate(360deg);
-    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+    transform: none;
+    box-shadow: none;
 }
 
 /* Related Products */
@@ -1223,9 +1221,9 @@ body.cart-open {
 }
 
 .checkout-btn:hover {
-    background: var(--secondary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.2);
+    background: var(--primary-color);
+    transform: none;
+    color: #fff;
 }
 
 .checkout-btn i {
@@ -1353,9 +1351,8 @@ body.cart-open {
 }
 
 .size-option:hover {
-    transform: translateY(-2px);
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.1);
+    transform: none;
+    border-color: var(--border-color);
 }
 
 .size-option.active {
@@ -1428,9 +1425,9 @@ body.cart-open {
 }
 
 .custom-measurements-section:hover {
-    transform: translateY(-2px);
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.15);
+    transform: none;
+    border-color: var(--border-color);
+    box-shadow: none;
 }
 
 .custom-measurements-section .form-check {
@@ -1589,9 +1586,9 @@ body.cart-open {
 }
 
 #loginPromptModal .btn-secondary:hover {
-    background-color: #e9ecef;
-    border-color: #dee2e6;
-    transform: translateY(-2px);
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    transform: none;
 }
 
 #loginPromptModal .btn-primary {
@@ -1601,8 +1598,8 @@ body.cart-open {
 }
 
 #loginPromptModal .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transform: none;
+    box-shadow: none;
 }
 
 /* Animation for modal */
@@ -1777,4 +1774,46 @@ body.cart-open {
     width: 40px;
     height: 3px;
     background-color: #0d6efd;
+}
+
+/* Remove focus effects */
+.btn:focus,
+.btn-primary:focus,
+.btn-secondary:focus,
+.quantity-option:focus,
+.size-option:focus,
+.color-item:focus,
+.form-control:focus,
+.form-select:focus,
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.quantity-option:focus-visible,
+.size-option:focus-visible,
+.color-item:focus-visible,
+button:focus-visible {
+    outline: none !important;
+}
+
+/* Remove active state color */
+.btn:active,
+.btn-primary:active,
+.btn-secondary:active,
+.quantity-option:active,
+.size-option:active,
+.color-item:active {
+    background-color: inherit !important;
+    border-color: inherit !important;
+    color: inherit !important;
+}
+
+/* Only show active state for selected items */
+.quantity-option.active,
+.size-option.active,
+.color-item.active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
 }

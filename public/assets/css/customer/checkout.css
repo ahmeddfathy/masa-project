@@ -163,7 +163,7 @@
     display: grid;
     grid-template-columns: 1fr 1.5fr;
     gap: 2rem;
-    margin-top: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 /* Card Styles */
@@ -490,6 +490,7 @@
 @media (max-width: 992px) {
     .checkout-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
 
     .shipping-info {
@@ -498,6 +499,10 @@
 
     .form-input {
         padding: 0.875rem 1rem;
+    }
+
+    .bank-info-section {
+        margin-bottom: 1rem;
     }
 }
 
@@ -555,6 +560,33 @@
     .product-details p {
         font-size: 0.9rem;
     }
+
+    .payment-steps {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .step {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .detail-item {
+        flex-wrap: wrap;
+    }
+
+    .detail-label {
+        min-width: 100%;
+        margin-bottom: 0.25rem;
+    }
+
+    .detail-value {
+        width: calc(100% - 40px);
+    }
+
+    .copy-btn {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -608,6 +640,22 @@
 
     .shipping-info {
         padding: 1rem;
+    }
+
+    .bank-info-header {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .bank-info-header h3 {
+        font-size: 1rem;
+    }
+
+    .detail-item {
+        padding: 0.5rem;
+    }
+
+    .detail-value {
+        font-size: 0.85rem;
     }
 }
 
@@ -685,4 +733,160 @@
 .placeholder-image:hover svg {
     transform: scale(1.1);
     opacity: 0.7;
+}
+
+/* Bank Information Section Styles */
+.bank-info-section {
+    margin-bottom: 1.5rem;
+}
+
+.bank-info-header {
+    background: var(--primary-color);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+}
+
+.bank-info-header i {
+    font-size: 1.25rem;
+}
+
+.bank-info-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.bank-info-content {
+    padding: 0;
+}
+
+.bank-account-details {
+    margin-bottom: 1rem;
+}
+
+.bank-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.bank-logo i {
+    font-size: 1.25rem;
+}
+
+.bank-logo h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--heading-color);
+}
+
+.account-details {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    min-width: 60px;
+}
+
+.detail-value {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    flex-grow: 1;
+    direction: ltr;
+    text-align: left;
+    background: white;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+.copy-btn {
+    background: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-light);
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.copy-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.payment-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+}
+
+.step-number {
+    background: var(--primary-color);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.step-text {
+    color: var(--text-color);
+    font-size: 0.85rem;
+    line-height: 1.2;
+}
+
+/* Copy button animation */
+@keyframes copySuccess {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.copy-btn.copied {
+    background: var(--success-color);
+    color: white;
+    animation: copySuccess 0.3s ease;
 }

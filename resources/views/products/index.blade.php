@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في الرياض.">
-    <meta name="keywords" content="عدسة سوما، البومات صور، مجسمات ثري دي، صور مطبوعة، هدايا تذكارية، صور عائلية، صور أطفال، استوديو تصوير، الرياض">
+    <meta name="description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في أبها حي المحالة.">
+    <meta name="keywords" content="عدسة سوما، البومات صور، مجسمات ثري دي، صور مطبوعة، هدايا تذكارية، صور عائلية، صور أطفال، استوديو تصوير، أبها، حي المحالة">
     <meta name="author" content="عدسة سوما">
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
@@ -13,8 +13,8 @@
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:site_name" content="عدسة سوما">
-    <meta property="og:title" content="متجر عدسة سوما | البومات صور ومجسمات ثري دي">
-    <meta property="og:description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في الرياض.">
+    <meta property="og:title" content="متجر عدسة سوما | البومات صور ومجسمات ثري دي في أبها">
+    <meta property="og:description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في أبها حي المحالة.">
     <meta property="og:image" content="/assets/images/logo.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -24,15 +24,15 @@
 
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="متجر عدسة سوما | البومات صور ومجسمات ثري دي">
-    <meta name="twitter:description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في الرياض.">
+    <meta name="twitter:title" content="متجر عدسة سوما | البومات صور ومجسمات ثري دي في أبها">
+    <meta name="twitter:description" content="تسوق منتجات عدسة سوما - البومات صور فاخرة، مجسمات ثري دي، صور مطبوعة، وهدايا تذكارية. منتجات عالية الجودة لتوثيق أجمل اللحظات العائلية في أبها حي المحالة.">
     <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>متجر عدسة سوما | البومات صور ومجسمات ثري دي في الرياض</title>
+    <title>متجر عدسة سوما | البومات صور ومجسمات ثري دي في أبها حي المحالة</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/customer/products.css">
@@ -336,12 +336,10 @@
         <div class="row">
           <div class="col-lg-4">
             <div class="footer-about">
-              <h5>عن المتجر</h5>
-              <p>نقدم خدمات التفصيل والخياطة بأعلى جودة وأفضل الأسعار مع الالتزام بالمواعيد</p>
+              <h5>عن الاستوديو</h5>
+              <p>نقدم خدمات التصوير الفوتوغرافي والطباعة بأعلى جودة وأفضل الأسعار مع الالتزام بالمواعيد</p>
               <div class="social-links">
-
                 <a href="https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#"><i class="fab fa-instagram"></i></a>
-
               </div>
             </div>
           </div>
@@ -352,7 +350,6 @@
                 <li><a href="/">الرئيسية</a></li>
                 <li><a href="/products">المنتجات</a></li>
                 <li><a href="/about">من نحن</a></li>
-
               </ul>
             </div>
           </div>
@@ -362,17 +359,15 @@
               <ul class="list-unstyled">
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-phone-alt ms-2"></i>
-                  <span dir="ltr">0561667885</span>
+                  <span dir="ltr">+966561667885</span>
                 </li>
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-envelope ms-2"></i>
-                  <a href="mailto:lens_soma@outlook.sa
-" class="text-decoration-none">lens_soma@outlook.sa
-</a>
+                  <a href="mailto:lens_soma@outlook.sa" class="text-decoration-none">lens_soma@outlook.sa</a>
                 </li>
                 <li class="d-flex align-items-center">
                   <i class="fas fa-map-marker-alt ms-2"></i>
-                  <span>أبها . المحالة</span>
+                  <span>أبها . المحالة</span>
                 </li>
               </ul>
             </div>
@@ -381,7 +376,7 @@
       </div>
       <div class="footer-bottom">
         <div class="container">
-          <p>جميع الحقوق محفوظة &copy; {{ date('Y') }} Madil</p>
+          <p>جميع الحقوق محفوظة &copy; {{ date('Y') }} عدسة سوما</p>
         </div>
       </div>
     </footer>

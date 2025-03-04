@@ -38,6 +38,8 @@
         @foreach($cart_items as $item)
         @php
           $needsAppointment = $item->needs_appointment && !$item->appointment()->exists();
+          $itemPrice = $item->unit_price;
+          $itemSubtotal = $item->subtotal;
         @endphp
         <div class="cart-item d-flex gap-3" data-item-id="{{ $item->id }}">
           @php
@@ -88,8 +90,11 @@
                   <i class="bi bi-plus"></i>
                 </button>
               </div>
-              <div class="cart-item-price" id="price-{{ $item->id }}">
-                {{ number_format($item->product->price * $item->quantity, 2) }} ريال
+              <div class="cart-item-price">
+                <div class="unit-price">{{ number_format($itemPrice, 2) }} ريال</div>
+                <div class="subtotal" id="price-{{ $item->id }}">
+                  {{ number_format($itemSubtotal, 2) }} ريال
+                </div>
               </div>
             </div>
           </div>
@@ -139,6 +144,9 @@
             <button class="btn btn-primary checkout-btn w-100" disabled>
               متابعة الشراء
             </button>
+            <div class="text-danger text-center mt-2">
+              <small>يجب حجز جميع المواعيد المطلوبة قبل متابعة الشراء</small>
+            </div>
           @else
             <a href="{{ route('checkout.index') }}" class="btn btn-primary checkout-btn w-100">
               متابعة الشراء
@@ -182,6 +190,19 @@ function showAlert(message, type = 'success') {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
     alertsContainer.appendChild(alert);
+
+    // Auto hide after 3 seconds
+    setTimeout(() => {
+        alert.classList.remove('show');
+        setTimeout(() => alert.remove(), 150);
+    }, 3000);
+}
+
+function formatPrice(price) {
+    return new Intl.NumberFormat('ar-SA', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(price) + ' ريال';
 }
 
 function updateQuantity(itemId, change, newValue = null) {
@@ -206,25 +227,19 @@ function updateQuantity(itemId, change, newValue = null) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // تحديث الكمية
             input.value = quantity;
 
             // تحديث السعر الفرعي للمنتج
-            document.getElementById(`price-${itemId}`).textContent =
-                new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR' })
-                    .format(data.item_subtotal)
-                    .replace('SAR', 'ريال');
+            document.getElementById(`price-${itemId}`).textContent = formatPrice(data.item_subtotal);
 
             // تحديث إجمالي السلة
-            document.getElementById('total').textContent =
-                new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR' })
-                    .format(data.cart_total)
-                    .replace('SAR', 'ريال');
+            document.getElementById('total').textContent = formatPrice(data.cart_total);
+            document.getElementById('subtotal').textContent = formatPrice(data.cart_total);
 
             showAlert('تم تحديث الكمية بنجاح');
         } else {
             input.value = currentValue;
-            showAlert(data.message, 'error');
+            showAlert(data.message, 'danger');
         }
     })
     .catch(error => {
@@ -255,7 +270,6 @@ function removeCartItem(itemId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // تأثير حذف المنتج
             cartItem.style.transform = 'translateX(100px)';
             cartItem.style.opacity = '0';
 
@@ -263,10 +277,8 @@ function removeCartItem(itemId) {
                 cartItem.remove();
 
                 // تحديث إجمالي السلة
-                document.getElementById('total').textContent =
-                    new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR' })
-                        .format(data.cart_total)
-                        .replace('SAR', 'ريال');
+                document.getElementById('total').textContent = formatPrice(data.cart_total);
+                document.getElementById('subtotal').textContent = formatPrice(data.cart_total);
 
                 // إذا أصبحت السلة فارغة
                 if (data.cart_count === 0) {

@@ -114,7 +114,9 @@ function updateWorkingHoursDisplay() {
 }
 
 function showAppointmentModal(cartItemId) {
+    // If appointments are not enabled, just return without doing anything
     if (!getAppointmentsStatus()) {
+        showNotification('تم إضافة المنتج للسلة بنجاح', 'success');
         return;
     }
 
@@ -248,14 +250,10 @@ document.querySelectorAll('.size-option').forEach(el => {
 function addToCart() {
     const productId = document.getElementById('product-id').value;
     const quantity = document.getElementById('quantity')?.value || 1;
-    const needsAppointment = document.getElementById('needsAppointment')?.checked || false;
-
     const appointmentsEnabled = getAppointmentsStatus();
-    if (needsAppointment && !appointmentsEnabled) {
-        errorMessage.textContent = 'عذراً، ميزة مواعيد المتجر غير متاحة حالياً';
-        errorMessage.classList.remove('d-none');
-        return;
-    }
+
+    // needsAppointment should be false if appointments are not enabled
+    const needsAppointment = appointmentsEnabled;
 
     const errorMessage = document.getElementById('errorMessage');
     errorMessage.classList.add('d-none');
@@ -264,7 +262,6 @@ function addToCart() {
     const hasCustomColorEnabled = document.getElementById('customColor') !== null;
     const hasSizeSelectionEnabled = document.querySelector('.available-sizes') !== null;
     const hasCustomSizeEnabled = document.getElementById('customSize') !== null;
-    const hasAppointmentEnabled = document.querySelector('.custom-measurements-section') !== null;
 
     const quantityOptions = document.querySelectorAll('.quantity-option');
     const quantityErrorAlert = document.getElementById('quantity-error-alert');
@@ -312,90 +309,31 @@ function addToCart() {
         }
     }
 
-    if (needsAppointment && hasAppointmentEnabled) {
+    // Validate color and size selections
+    if ((hasColorSelectionEnabled || hasCustomColorEnabled) && !colorValue) {
+        let errorText = '';
+        if (hasColorSelectionEnabled && hasCustomColorEnabled) {
+            errorText = 'يرجى اختيار لون أو كتابة اللون المطلوب';
+        } else if (hasColorSelectionEnabled) {
+            errorText = 'يرجى اختيار لون للمنتج';
+        } else if (hasCustomColorEnabled) {
+            errorText = 'يرجى كتابة اللون المطلوب';
+        }
+        errorMessage.textContent = errorText;
+        errorMessage.classList.remove('d-none');
+        return;
     }
-    else if (!needsAppointment) {
-        if ((hasColorSelectionEnabled || hasCustomColorEnabled) &&
-            !(hasSizeSelectionEnabled || hasCustomSizeEnabled)) {
-            if (!colorValue) {
-                let errorText = '';
-                if (hasColorSelectionEnabled && hasCustomColorEnabled) {
-                    errorText = 'يرجى اختيار لون أو كتابة اللون المطلوب';
-                } else if (hasColorSelectionEnabled) {
-                    errorText = 'يرجى اختيار لون للمنتج';
-                } else if (hasCustomColorEnabled) {
-                    errorText = 'يرجى كتابة اللون المطلوب';
-                }
 
-                if (hasAppointmentEnabled) {
-                    errorText += ' أو اختيار خيار "أحتاج إلى أخذ المقاسات"';
-                }
-
-                errorMessage.textContent = errorText;
-                errorMessage.classList.remove('d-none');
-                return;
-            }
+    if ((hasSizeSelectionEnabled || hasCustomSizeEnabled) && !sizeValue) {
+        let errorText = '';
+        if (hasSizeSelectionEnabled && hasCustomSizeEnabled) {
+            errorText = 'يرجى اختيار مقاس أو كتابة المقاس المطلوب';
+        } else if (hasSizeSelectionEnabled) {
+            errorText = 'يرجى اختيار مقاس للمنتج';
+        } else if (hasCustomSizeEnabled) {
+            errorText = 'يرجى كتابة المقاس المطلوب';
         }
-        else if (!(hasColorSelectionEnabled || hasCustomColorEnabled) &&
-                (hasSizeSelectionEnabled || hasCustomSizeEnabled)) {
-            if (!sizeValue) {
-                let errorText = '';
-                if (hasSizeSelectionEnabled && hasCustomSizeEnabled) {
-                    errorText = 'يرجى اختيار مقاس أو كتابة المقاس المطلوب';
-                } else if (hasSizeSelectionEnabled) {
-                    errorText = 'يرجى اختيار مقاس للمنتج';
-                } else if (hasCustomSizeEnabled) {
-                    errorText = 'يرجى كتابة المقاس المطلوب';
-                }
-
-                if (hasAppointmentEnabled) {
-                    errorText += ' أو اختيار خيار "أحتاج إلى أخذ المقاسات"';
-                }
-
-                errorMessage.textContent = errorText;
-                errorMessage.classList.remove('d-none');
-                return;
-            }
-        }
-        else if ((hasColorSelectionEnabled || hasCustomColorEnabled) &&
-                (hasSizeSelectionEnabled || hasCustomSizeEnabled)) {
-            let errorMessages = [];
-
-            if (!colorValue) {
-                if (hasColorSelectionEnabled && hasCustomColorEnabled) {
-                    errorMessages.push('اختيار لون أو كتابة اللون المطلوب');
-                } else if (hasColorSelectionEnabled) {
-                    errorMessages.push('اختيار لون للمنتج');
-                } else if (hasCustomColorEnabled) {
-                    errorMessages.push('كتابة اللون المطلوب');
-                }
-            }
-
-            if (!sizeValue) {
-                if (hasSizeSelectionEnabled && hasCustomSizeEnabled) {
-                    errorMessages.push('اختيار مقاس أو كتابة المقاس المطلوب');
-                } else if (hasSizeSelectionEnabled) {
-                    errorMessages.push('اختيار مقاس للمنتج');
-                } else if (hasCustomSizeEnabled) {
-                    errorMessages.push('كتابة المقاس المطلوب');
-                }
-            }
-
-            if (errorMessages.length > 0) {
-                let errorText = 'يرجى ' + errorMessages.join(' و');
-
-                if (hasAppointmentEnabled) {
-                    errorText += ' أو اختيار خيار "أحتاج إلى أخذ المقاسات"';
-                }
-
-                errorMessage.textContent = errorText;
-                errorMessage.classList.remove('d-none');
-                return;
-            }
-        }
-    }
-    else if (needsAppointment && !hasAppointmentEnabled) {
-        errorMessage.textContent = 'عذراً، خيار حجز الموعد غير متاح لهذا المنتج';
+        errorMessage.textContent = errorText;
         errorMessage.classList.remove('d-none');
         return;
     }
@@ -418,18 +356,31 @@ function addToCart() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
         },
         body: JSON.stringify(data)
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            document.querySelector('.cart-count').textContent = data.cart_count;
-            showNotification(data.message, 'success');
+            // تحديث عدد العناصر في جميع أيقونات السلة
+            document.querySelectorAll('.cart-count').forEach(element => {
+                element.textContent = data.cart_count;
+            });
 
+            // إظهار رسالة النجاح دائماً
+            showNotification('تم إضافة المنتج للسلة بنجاح', 'success');
+
+            // إذا كان المنتج يتطلب موعد وخاصية المواعيد مفعلة، نعرض نموذج حجز الموعد
+            if (appointmentsEnabled && needsAppointment) {
+                showAppointmentModal(data.cart_item_id);
+            }
+
+            // تحديث محتوى السلة
             loadCartItems();
 
+            // Reset form fields
             if (document.querySelector('.colors-section')) {
                 selectedColor = null;
                 document.querySelectorAll('.color-item').forEach(item => {
@@ -451,17 +402,8 @@ function addToCart() {
             }
 
             document.getElementById('quantity').value = 1;
-            if (document.getElementById('needsAppointment')) {
-                document.getElementById('needsAppointment').checked = false;
-            }
-
-            if (data.show_modal) {
-                document.getElementById('cart_item_id').value = data.cart_item_id;
-                const appointmentModal = new bootstrap.Modal(document.getElementById('appointmentModal'));
-                appointmentModal.show();
-            }
         } else {
-            showNotification(data.message, 'error');
+            showNotification(data.message || 'حدث خطأ أثناء إضافة المنتج للسلة', 'error');
         }
     })
     .catch(error => {
@@ -469,7 +411,8 @@ function addToCart() {
         showNotification('حدث خطأ أثناء إضافة المنتج إلى السلة', 'error');
     })
     .finally(() => {
-        addToCartBtn.innerHTML = originalBtnText;
+        const addToCartBtn = document.querySelector('.btn-primary[onclick="addToCart()"]');
+        addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>أضف إلى السلة';
         addToCartBtn.disabled = false;
     });
 }
@@ -478,13 +421,17 @@ function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} notification-toast position-fixed top-0 start-50 translate-middle-x mt-3`;
     notification.style.zIndex = '9999';
+    notification.style.opacity = '1';
     notification.innerHTML = message;
     document.body.appendChild(notification);
 
+    // إظهار الإشعار لمدة 15 ثانية
     setTimeout(() => {
         notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
+        notification.style.transition = 'opacity 0.5s ease';
+        // إزالة العنصر بعد انتهاء التأثير البصري
+        setTimeout(() => notification.remove(), 500);
+    }, 6000);
 }
 
 function updateCartDisplay(data) {
@@ -640,6 +587,7 @@ function removeFromCart(button, cartItemId) {
                 cartItem.style.transform = 'translateX(50px)';
             }
 
+            // تحديث عرض السلة مباشرة
             updateCartDisplay(data);
             showNotification('تم حذف المنتج من السلة بنجاح', 'success');
 
@@ -648,6 +596,9 @@ function removeFromCart(button, cartItemId) {
                 appointmentModal.setAttribute('data-allow-close', 'true');
                 bootstrap.Modal.getInstance(appointmentModal).hide();
             }
+
+            // إعادة تحميل عناصر السلة
+            loadCartItems();
         } else {
             if (cartItem) {
                 cartItem.style.opacity = '1';

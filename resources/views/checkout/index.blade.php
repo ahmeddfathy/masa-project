@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ __('Checkout') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url('assets/css/customer/checkout.css') }}">
 
 </head>
@@ -39,6 +40,57 @@
                     @endif
 
                     <div class="checkout-grid">
+                        <!-- Bank Information -->
+                        <div class="bank-info-section">
+                            <div class="bank-info-header">
+                                <i class="fas fa-info-circle"></i>
+                                <h3>معلومات الدفع</h3>
+                            </div>
+                            <div class="bank-info-content">
+                                <div class="bank-logo">
+                                    <i class="fas fa-university"></i>
+                                    <h4>البنك الأهلي السعودي</h4>
+                                </div>
+                                <div class="account-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">رقم الحساب</span>
+                                        <span class="detail-value">18900000406701</span>
+                                        <button class="copy-btn" data-clipboard="18900000406701">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">الآيبان</span>
+                                        <span class="detail-value">SA8710000018900000406701</span>
+                                        <button class="copy-btn" data-clipboard="SA8710000018900000406701">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">السويفت</span>
+                                        <span class="detail-value">NCBKSAJE</span>
+                                        <button class="copy-btn" data-clipboard="NCBKSAJE">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="payment-steps">
+                                    <div class="step">
+                                        <span class="step-number">1</span>
+                                        <span class="step-text">حول المبلغ للحساب</span>
+                                    </div>
+                                    <div class="step">
+                                        <span class="step-number">2</span>
+                                        <span class="step-text">أرسل صورة الإيصال</span>
+                                    </div>
+                                    <div class="step">
+                                        <span class="step-number">3</span>
+                                        <span class="step-text">انتظر تأكيد الطلب</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Order Summary -->
                         <div class="order-summary">
                             <h3>ملخص الطلب</h3>
@@ -186,6 +238,24 @@
     <script>
         document.getElementById('checkout-form').addEventListener('submit', function(e) {
             this.classList.add('loading');
+        });
+
+        // Copy functionality
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const textToCopy = this.getAttribute('data-clipboard');
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Visual feedback
+                    this.classList.add('copied');
+                    const originalIcon = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+
+                    setTimeout(() => {
+                        this.classList.remove('copied');
+                        this.innerHTML = originalIcon;
+                    }, 2000);
+                });
+            });
         });
     </script>
 </body>

@@ -71,7 +71,7 @@ body {
 }
 
 .nav-link:hover {
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .nav-link::after {
@@ -87,7 +87,7 @@ body {
 }
 
 .nav-link:hover::after {
-    width: 100%;
+    width: 0;
 }
 
 .search-bar {
@@ -108,7 +108,7 @@ body {
 }
 
 .search-btn:hover {
-    background: var(--secondary-color);
+    background: var(--primary-color);
     color: white;
 }
 
@@ -172,9 +172,9 @@ body {
 }
 
 .size-btn:hover, .size-btn.active {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-2px);
+    background: var(--glass-background);
+    color: var(--text-color);
+    transform: none;
 }
 
 /* Product Card */
@@ -190,7 +190,7 @@ body {
 }
 
 .product-card:hover {
-    transform: translateY(-10px) scale(1.02);
+    transform: none;
     box-shadow: var(--card-shadow);
 }
 
@@ -257,8 +257,8 @@ body {
 }
 
 .add-to-cart-btn:hover {
-    background: var(--secondary-color);
-    transform: translateY(-2px);
+    background: var(--primary-color);
+    transform: none;
 }
 
 .view-details-btn {
@@ -275,7 +275,7 @@ body {
 }
 
 .view-details-btn:hover {
-    background: var(--glass-background-dark);
+    background: var(--glass-background);
     color: var(--primary-color);
 }
 
@@ -361,8 +361,8 @@ body.cart-open {
 }
 
 .close-cart:hover {
-    color: #333333;
-    background-color: #f5f5f5;
+    color: #666666;
+    background-color: transparent;
 }
 
 .close-cart i {
@@ -920,9 +920,9 @@ body.cart-open {
 }
 
 .glass-footer ul li a:hover {
-    color: var(--primary-color);
-    opacity: 1;
-    padding-left: 25px;
+    color: var(--text-color);
+    opacity: 0.85;
+    padding-left: 20px;
 }
 
 .glass-footer ul li a:hover::before {
@@ -953,10 +953,10 @@ body.cart-open {
 }
 
 .social-link:hover {
-    background: var(--primary-color);
-    color: white;
-    transform: translateY(-5px) rotate(360deg);
-    box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3);
+    background: var(--glass-background);
+    color: var(--primary-color);
+    transform: none;
+    box-shadow: none;
 }
 
 .newsletter {
@@ -1022,9 +1022,9 @@ body.cart-open {
 }
 
 .newsletter .btn:hover {
-    background: var(--secondary-color);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+    background: var(--primary-color);
+    transform: none;
+    box-shadow: none;
 }
 
 .footer-bottom {
@@ -1247,8 +1247,8 @@ body.cart-open {
 }
 
 .fixed-cart-btn:hover {
-    transform: scale(1.1);
-    background: var(--bs-primary-dark, #0056b3);
+    transform: none;
+    background: var(--bs-primary);
 }
 
 .fixed-cart-btn .cart-count {
@@ -1276,9 +1276,9 @@ body.cart-open {
 }
 
 .fixed-dashboard-btn:hover {
-    transform: scale(1.05);
+    transform: none;
     color: white;
-    background: var(--secondary-color);
+    background: var(--primary-color);
 }
 
 @media (max-width: 768px) {
@@ -1348,27 +1348,44 @@ body.cart-open {
     left: 50%;
     transform: translateX(-50%);
     z-index: 9999;
-    padding: 1rem 2rem;
+    padding: 12px 25px;
     border-radius: 8px;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-.notification-toast.show {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: opacity 0.5s ease;
     opacity: 1;
-    transform: translateX(-50%) translateY(10px);
+    text-align: center;
+    direction: rtl;
+    font-size: 14px;
+    min-width: 200px;
+    max-width: 90%;
+    background: #fff;
 }
 
 .notification-toast.alert-success {
-    background: #d4edda;
-    color: #155724;
+    background-color: #d4edda;
     border: 1px solid #c3e6cb;
+    color: #155724;
 }
 
 .notification-toast.alert-error {
-    background: #f8d7da;
-    color: #721c24;
+    background-color: #f8d7da;
     border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* Mobile Styles */
+@media (max-width: 576px) {
+    .notification-toast {
+        width: calc(100% - 32px);
+        top: 16px;
+        padding: 12px 20px;
+    }
+}
+
+/* تحسين مظهر الإشعار على الأجهزة المتوسطة */
+@media (min-width: 577px) and (max-width: 768px) {
+    .notification-toast {
+        width: 80%;
+        max-width: 400px;
+    }
 }

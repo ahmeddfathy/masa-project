@@ -272,7 +272,7 @@
                             </div>
                             <div class="contact-info-content">
                                 <h4>اتصل بنا</h4>
-                                <p>0561667885</p>
+                                <p>+966561667885</p>
 
                             </div>
                         </div>
@@ -302,7 +302,7 @@
                         </div>
 
                         <div class="social-links-contact">
-                            <a href="https://wa.me/0561667885" target="_blank" title="واتساب"><i class="fab fa-whatsapp"></i></a>
+                            <a href="https://wa.me/966561667885" target="_blank" title="واتساب"><i class="fab fa-whatsapp"></i></a>
                             <a href="/https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#" target="_blank" title="انستغرام"><i class="fab fa-instagram"></i></a>
                          </a>
                         </div>
