@@ -73,6 +73,16 @@
                                             <i class="fas fa-copy"></i>
                                         </button>
                                     </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">رقم الواتساب للتواصل</span>
+                                        <span class="detail-value">+966561667885</span>
+                                        <button class="copy-btn" data-clipboard="+966561667885">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="payment-notice">
+                                    <p class="important-note">ملاحظة هامة: يجب دفع المبلغ كاملاً لتأكيد الطلب</p>
                                 </div>
                                 <div class="payment-steps">
                                     <div class="step">
@@ -81,7 +91,7 @@
                                     </div>
                                     <div class="step">
                                         <span class="step-number">2</span>
-                                        <span class="step-text">أرسل صورة الإيصال</span>
+                                        <span class="step-text">أرسل صورة الإيصال عبر الواتساب</span>
                                     </div>
                                     <div class="step">
                                         <span class="step-number">3</span>

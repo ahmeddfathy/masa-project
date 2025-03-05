@@ -91,108 +91,151 @@
             </h5>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="thead-light">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">العميل</th>
-                            <th scope="col">نوع الجلسة</th>
-                            <th scope="col">الباقة</th>
-                            <th scope="col">التاريخ</th>
-                            <th scope="col">الوقت</th>
-                            <th scope="col">المبلغ</th>
-                            <th scope="col">الحالة</th>
-                            <th scope="col">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($bookings as $booking)
-                        <tr>
-                            <td>{{ $booking->booking_number }}</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-sm me-3">
-                                        <div class="avatar-initial rounded-circle bg-primary">
-                                            {{ substr($booking->user->name, 0, 1) }}
+            <div class="table-wrapper">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">العميل</th>
+                                <th scope="col">نوع الجلسة</th>
+                                <th scope="col">الباقة</th>
+                                <th scope="col">التاريخ</th>
+                                <th scope="col">الوقت</th>
+                                <th scope="col">المبلغ</th>
+                                <th scope="col">الحالة</th>
+                                <th scope="col">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($bookings as $booking)
+                            <tr>
+                                <td>{{ $booking->booking_number }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar avatar-sm me-3">
+                                            <div class="avatar-initial rounded-circle bg-primary">
+                                                {{ substr($booking->user->name, 0, 1) }}
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold">{{ $booking->user->name }}</span>
+                                            <small class="text-muted">{{ $booking->user->phone }}</small>
                                         </div>
                                     </div>
-                                    <div class="d-flex flex-column">
-                                        <span class="fw-bold">{{ $booking->user->name }}</span>
-                                        <small class="text-muted">{{ $booking->user->phone }}</small>
+                                </td>
+                                <td>{{ $booking->service->name }}</td>
+                                <td>{{ $booking->package->name }}</td>
+                                <td>{{ $booking->session_date->format('Y-m-d') }}</td>
+                                <td>{{ $booking->session_time->format('H:i') }}</td>
+                                <td>
+                                    <span class="fw-bold">{{ $booking->total_amount }}</span>
+                                    <small class="text-muted">درهم</small>
+                                </td>
+                                <td>
+                                    <form action="{{ route('admin.bookings.update-status', $booking->uuid) }}"
+                                          method="POST"
+                                          class="d-flex gap-2 align-items-center status-form">
+                                        @csrf
+                                        @method('PATCH')
+                                        <select class="form-select form-select-sm status-select" name="status">
+                                            <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>
+                                                قيد الانتظار
+                                            </option>
+                                            <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>
+                                                مؤكد
+                                            </option>
+                                            <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>
+                                                مكتمل
+                                            </option>
+                                            <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>
+                                                ملغي
+                                            </option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ route('admin.bookings.show', $booking->uuid) }}"
+                                           class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-danger"
+                                                onclick="confirmDelete('{{ $booking->uuid }}')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
-                                </div>
-                            </td>
-                            <td>{{ $booking->service->name }}</td>
-                            <td>{{ $booking->package->name }}</td>
-                            <td>{{ $booking->session_date->format('Y-m-d') }}</td>
-                            <td>{{ $booking->session_time->format('H:i') }}</td>
-                            <td>
-                                <span class="fw-bold">{{ $booking->total_amount }}</span>
-                                <small class="text-muted">درهم</small>
-                            </td>
-                            <td>
-                                <form action="{{ route('admin.bookings.update-status', $booking->uuid) }}"
-                                      method="POST"
-                                      class="d-flex gap-2 align-items-center status-form">
-                                    @csrf
-                                    @method('PATCH')
-                                    <select class="form-select form-select-sm status-select" name="status">
-                                        <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>
-                                            قيد الانتظار
-                                        </option>
-                                        <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>
-                                            مؤكد
-                                        </option>
-                                        <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>
-                                            مكتمل
-                                        </option>
-                                        <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>
-                                            ملغي
-                                        </option>
-                                    </select>
-                                    <button type="submit" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </form>
-                            </td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="{{ route('admin.bookings.show', $booking->uuid) }}"
-                                       class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <button type="button" class="btn btn-sm btn-danger"
-                                            onclick="confirmDelete('{{ $booking->uuid }}')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="9" class="text-center py-5">
-                                <div class="empty-state">
-                                    <i class="fas fa-calendar-times empty-state-icon"></i>
-                                    <h4>لا توجد حجوزات</h4>
-                                    <p class="text-muted">لم يتم العثور على أي حجوزات تطابق معايير البحث</p>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="9" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-calendar-times empty-state-icon"></i>
+                                        <h4>لا توجد حجوزات</h4>
+                                        <p class="text-muted">لم يتم العثور على أي حجوزات تطابق معايير البحث</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+        @if($bookings->hasPages())
         <div class="card-footer border-0 py-3">
-            <div class="d-flex justify-content-center">
-                {{ $bookings->appends([
-                    'booking_number' => $search_booking_number ?? null,
-                    'status' => $search_status ?? null,
-                    'date' => $search_date ?? null
-                ])->links() }}
-            </div>
+            <nav aria-label="صفحات الحجوزات">
+                <ul class="pagination mb-0">
+                    {{-- Previous Page Link --}}
+                    @if ($bookings->onFirstPage())
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </li>
+                    @else
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $bookings->previousPageUrl() }}" rel="prev">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    @endif
+
+                    {{-- Pagination Elements --}}
+                    @foreach ($bookings->getUrlRange(1, $bookings->lastPage()) as $page => $url)
+                        @if ($page == $bookings->currentPage())
+                            <li class="page-item active">
+                                <span class="page-link">{{ $page }}</span>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endif
+                    @endforeach
+
+                    {{-- Next Page Link --}}
+                    @if ($bookings->hasMorePages())
+                        <li class="page-item">
+                            <a class="page-link" href="{{ $bookings->nextPageUrl() }}" rel="next">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    @else
+                        <li class="page-item disabled">
+                            <span class="page-link" aria-hidden="true">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                        </li>
+                    @endif
+                </ul>
+            </nav>
         </div>
+        @endif
     </div>
 </div>
 

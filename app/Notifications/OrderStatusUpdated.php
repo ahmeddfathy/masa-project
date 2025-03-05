@@ -91,23 +91,6 @@ class OrderStatusUpdated extends Notification
                 ];
             }
 
-            // إذا كانت الحالة "مؤكد"، أضف قسم معلومات الدفع
-            if ($this->order->order_status === 'confirmed') {
-                $halfAmount = number_format($this->order->total_amount / 2, 2);
-                $sections[] = [
-                    'title' => 'تذكير بمعلومات الدفع',
-                    'items' => [
-                        "• يرجى دفع نصف المبلغ ({$halfAmount} ر.س) مقدماً لتأكيد الطلب",
-                        "• يمكنك إرسال صورة إيصال التحويل على رقم الواتساب: 0561667885",
-                        "• بيانات الحساب البنكي:",
-                        "   - البنك الأهلي السعودي",
-                        "   - رقم الحساب: 18900000406701",
-                        "   - الآيبان (IBAN): SA8710000018900000406701",
-                        "   - رمز السويفت: NCBKSAJE"
-                    ]
-                ];
-            }
-
             return (new MailMessage)
                 ->subject("{$statusEmoji} تحديث حالة الطلب #{$this->order->order_number}")
                 ->view('emails.notification', [

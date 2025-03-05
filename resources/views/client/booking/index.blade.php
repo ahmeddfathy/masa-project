@@ -505,7 +505,7 @@
                 })
                 .then(async response => {
                     const responseText = await response.text();
-                    console.log('Raw response:', responseText);
+
 
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}, response: ${responseText}`);
@@ -519,7 +519,7 @@
                     }
                 })
                 .then(data => {
-                    console.log('Response data:', data);
+                
                     sessionTimeSelect.innerHTML = '';
                     const defaultOption = document.createElement('option');
                     defaultOption.value = '';

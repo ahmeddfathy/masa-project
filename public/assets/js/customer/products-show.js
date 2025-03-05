@@ -114,8 +114,8 @@ function updateWorkingHoursDisplay() {
 }
 
 function showAppointmentModal(cartItemId) {
-    // If appointments are not enabled, just return without doing anything
-    if (!getAppointmentsStatus()) {
+    // If appointments are not enabled or not needed, just return without doing anything
+    if (!getAppointmentsStatus() || !document.getElementById('needsAppointment')?.checked) {
         showNotification('تم إضافة المنتج للسلة بنجاح', 'success');
         return;
     }
@@ -251,9 +251,10 @@ function addToCart() {
     const productId = document.getElementById('product-id').value;
     const quantity = document.getElementById('quantity')?.value || 1;
     const appointmentsEnabled = getAppointmentsStatus();
+    const needsAppointmentCheckbox = document.getElementById('needsAppointment');
 
-    // needsAppointment should be false if appointments are not enabled
-    const needsAppointment = appointmentsEnabled;
+    // needsAppointment should be false if appointments are not enabled or checkbox doesn't exist
+    const needsAppointment = appointmentsEnabled && needsAppointmentCheckbox?.checked;
 
     const errorMessage = document.getElementById('errorMessage');
     errorMessage.classList.add('d-none');
@@ -373,7 +374,7 @@ function addToCart() {
             showNotification('تم إضافة المنتج للسلة بنجاح', 'success');
 
             // إذا كان المنتج يتطلب موعد وخاصية المواعيد مفعلة، نعرض نموذج حجز الموعد
-            if (appointmentsEnabled && needsAppointment) {
+            if (needsAppointment) {
                 showAppointmentModal(data.cart_item_id);
             }
 

@@ -6,11 +6,24 @@
 <style>
     .fc-event {
         cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .fc-event-pending { background-color: #ffc107; border-color: #ffc107; }
     .fc-event-confirmed { background-color: #28a745; border-color: #28a745; }
     .fc-event-completed { background-color: #17a2b8; border-color: #17a2b8; }
     .fc-event-cancelled { background-color: #dc3545; border-color: #dc3545; }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 0.5rem;
+        }
+
+        #calendar {
+            font-size: 14px;
+        }
+    }
 </style>
 @endsection
 
@@ -20,7 +33,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">تقويم الحجوزات</h3>
+                    <h3 class="card-title mb-0">تقويم الحجوزات</h3>
                 </div>
                 <div class="card-body">
                     <div id="calendar"></div>
@@ -32,7 +45,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="bookingModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">تفاصيل الحجز</h5>
@@ -55,11 +68,32 @@ document.addEventListener('DOMContentLoaded', function() {
     var calendar = new FullCalendar.Calendar(calendarEl, {
         locale: 'ar',
         direction: 'rtl',
-        initialView: 'dayGridMonth',
+        initialView: window.innerWidth < 768 ? 'dayGridDay' : 'dayGridMonth',
         headerToolbar: {
             right: 'prev,next today',
             center: 'title',
             left: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        views: {
+            dayGridMonth: {
+                titleFormat: { year: 'numeric', month: 'long' }
+            },
+            timeGridWeek: {
+                titleFormat: { year: 'numeric', month: 'long', day: '2-digit' }
+            },
+            timeGridDay: {
+                titleFormat: { year: 'numeric', month: 'long', day: '2-digit' }
+            }
+        },
+        windowResize: function(view) {
+            if (window.innerWidth < 768) {
+                calendar.changeView('dayGridDay');
+            } else {
+                calendar.changeView('dayGridMonth');
+            }
+        },
+        eventDidMount: function(info) {
+            info.el.title = info.event.title;
         },
         events: {!! json_encode($bookings->map(function($booking) {
             return [
@@ -78,12 +112,16 @@ document.addEventListener('DOMContentLoaded', function() {
         eventClick: function(info) {
             var event = info.event;
             var html = `
-                <p><strong>رقم الحجز:</strong> ${event.extendedProps.bookingNumber}</p>
-                <p><strong>العميل:</strong> ${event.title}</p>
-                <p><strong>الباقة:</strong> ${event.extendedProps.package}</p>
-                <p><strong>الحالة:</strong> ${getStatusInArabic(event.extendedProps.status)}</p>
-                <p><strong>المبلغ:</strong> ${event.extendedProps.total} درهم</p>
-                <p><a href="/admin/bookings/${event.id}" class="btn btn-primary btn-sm">عرض التفاصيل</a></p>
+                <div class="booking-details">
+                    <p><strong>رقم الحجز:</strong> ${event.extendedProps.bookingNumber}</p>
+                    <p><strong>العميل:</strong> ${event.title}</p>
+                    <p><strong>الباقة:</strong> ${event.extendedProps.package}</p>
+                    <p><strong>الحالة:</strong> ${getStatusInArabic(event.extendedProps.status)}</p>
+                    <p><strong>المبلغ:</strong> ${event.extendedProps.total} درهم</p>
+                    <div class="text-center mt-3">
+                        <a href="/admin/bookings/${event.id}" class="btn btn-primary">عرض التفاصيل</a>
+                    </div>
+                </div>
             `;
             document.getElementById('bookingDetails').innerHTML = html;
             var modal = new bootstrap.Modal(document.getElementById('bookingModal'));

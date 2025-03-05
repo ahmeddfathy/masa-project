@@ -135,8 +135,12 @@ class ProductController extends Controller
             'quantity' => 'required|integer|min:1',
             'color' => 'nullable|string|max:50',
             'size' => 'nullable|string|max:50',
-            'needs_appointment' => 'required|boolean'
+            'needs_appointment' => 'nullable|boolean'
         ]);
+
+        if (!$request->has('needs_appointment')) {
+            $request->merge(['needs_appointment' => false]);
+        }
 
         $result = $this->cartService->addToCart($request);
 
