@@ -391,22 +391,27 @@ footer .logo-container img {
 
 /* Buttons */
 .btn-primary {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
+    background: #21B3B0;
+    border: 1px solid #21B3B0;
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: 30px;
-    color: var(--light-color);
+    color: white;
     font-weight: 600;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-size: var(--font-size-md);
     letter-spacing: var(--letter-spacing-normal);
+    display: inline-block;
+    opacity: 1;
+    visibility: visible;
+    text-decoration: none;
 }
 
 .btn-primary:hover {
     transform: translateY(-3px);
-    background: var(--light-color);
-    color: var(--primary-color);
-    box-shadow: var(--box-shadow);
+    background: white;
+    color: #21B3B0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-color: white;
 }
 
 /* Responsive Design */

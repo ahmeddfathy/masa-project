@@ -103,48 +103,21 @@
 .service-card {
     background: #ffffff;
     border-radius: 20px;
-    padding: 3rem 2rem;
+    padding: 0;
     margin-bottom: 30px;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
     text-align: center;
     position: relative;
-    border: 2px solid transparent;
     overflow: hidden;
 }
 
-.service-card::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
+.service-card .service-image {
     width: 100%;
-    height: 3px;
-    background: linear-gradient(to right, transparent, var(--primary-color), transparent);
-    opacity: 0;
-    transition: all 0.5s ease;
-}
-
-.service-card:hover {
-    transform: translateY(-15px);
-    border-color: var(--primary-color);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-}
-
-.service-card:hover::after {
-    opacity: 1;
-}
-
-.service-card i {
-    font-size: 4rem;
-    color: var(--primary-color);
-    margin-bottom: 2rem;
-    transition: all 0.5s ease;
-    display: inline-block;
-}
-
-.service-card:hover i {
-    transform: scale(1.15);
+    height: 250px;
+    object-fit: cover;
+    border-radius: 20px 20px 0 0;
+    margin-bottom: 0;
+    display: block;
 }
 
 .service-card h3 {
@@ -152,24 +125,8 @@
     font-weight: 500;
     margin-bottom: 1.5rem;
     color: var(--dark-color);
-    transition: all 0.4s ease;
     position: relative;
     display: inline-block;
-}
-
-.service-card h3::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--primary-color);
-    transition: all 0.4s ease;
-}
-
-.service-card:hover h3::after {
-    width: 100%;
 }
 
 .service-card p {
@@ -177,11 +134,26 @@
     font-size: 1.1rem;
     line-height: 1.8;
     margin-bottom: 1.5rem;
-    transition: all 0.4s ease;
 }
 
-.service-card:hover p {
-    color: #333;
+.service-card .btn-primary {
+    display: inline-block;
+    background-color: #21B3B0;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+    opacity: 1;
+    visibility: visible;
+}
+
+.service-card .btn-primary:hover {
+    background-color: #1a8e8c;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Services Section Container */
@@ -574,15 +546,33 @@
 }
 
 .carousel-caption .btn {
-    font-size: 1.2rem;
+    margin-top: 1rem;
     padding: 0.8rem 2rem;
-    border-radius: 50px;
+    font-size: 1.1rem;
+    border-radius: 30px;
     transition: all 0.3s ease;
+    display: inline-block;
+    opacity: 1;
+    visibility: visible;
+}
+
+.carousel-caption .btn-primary {
+    background-color: #21B3B0;
+    color: white;
+    border: 2px solid #21B3B0;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    opacity: 1;
+    visibility: visible;
 }
 
 .carousel-caption .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    background-color: white;
+    color: #21B3B0;
+    border-color: white;
 }
 
 /* Responsive Styles */
@@ -1061,4 +1051,64 @@
 .carousel-item-prev {
     background: none !important;
     transition: none !important;
+}
+
+/* Add new styles for service card images */
+.service-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 20px 20px 0 0;
+    margin-bottom: 0;
+}
+
+/* Lazy loading styles */
+.lazy-image {
+    opacity: 0;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+.lazy-image::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border-radius: 50%;
+    border: 3px solid #f3f3f3;
+    border-top-color: #21B3B0;
+    animation: spin 1s linear infinite;
+}
+
+.lazy-image.loaded {
+    opacity: 1;
+}
+
+.lazy-image.loaded::before {
+    display: none;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Placeholder for when there's no image */
+.service-card-placeholder {
+    width: 100%;
+    height: 250px;
+    background-color: #f8f9fa;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #21B3B0;
+}
+
+/* Add padding to the content area */
+.service-card-content {
+    padding: 1.5rem 2rem 2rem;
 }

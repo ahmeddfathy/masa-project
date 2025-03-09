@@ -51,8 +51,20 @@
 
     /* Services Section */
     .service-card {
-        padding: var(--spacing-md);
+        padding: 0;
         margin-bottom: 1.5rem;
+    }
+
+    .service-card-content {
+        padding: var(--spacing-md);
+    }
+
+    .service-card img {
+        height: 200px;
+    }
+
+    .service-card-placeholder {
+        height: 200px;
     }
 
     .service-detail {
@@ -171,7 +183,19 @@
     }
 
     .service-card {
+        padding: 0;
+    }
+
+    .service-card-content {
         padding: var(--spacing-md);
+    }
+
+    .service-card img {
+        height: 220px;
+    }
+
+    .service-card-placeholder {
+        height: 220px;
     }
 
     /* Fix carousel section */
@@ -323,9 +347,7 @@
 
 /* Animation Optimization for Mobile */
 @media (max-width: 768px) {
-    .hero-content:hover,
-    .service-card:hover,
-    .gallery-item:hover img {
+    .hero-content:hover {
         transform: none;
     }
 
@@ -456,6 +478,20 @@
     .auth-form .btn-primary {
         padding: 14px 20px;
         font-size: 1rem;
+    }
+
+    .service-card {
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+
+    .service-card-content {
+        padding: var(--spacing-sm);
+    }
+
+    .service-card img,
+    .service-card-placeholder {
+        height: 180px;
     }
 }
 

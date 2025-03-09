@@ -116,8 +116,7 @@
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">التصوير الفوتوغرافي</h2>
                                 <p class="lead mb-4">خدمات تصوير احترافية للعائلات والأطفال</p>
-                                <a href="{{ route('services') }}" class="btn btn-primary btn-lg">اكتشف المزيد</a>
-
+                                <a href="{{ route('services') }}" class="btn btn-primary btn-lg" style="display: inline-block; background-color: #21B3B0; color: white; padding: 10px 25px; border-radius: 30px; text-decoration: none; font-weight: 600; border: none; transition: all 0.3s ease;">اكتشف المزيد</a>
                             </div>
                         </div>
                     </div>
@@ -130,8 +129,7 @@
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">مجسمات ثري دي</h2>
                                 <p class="lead mb-4">تصميم وتنفيذ مجسمات ثري دي للذكريات العائلية</p>
-                                                       <a href="{{ route('services') }}" class="btn btn-primary btn-lg">اكتشف المزيد</a>
->
+                                <a href="{{ route('services') }}" class="btn btn-primary btn-lg" style="display: inline-block; background-color: #21B3B0; color: white; padding: 10px 25px; border-radius: 30px; text-decoration: none; font-weight: 600; border: none; transition: all 0.3s ease;">اكتشف المزيد</a>
                             </div>
                         </div>
                     </div>
@@ -144,8 +142,7 @@
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">الصور المطبوعة الفاخرة</h2>
                                 <p class="lead mb-4">طباعة الصور بجودة عالية وخيارات متعددة</p>
-                                                           <a href="{{ route('services') }}" class="btn btn-primary btn-lg">اكتشف المزيد</a>
->
+                                <a href="{{ route('services') }}" class="btn btn-primary btn-lg" style="display: inline-block; background-color: #21B3B0; color: white; padding: 10px 25px; border-radius: 30px; text-decoration: none; font-weight: 600; border: none; transition: all 0.3s ease;">اكتشف المزيد</a>
                             </div>
                         </div>
                     </div>
@@ -158,8 +155,7 @@
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">البومات الأطفال</h2>
                                 <p class="lead mb-4">ألبومات مخصصة لتوثيق ذكريات الأطفال</p>
-                                                             <a href="{{ route('services') }}" class="btn btn-primary btn-lg">اكتشف المزيد</a>
-
+                                <a href="{{ route('services') }}" class="btn btn-primary btn-lg" style="display: inline-block; background-color: #21B3B0; color: white; padding: 10px 25px; border-radius: 30px; text-decoration: none; font-weight: 600; border: none; transition: all 0.3s ease;">اكتشف المزيد</a>
                             </div>
                         </div>
                     </div>
@@ -182,11 +178,22 @@
             <h2 class="text-center mb-5" style="font-weight: 500;">خدماتنا المميزة</h2>
             <div class="row">
                 @foreach($services as $service)
-                    <div class="col-md-4">
+                    <div class="col-md-4 mb-4">
                         <div class="service-card glass-card">
-                            <i class="fas fa-camera"></i>
-                            <h3 style="color: black;">{{ $service->name }}</h3>
-                            <p style="color: black;">{{ $service->description }}</p>
+                            @if($service->image)
+                                <img src="{{ url('storage/' . $service->image) }}" alt="{{ $service->name }}" class="service-image">
+                            @else
+                                <div class="service-card-placeholder">
+                                    <i class="fas fa-camera" style="font-size: 3rem;"></i>
+                                </div>
+                            @endif
+                            <div class="service-card-content">
+                                <h3 style="color: black;">{{ $service->name }}</h3>
+                                <p style="color: black;">{{ $service->description }}</p>
+                                <div class="text-center mt-3">
+                                    <a href="{{ route('client.bookings.create') }}" class="btn btn-primary" style="display: inline-block; background-color: #21B3B0; color: white; padding: 8px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; border: none; transition: all 0.3s ease;">احجز الآن</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -222,7 +229,7 @@
                 @endforeach
             </div>
             <div class="text-center mt-5">
-                <a href="{{ route('gallery') }}" class="btn btn-primary">شاهد المزيد من أعمالنا</a>
+                <a href="{{ route('gallery') }}" class="btn btn-primary" style="display: inline-block; background-color: #21B3B0; color: white; padding: 8px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; border: none; transition: all 0.3s ease;">شاهد المزيد من أعمالنا</a>
             </div>
         </div>
     </section>
@@ -383,9 +390,28 @@
     @include('parts.footer')
 
     <!-- Scripts -->
+    <!-- jQuery first -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Lightbox -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <!-- Waypoints -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+    <!-- Counter Up -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
+
     <script>
+        // Initialize Lightbox
+        document.addEventListener('DOMContentLoaded', function() {
+            lightbox.option({
+                'resizeDuration': 200,
+                'wrapAround': true,
+                'showImageNumberLabel': false
+            });
+        });
+
+        // Navbar Scroll Effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
             if (window.scrollY > 50) {
@@ -394,18 +420,65 @@
                 navbar.classList.remove('scrolled');
             }
         });
-        // Initialize Lightbox
-        lightbox.option({
-            'resizeDuration': 200,
-            'wrapAround': true,
-            'showImageNumberLabel': false
+
+        // Initialize Counter
+        $(document).ready(function() {
+            if($('.counter').length) {
+                $('.counter').counterUp({
+                    delay: 10,
+                    time: 1000
+                });
+            }
         });
     </script>
-    <!-- Add before the footer -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
-    <script>
 
+    <!-- Lazy Loading for Images -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if ('loading' in HTMLImageElement.prototype) {
+                // Browser supports native lazy loading
+                const images = document.querySelectorAll('img[loading="lazy"]');
+                images.forEach(img => {
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                    }
+                });
+            } else if ('IntersectionObserver' in window) {
+                // Use Intersection Observer for lazy loading
+                const lazyImages = document.querySelectorAll('.lazy-image');
+
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            const src = img.getAttribute('data-src');
+
+                            if (src) {
+                                img.src = src;
+                                img.classList.add('loaded');
+                                observer.unobserve(img);
+                            }
+                        }
+                    });
+                }, {
+                    rootMargin: '50px 0px',
+                    threshold: 0.01
+                });
+
+                lazyImages.forEach(img => {
+                    imageObserver.observe(img);
+                });
+            } else {
+                // Fallback for older browsers
+                const lazyImages = document.querySelectorAll('.lazy-image');
+                lazyImages.forEach(img => {
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.classList.add('loaded');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

@@ -19,6 +19,7 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>الصورة</th>
                                         <th>الاسم</th>
                                         <th>الوصف</th>
                                         <th>الحالة</th>
@@ -29,6 +30,16 @@
                                     @forelse($services as $service)
                                         <tr>
                                             <td>{{ $service->id }}</td>
+                                            <td>
+                                                @if($service->image)
+                                                    <img src="{{ url('storage/' . $service->image) }}" alt="{{ $service->name }}"
+                                                         class="img-thumbnail" style="width: 80px; height: 60px; object-fit: cover;">
+                                                @else
+                                                    <div class="text-center" style="width: 80px;">
+                                                        <i class="fas fa-image text-muted" style="font-size: 2rem;"></i>
+                                                    </div>
+                                                @endif
+                                            </td>
                                             <td>{{ $service->name }}</td>
                                             <td>{{ Str::limit($service->description, 50) }}</td>
                                             <td>
@@ -58,7 +69,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-5">
+                                            <td colspan="6" class="text-center py-5">
                                                 <div class="empty-state">
                                                     <i class="fas fa-cogs empty-state-icon"></i>
                                                     <h4>لا توجد خدمات</h4>

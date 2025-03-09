@@ -9,7 +9,7 @@
                     <h3 class="card-title">تعديل الخدمة</h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('admin.services.update', $service) }}" method="POST">
+                    <form action="{{ route('admin.services.update', $service) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -29,6 +29,22 @@
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label">صورة الخدمة</label>
+                            @if($service->image)
+                                <div class="mb-2">
+                                    <img src="{{ url('storage/' . $service->image) }}" alt="{{ $service->name }}"
+                                         class="img-thumbnail" style="max-height: 200px;">
+                                </div>
+                            @endif
+                            <input type="file" class="form-control @error('image') is-invalid @enderror"
+                                   id="image" name="image" accept="image/*">
+                            @error('image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">اترك هذا الحقل فارغًا إذا كنت لا ترغب في تغيير الصورة.</small>
                         </div>
 
                         <div class="mb-3">
