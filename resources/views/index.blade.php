@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="استوديو عدسة سوما - استوديو تصوير احترافي للعائلات والأطفال في ابها حي المحالة. نقدم خدمات التصوير الفوتوغرافي، مجسمات ثري دي، والبومات مطبوعة بجودة عالية.">
-    <meta name="keywords" content="استوديو تصوير، تصوير عائلي، تصوير أطفال، استوديو في ابها، حي المحالة، عدسة سوما، البومات صور، مجسمات ثري دي، تصوير مناسبات، تصوير احترافي">
+    <meta name="description" content="استوديو عدسة سوما - الأفضل في التصوير الاحترافي في ابها، نقدم خدمات متميزة في التصوير العائلي وتصوير الأطفال. اكتشف أفضل استوديوهات تصوير أطفال وتصوير عائلي في السعودية للتميز والإبداع.">
+    <meta name="keywords" content="تصوير احترافي, استوديو تصوير, تصوير عائلي, تصوير أطفال, استوديو ابها, أفضل استوديوهات تصوير, استوديوهات تصوير أطفال في السعودية, تصوير مناسبات, صور عائلية, إبداع, عدسة سوما">
     <meta name="author" content="عدسة سوما">
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
@@ -14,7 +14,7 @@
     <!-- Open Graph Meta Tags -->
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="عدسة سوما - استوديو التصوير العائلي في ابها حي المحالة">
-    <meta property="og:description" content="استوديو تصوير احترافي للعائلات والأطفال في ابها حي المحالة. نقدم خدمات التصوير الفوتوغرافي، مجسمات ثري دي، والبومات مطبوعة بجودة عالية.">
+    <meta property="og:description" content="استوديو عدسة سوما يقدم أفضل خدمات التصوير الاحترافي في ابها مع خبرة في التصوير العائلي وتصوير الأطفال. إذا كنت تبحث عن استوديوهات تصوير أطفال في السعودية أو تصوير عائلي مميز، هنا تجد الإبداع والتميز.">
     <meta property="og:image" content="/assets/images/logo.png" loading="lazy">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -25,25 +25,40 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="عدسة سوما - استوديو التصوير العائلي في ابها حي المحالة">
-    <meta name="twitter:description" content="استوديو تصوير احترافي للعائلات والأطفال في ابها حي المحالة. نقدم خدمات التصوير الفوتوغرافي، مجسمات ثري دي، والبومات مطبوعة بجودة عالية.">
+    <meta name="twitter:description" content="استوديو عدسة سوما يقدم أفضل خدمات التصوير الاحترافي في ابها مع خبرة في التصوير العائلي وتصوير الأطفال. إذا كنت تبحث عن استوديوهات تصوير أطفال في السعودية أو تصوير عائلي مميز، هنا تجد الإبداع والتميز.">
     <meta name="twitter:image" content="/assets/images/logo.png">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
     <title>عدسة سوما - استوديو التصوير العائلي في ابها حي المحالة | تصوير احترافي للعائلات والأطفال</title>
-    <!-- Bootstrap RTL CSS -->
+    <!-- Resource Preloading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Critical CSS -->
+    <link rel="preload" href="{{ asset('assets/css/studio-client/style.css') }}?v={{ filemtime(public_path('assets/css/studio-client/style.css')) }}" as="style">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" as="style">
+
+    <!-- Primary Styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}?v={{ filemtime(public_path('assets/css/studio-client/style.css')) }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Lightbox CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/index.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/responsive.css">
+
+    <!-- Deferred CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/index.css') }}?v={{ filemtime(public_path('assets/css/studio-client/index.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}?v={{ filemtime(public_path('assets/css/studio-client/responsive.css')) }}">
+
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    </noscript>
     <style>
         /* تحسين الناف بار في الموبايل */
         @media (max-width: 991.98px) {
@@ -111,7 +126,7 @@
             <div class="carousel-inner">
                 <!-- التصوير الفوتوغرافي -->
                 <div class="carousel-item active">
-                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('assets/images/home/30.jpg');">
+                    <div class="carousel-image" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('assets/images/home/30.jpg');" loading="lazy">
                         <div class="carousel-caption d-flex flex-column justify-content-center align-items-center h-100">
                             <div class="caption-content">
                                 <h2 class="display-4 fw-bold mb-3">التصوير الفوتوغرافي</h2>
@@ -181,7 +196,13 @@
                     <div class="col-md-4 mb-4">
                         <div class="service-card glass-card">
                             @if($service->image)
-                                <img src="{{ url('storage/' . $service->image) }}" alt="{{ $service->name }}" class="service-image">
+                                <img src="{{ url('storage/' . $service->image) }}"
+                                     alt="{{ $service->name }}"
+                                     class="service-image"
+                                     loading="lazy"
+                                     width="400"
+                                     height="300"
+                                     decoding="async">
                             @else
                                 <div class="service-card-placeholder">
                                     <i class="fas fa-camera" style="font-size: 3rem;"></i>
@@ -214,7 +235,13 @@
                 @foreach($latestImages as $image)
                     <div class="col-md-4">
                         <div class="gallery-item glass-effect">
-                            <img src="{{ url('storage/' . $image->image_url) }}" alt="{{ $image->caption }}" class="img-fluid" loading="lazy">
+                            <img src="{{ url('storage/' . $image->image_url) }}"
+                                 alt="{{ $image->caption }}"
+                                 class="img-fluid"
+                                 loading="lazy"
+                                 width="400"
+                                 height="300"
+                                 decoding="async">
                             <div class="gallery-overlay">
                                 <div class="gallery-info">
                                     <h4>{{ $image->caption }}</h4>
@@ -390,71 +417,67 @@
     @include('parts.footer')
 
     <!-- Scripts -->
-    <!-- jQuery first -->
+    <!-- jQuery First (Required for other plugins) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Bootstrap -->
+
+    <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Lightbox -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-    <!-- Waypoints -->
+
+    <!-- Plugins (after jQuery) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
-    <!-- Counter Up -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Counter-Up/1.0.0/jquery.counterup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
 
     <script>
-        // Initialize Lightbox
-        document.addEventListener('DOMContentLoaded', function() {
-            lightbox.option({
-                'resizeDuration': 200,
-                'wrapAround': true,
-                'showImageNumberLabel': false
-            });
-        });
-
-        // Navbar Scroll Effect
-        window.addEventListener('scroll', function() {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
-
-        // Initialize Counter
         $(document).ready(function() {
-            if($('.counter').length) {
+            // Initialize Lightbox
+            if (typeof lightbox !== 'undefined') {
+                lightbox.option({
+                    'resizeDuration': 200,
+                    'wrapAround': true,
+                    'showImageNumberLabel': false
+                });
+            }
+
+            // Navbar Scroll Effect
+            const navbar = document.querySelector('.navbar');
+            if (navbar) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                }, { passive: true });
+            }
+
+            // Initialize Counter
+            if ($('.counter').length) {
                 $('.counter').counterUp({
                     delay: 10,
                     time: 1000
                 });
             }
         });
-    </script>
 
-    <!-- Lazy Loading for Images -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        // Optimized Lazy Loading
+        document.addEventListener('DOMContentLoaded', function() {
             if ('loading' in HTMLImageElement.prototype) {
-                // Browser supports native lazy loading
-                const images = document.querySelectorAll('img[loading="lazy"]');
+                // Native lazy loading supported
+                const images = document.querySelectorAll('img[data-src]');
                 images.forEach(img => {
                     if (img.dataset.src) {
                         img.src = img.dataset.src;
                     }
                 });
             } else if ('IntersectionObserver' in window) {
-                // Use Intersection Observer for lazy loading
-                const lazyImages = document.querySelectorAll('.lazy-image');
-
+                // Use Intersection Observer
                 const imageObserver = new IntersectionObserver((entries, observer) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             const img = entry.target;
-                            const src = img.getAttribute('data-src');
-
-                            if (src) {
-                                img.src = src;
+                            if (img.dataset.src) {
+                                img.src = img.dataset.src;
                                 img.classList.add('loaded');
                                 observer.unobserve(img);
                             }
@@ -465,17 +488,8 @@
                     threshold: 0.01
                 });
 
-                lazyImages.forEach(img => {
+                document.querySelectorAll('img[data-src]').forEach(img => {
                     imageObserver.observe(img);
-                });
-            } else {
-                // Fallback for older browsers
-                const lazyImages = document.querySelectorAll('.lazy-image');
-                lazyImages.forEach(img => {
-                    if (img.dataset.src) {
-                        img.src = img.dataset.src;
-                        img.classList.add('loaded');
-                    }
                 });
             }
         });

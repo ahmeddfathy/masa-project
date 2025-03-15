@@ -4,18 +4,44 @@ Allow: /products
 Allow: /gallery
 Allow: /services
 Allow: /about
-Allow: /contact
+Allow: /policy
 
+# Disallow admin and sensitive areas
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /login
 Disallow: /register
-Disallow: /password/
+Disallow: /password/reset
+Disallow: /email/verify
 Disallow: /api/
 Disallow: /storage/
+Disallow: /components/
+Disallow: /layouts/
+Disallow: /parts/
+Disallow: /notifications/
+Disallow: /profile/
+Disallow: /cart/checkout/
+Disallow: /orders/
+
+# Prevent indexing of non-public files
 Disallow: /*.json$
 Disallow: /*.js$
 Disallow: /*.css$
+Disallow: /*.php$
 Disallow: /*?*
+Disallow: /*&*
 
-Sitemap: https://somalens.com/sitemap.xml
+# Prevent caching of dynamic pages
+Disallow: /*?*cache=*
+
+# Prevent duplicate content
+Disallow: /page/*?page=*
+Disallow: /*/page/*
+
+# Clean parameters
+Disallow: /*?utm_*
+Disallow: /*?ref=*
+Disallow: /*?source=*
+
+# Sitemap location
+Sitemap: https://lens-soma.com/sitemap.xml

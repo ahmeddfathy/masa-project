@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="text-center mt-4">
-            <p>&copy; 2024 عدسة سوما. جميع الحقوق محفوظة</p>
+            <p>&copy; {{ date('Y') }} عدسة سوما. جميع الحقوق محفوظة</p>
         </div>
     </div>
 </footer>

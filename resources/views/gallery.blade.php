@@ -41,10 +41,12 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/gallery.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/responsive.css">
-    <style>
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}?v={{ filemtime(public_path('assets/css/studio-client/style.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/gallery.css') }}?v={{ filemtime(public_path('assets/css/studio-client/gallery.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}?v={{ filemtime(public_path('assets/css/studio-client/responsive.css')) }}">
+
+
+<style>
         .lazy {
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
