@@ -193,7 +193,7 @@
             <h2 class="text-center mb-5" style="font-weight: 500;">خدماتنا المميزة</h2>
             <div class="row">
                 @foreach($services as $service)
-                    <div class="col-md-4 mb-4">
+                    <div class="col-6 col-md-4 mb-4">
                         <div class="service-card glass-card">
                             @if($service->image)
                                 <img src="{{ url('storage/' . $service->image) }}"
@@ -212,7 +212,112 @@
                                 <h3 style="color: black;">{{ $service->name }}</h3>
                                 <p style="color: black;">{{ $service->description }}</p>
                                 <div class="text-center mt-3">
-                                    <a href="{{ route('client.bookings.create') }}" class="btn btn-primary" style="display: inline-block; background-color: #21B3B0; color: white; padding: 8px 20px; border-radius: 30px; text-decoration: none; font-weight: 600; border: none; transition: all 0.3s ease;">احجز الآن</a>
+                                    <a href="{{ route('client.bookings.create') }}" class="btn btn-primary me-2">احجز الآن</a>
+                                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#packageModal{{ $service->id }}">
+                                        تعرف على أسعارنا
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal for Service Packages -->
+                    <div class="modal fade" id="packageModal{{ $service->id }}" tabindex="-1" aria-labelledby="packageModalLabel{{ $service->id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="packageModalLabel{{ $service->id }}">باقات {{ $service->name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="package-tabs mb-4">
+                                        <div class="text-center mb-3">
+                                            <p>اضغط لمعرفة تفاصيل الباقة</p>
+                                        </div>
+                                        <div class="d-flex justify-content-center flex-wrap">
+                                            @foreach($service->packages as $index => $package)
+                                                <button class="btn package-tab-btn me-2 mb-2 {{ $index === 0 ? 'active' : '' }}"
+                                                        data-package-id="{{ $package->id }}"
+                                                        data-service-id="{{ $service->id }}">
+                                                    {{ $package->name }}
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    @foreach($service->packages as $index => $package)
+                                        <div class="package-details package-{{ $service->id }}-{{ $package->id }} {{ $index === 0 ? 'd-block' : 'd-none' }}">
+                                            <div class="card">
+                                                <div class="card-header bg-light">
+                                                    <h4 class="text-center mb-0">{{ $package->name }}</h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <h5 class="card-title">مميزات الباقة</h5>
+                                                            <ul class="list-group list-group-flush">
+                                                                <li class="list-group-item">
+                                                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                                                    مدة الجلسة: {{ $package->duration }} دقيقة
+                                                                </li>
+                                                                <li class="list-group-item">
+                                                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                                                    عدد الصور: {{ $package->num_photos }}
+                                                                </li>
+                                                                @if($package->themes_count)
+                                                                <li class="list-group-item">
+                                                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                                                    عدد الثيمات: {{ $package->themes_count }}
+                                                                </li>
+                                                                @endif
+                                                            </ul>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="p-3 border rounded text-center mb-3">
+                                                                <h5>السعر</h5>
+                                                                <p class="display-6 text-primary mb-0">{{ $package->base_price }} ر.س</p>
+                                                            </div>
+                                                            <p>{{ $package->description }}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    @if($package->addons && $package->addons->count() > 0)
+                                                    <div class="mt-4">
+                                                        <h5>الإضافات المتاحة</h5>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-striped">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>الإضافة</th>
+                                                                        <th>السعر</th>
+                                                                        <th>الوصف</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($package->addons as $addon)
+                                                                    <tr>
+                                                                        <td>{{ $addon->name }}</td>
+                                                                        <td>{{ $addon->price }} ر.س</td>
+                                                                        <td>{{ $addon->description }}</td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                                <div class="card-footer text-center">
+                                                    <a href="{{ route('client.bookings.create') }}" class="btn btn-primary">
+                                                        احجز هذه الباقة الآن
+                                                    </a>
+                                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                        إغلاق
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
                         </div>
@@ -458,6 +563,27 @@
                     time: 1000
                 });
             }
+
+            // Package tab switching
+            $('.package-tab-btn').on('click', function() {
+                const serviceId = $(this).data('service-id');
+                const packageId = $(this).data('package-id');
+
+                // Update button styling
+                $(this).closest('.package-tabs').find('.package-tab-btn').removeClass('active').css({
+                    'background-color': '#f8f9fa',
+                    'color': '#21B3B0'
+                });
+
+                $(this).addClass('active').css({
+                    'background-color': '#21B3B0',
+                    'color': 'white'
+                });
+
+                // Hide all package details and show the selected one
+                $(`.package-${serviceId}-${packageId}`).parent().find('.package-details').addClass('d-none');
+                $(`.package-${serviceId}-${packageId}`).removeClass('d-none');
+            });
         });
 
         // Optimized Lazy Loading

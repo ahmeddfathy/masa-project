@@ -18,7 +18,7 @@
             <div class="col-md-4">
                 <h3>تابعنا على</h3>
                 <div class="social-links">
-                    <a href="/https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#" class="me-2"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#" class="me-2"><i class="fab fa-instagram"></i></a>
                     <a href="https://wa.me/966561667885" class="me-2"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>

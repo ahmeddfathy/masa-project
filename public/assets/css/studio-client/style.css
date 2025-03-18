@@ -494,3 +494,37 @@ footer .logo-container img {
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
+
+/* RTL Modal Header Fixes */
+html[dir="rtl"] .modal-header {
+    flex-direction: row;
+}
+
+html[dir="rtl"] .modal-header .modal-title {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+html[dir="rtl"] .modal-header .btn-close {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* Ensure Close Button X appears correctly */
+html[dir="rtl"] .modal-header .btn-close::before,
+html[dir="rtl"] .modal-header .btn-close::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    background-color: white;
+    border-radius: 2px;
+}
+
+html[dir="rtl"] .modal-header .btn-close::before {
+    transform: rotate(45deg);
+}
+
+html[dir="rtl"] .modal-header .btn-close::after {
+    transform: rotate(-45deg);
+}

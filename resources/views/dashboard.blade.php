@@ -15,6 +15,41 @@
     </div>
     @endif
 
+    <!-- Main Action Buttons -->
+    <div class="main-action-buttons mb-4">
+        <h2 class="text-center mb-3">ماذا تريد أن تفعل اليوم؟</h2>
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <a href="{{ route('client.bookings.create') }}" class="main-action-btn booking-btn">
+                    <div class="action-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>حجز جلسة تصوير</h3>
+                        <p>احجز موعد لجلسة تصوير في الاستوديو الخاص بنا</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </a>
+            </div>
+            <div class="col-12 col-md-6">
+                <a href="{{ route('products.index') }}" class="main-action-btn store-btn">
+                    <div class="action-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="action-content">
+                        <h3>تسوق منتجاتنا</h3>
+                        <p>تصفح وشراء أحدث المنتجات من متجرنا الإلكتروني</p>
+                    </div>
+                    <div class="action-arrow">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Welcome Section -->
     <div class="welcome-section mb-4">
         <div class="row align-items-center">

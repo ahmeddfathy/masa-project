@@ -264,8 +264,8 @@ class DashboardController extends Controller
                         'user_name' => $booking->user->name,
                         'total' => $booking->total_amount,
                         'package_name' => $booking->package->name,
-                        'booking_date' => Carbon::parse($booking->booking_date)->format('Y-m-d'),
-                        'time_slot' => $booking->time_slot,
+                        'booking_date' => Carbon::parse($booking->session_date)->format('Y-m-d'),
+                        'time_slot' => Carbon::parse($booking->session_time)->format('h.i a'),
                         'status' => $booking->status,
                         'payment_status' => $booking->payment_status,
                         'created_at' => $booking->created_at->format('Y-m-d H:i'),
@@ -275,19 +275,23 @@ class DashboardController extends Controller
                                 'price' => $addon->price
                             ];
                         }),
-                        'status_color' => match($booking->status) {
-                            'completed' => 'success',
-                            'pending' => 'warning',
-                            'cancelled' => 'danger',
-                            'rescheduled' => 'info',
-                            default => 'secondary'
-                        },
                         'status_text' => match($booking->status) {
                             'completed' => 'مكتمل',
                             'pending' => 'معلق',
+
                             'cancelled' => 'ملغي',
-                            'rescheduled' => 'معاد جدولته',
+
+                            'confirmed' => 'مؤكد',
                             default => 'غير معروف'
+                        },
+                        'status_color' => match($booking->status) {
+                            'completed' => 'success',
+                            'pending' => 'warning',
+                            'waiting' => 'info',
+                            'cancelled' => 'danger',
+                            'rescheduled' => 'info',
+                            'confirmed' => 'success',
+                            default => 'secondary'
                         },
                         'payment_status_color' => match($booking->payment_status) {
                             'paid' => 'success',

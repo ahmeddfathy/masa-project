@@ -479,7 +479,8 @@
                                 <th style="min-width: 70px">الحجز</th>
                                 <th style="min-width: 120px">العميل</th>
                                 <th style="min-width: 250px">الباقة والإضافات</th>
-                                <th style="min-width: 120px">موعد الحجز</th>
+                                <th style="min-width: 120px">تاريخ السيشن</th>
+                                <th style="min-width: 120px">وقت السيشن</th>
                                 <th style="min-width: 120px">حالة الحجز</th>
                                 <th style="min-width: 120px">حالة الدفع</th>
                                 <th style="min-width: 100px">المبلغ</th>
@@ -508,9 +509,11 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td data-label="الموعد">
+                                <td data-label="تاريخ السيشن">
                                     <div>{{ $booking['booking_date'] }}</div>
-                                    <div class="small text-muted">{{ $booking['time_slot'] }}</div>
+                                </td>
+                                <td data-label="وقت السيشن">
+                                    <div>{{ $booking['time_slot'] }}</div>
                                 </td>
                                 <td data-label="حالة الحجز">
                                     <span class="badge bg-{{ $booking['status_color'] }}">

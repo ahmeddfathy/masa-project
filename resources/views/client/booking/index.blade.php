@@ -40,8 +40,8 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/booking.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/booking.css') }}">
     <style>
         :root {
             --primary-color: #21B3B0 !important;
@@ -142,6 +142,21 @@
                 <span class="visually-hidden">التالي</span>
             </button>
         </div>
+
+        <!-- Authentication Notice -->
+        @guest
+        <div class="auth-notice animate-fadeInUp mb-4">
+            <div class="alert alert-booking">
+                <div class="alert-icon">
+                    <i class="fas fa-user-lock"></i>
+                </div>
+                <div class="alert-content">
+                    <h5>تنبيه هام</h5>
+                    <p>قبل البدء في تعبئة نموذج الحجز، يجب عليك <a href="{{ route('login') }}">تسجيل الدخول</a> إلى حسابك أو <a href="{{ route('register') }}">إنشاء حساب جديد</a> إذا لم يكن لديك حساب مسبقاً.</p>
+                </div>
+            </div>
+        </div>
+        @endguest
 
         <!-- Booking Form -->
         <div class="booking-form animate-fadeInUp">
@@ -519,7 +534,7 @@
                     }
                 })
                 .then(data => {
-                
+
                     sessionTimeSelect.innerHTML = '';
                     const defaultOption = document.createElement('option');
                     defaultOption.value = '';

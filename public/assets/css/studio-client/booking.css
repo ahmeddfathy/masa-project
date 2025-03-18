@@ -623,3 +623,83 @@ h2, h5, .form-label {
         transform: translateX(-5px);
     }
 }
+
+/* Authentication Notice Styling */
+.auth-notice .alert-booking {
+    display: flex;
+    background: linear-gradient(to right, rgba(33, 179, 176, 0.1), rgba(33, 179, 176, 0.05));
+    border: 2px solid rgba(33, 179, 176, 0.3);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-notice .alert-booking::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--primary-gradient);
+}
+
+.auth-notice .alert-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: rgba(33, 179, 176, 0.15);
+    border-radius: 50%;
+    margin-left: 1.5rem;
+    flex-shrink: 0;
+}
+
+.auth-notice .alert-icon i {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.auth-notice .alert-content {
+    flex-grow: 1;
+}
+
+.auth-notice h5 {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.auth-notice p {
+    margin-bottom: 0;
+    color: #4a5568;
+    font-size: 1.1rem;
+}
+
+.auth-notice a {
+    color: var(--primary-color);
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-bottom: 1px dashed rgba(33, 179, 176, 0.5);
+    padding-bottom: 2px;
+}
+
+.auth-notice a:hover {
+    color: #21907d;
+    border-bottom: 1px solid #21907d;
+}
+
+@media (max-width: 576px) {
+    .auth-notice .alert-booking {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .auth-notice .alert-icon {
+        margin: 0 auto 1rem;
+    }
+}
