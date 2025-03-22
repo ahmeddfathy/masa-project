@@ -85,13 +85,13 @@
                                     <strong>الإضافات المختارة:</strong>
                                     <ul>
                                         @foreach($booking->addons as $addon)
-                                            <li>{{ $addon->name }} - {{ $addon->pivot->price_at_booking }} درهم</li>
+                                            <li>{{ $addon->name }} - {{ $addon->pivot->price_at_booking }} ريال سعودي</li>
                                         @endforeach
                                     </ul>
                                 </li>
                             @endif
 
-                            <li><strong>المبلغ الإجمالي:</strong> {{ $booking->total_amount }} درهم</li>
+                            <li><strong>المبلغ الإجمالي:</strong> {{ $booking->total_amount }} ريال سعودي</li>
                         </ul>
                     </div>
 

@@ -55,7 +55,7 @@
                     {{ $booking->session_time->format('H:i') }}
                 </div>
                 <div class="booking-total">
-                    {{ $booking->total_amount }} درهم
+                    {{ $booking->total_amount }} ريال سعودي
                 </div>
                 <a href="{{ route('client.bookings.show', $booking->uuid) }}" class="btn btn-primary">
                     <i class="bi bi-eye"></i>
@@ -85,7 +85,7 @@
                     @endif
                     <div class="info-group">
                         <h6><i class="bi bi-clock-history me-1"></i> مدة الجلسة</h6>
-                        <p>{{ $booking->package->duration }} ساعة</p>
+                        <p>{{ $booking->package->duration }} دقيقه</p>
                     </div>
                 </div>
             </div>

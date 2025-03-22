@@ -120,7 +120,7 @@
                     </div>
                     <div class="info-group">
                         <h6><i class="fas fa-clock me-1"></i> مدة الجلسة</h6>
-                        <p class="mb-0">{{ $booking->package->duration }} ساعة</p>
+                        <p class="mb-0">{{ $booking->package->duration }} دقيقه</p>
                     </div>
                     <div class="info-group">
                         <h6><i class="fas fa-images me-1"></i> عدد الصور</h6>
@@ -167,7 +167,7 @@
                             <p class="text-muted mb-0">{{ $addon->description }}</p>
                         </div>
                         <div class="text-end">
-                            <p class="mb-0">{{ $addon->pivot->quantity }} × {{ $addon->pivot->price_at_booking }} درهم</p>
+                            <p class="mb-0">{{ $addon->pivot->quantity }} × {{ $addon->pivot->price_at_booking }} ريال سعودي</p>
                         </div>
                     </div>
                 </div>
