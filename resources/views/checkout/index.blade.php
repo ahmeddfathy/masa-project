@@ -8,6 +8,72 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url('assets/css/customer/checkout.css') }}">
 
+    <style>
+        /* Payment Method Styles */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .payment-method-option {
+            position: relative;
+        }
+
+        .payment-method-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .payment-method-label {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method-option input[type="radio"]:checked + .payment-method-label {
+            border-color: #21B3B0;
+            background-color: rgba(33, 179, 176, 0.05);
+        }
+
+        .payment-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            margin-left: 15px;
+            background-color: rgba(33, 179, 176, 0.15);
+            color: #21B3B0;
+            border-radius: 50%;
+            font-size: 18px;
+        }
+
+        .payment-label {
+            font-weight: 600;
+            font-size: 16px;
+            flex: 1;
+        }
+
+        .payment-cards {
+            display: flex;
+            gap: 5px;
+        }
+
+        .payment-cards img {
+            height: 24px;
+            width: auto;
+        }
+    </style>
+
 </head>
 <body class="checkout-container">
     <!-- Header -->
@@ -191,12 +257,32 @@
                                     <label class="form-label">
                                         طريقة الدفع
                                     </label>
-                                    <div class="payment-method">
-                                        <div class="payment-info">
-                                            <span class="payment-label">الدفع عند الاستلام</span>
-                                            <input type="hidden" name="payment_method" value="cash">
+                                    <div class="payment-methods">
+                                        <div class="payment-method-option">
+                                            <input type="radio" name="payment_method" id="payment_cash" value="cash"
+                                                {{ old('payment_method') == 'cash' ? 'checked' : '' }} checked>
+                                            <label for="payment_cash" class="payment-method-label">
+                                                <span class="payment-icon"><i class="fas fa-money-bill-wave"></i></span>
+                                                <span class="payment-label">الدفع عند الاستلام</span>
+                                            </label>
+                                        </div>
+                                        <div class="payment-method-option">
+                                            <input type="radio" name="payment_method" id="payment_online" value="online"
+                                                {{ old('payment_method') == 'online' ? 'checked' : '' }}>
+                                            <label for="payment_online" class="payment-method-label">
+                                                <span class="payment-icon"><i class="fas fa-credit-card"></i></span>
+                                                <span class="payment-label">الدفع الإلكتروني</span>
+                                                <div class="payment-cards">
+                                                    <img src="{{ asset('assets/images/payments/visa.png') }}" alt="Visa">
+                                                    <img src="{{ asset('assets/images/payments/mastercard.png') }}" alt="MasterCard">
+                                                    <img src="{{ asset('assets/images/payments/mada.png') }}" alt="Mada">
+                                                </div>
+                                            </label>
                                         </div>
                                     </div>
+                                    @error('payment_method')
+                                    <p class="error-message">{{ $message }}</p>
+                                    @enderror
                                 </div>
 
                                 <div class="form-group">
@@ -235,8 +321,9 @@
                     <!-- Hidden Appointment ID field -->
                     <input type="hidden" name="appointment_id" value="{{ session('appointment_id') }}">
 
+                    <!-- Submit button section -->
                     <div class="checkout-actions">
-                        <button type="submit" class="place-order-btn">
+                        <button type="submit" class="place-order-btn" id="submitBtn">
                             تأكيد الطلب
                         </button>
                     </div>
@@ -266,6 +353,28 @@
                     }, 2000);
                 });
             });
+        });
+
+        // Add JavaScript to update the button text based on payment method
+        document.addEventListener('DOMContentLoaded', function() {
+            const cashRadio = document.getElementById('payment_cash');
+            const onlineRadio = document.getElementById('payment_online');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function updateButtonText() {
+                if (onlineRadio.checked) {
+                    submitBtn.innerHTML = '<i class="fas fa-credit-card me-2"></i> متابعة للدفع الإلكتروني';
+                } else {
+                    submitBtn.innerHTML = 'تأكيد الطلب';
+                }
+            }
+
+            // Initialize button text
+            updateButtonText();
+
+            // Update button text when payment method changes
+            cashRadio.addEventListener('change', updateButtonText);
+            onlineRadio.addEventListener('change', updateButtonText);
         });
     </script>
 </body>

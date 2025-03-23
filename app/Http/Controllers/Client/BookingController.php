@@ -5,25 +5,38 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Package;
+use App\Models\PackageAddon;
 
 use App\Services\Booking\BookingService;
 use App\Services\Booking\AvailabilityService;
+use App\Services\Booking\PaymentService;
+use App\Services\Payment\PaytabsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
-use Illuminate\Validation\ValidationException;
+
 use App\Notifications\BookingStatusUpdated;
 
 class BookingController extends Controller
 {
     protected $bookingService;
     protected $availabilityService;
+    protected $paymentService;
+    protected $paytabsService;
 
-    public function __construct(BookingService $bookingService, AvailabilityService $availabilityService)
+    public function __construct(
+        BookingService $bookingService,
+        AvailabilityService $availabilityService,
+        PaymentService $paymentService ,
+        PaytabsService $paytabsService
+    )
     {
         $this->bookingService = $bookingService;
         $this->availabilityService = $availabilityService;
+        $this->paymentService = $paymentService;
+        $this->paytabsService = $paytabsService;
     }
 
     /**
@@ -102,19 +115,139 @@ class BookingController extends Controller
             // حساب التكلفة الإجمالية وإنشاء الحجز
             $totalAmount = $this->bookingService->calculateTotalAmount($package, $validated['addons'] ?? []);
 
-            // إضافة UUID ورقم الحجز العشوائي
-            $validated['uuid'] = (string) Str::uuid();
+            // إذا كان هناك نظام دفع مفعل
+            if ($this->paymentService) {
+                $addons = [];
+                if (!empty($validated['addons'])) {
+                    foreach ($validated['addons'] as $addonData) {
+                        if (isset($addonData['id'])) {
+                            $addon = PackageAddon::findOrFail($addonData['id']);
+                            $quantity = $addonData['quantity'] ?? 1;
+                            $addons[] = [
+                                'id' => $addon->id,
+                                'quantity' => $quantity,
+                                'price' => $addon->price
+                            ];
+                        }
+                    }
+                }
 
+                $payment_id = 'PAY-' . strtoupper(Str::random(8)) . '-' . time();
+
+                $bookingData = array_merge($validated, [
+                    'user_id' => Auth::id(),
+                    'total_amount' => $totalAmount,
+                    'addons' => $addons,
+                    'payment_id' => $payment_id,
+                    'package_name' => $package->name,
+                    'uuid' => (string) Str::uuid()
+                ]);
+                session(['pending_booking' => $bookingData]);
+
+                $user = Auth::user();
+
+                // إنشاء طلب دفع باستخدام خدمة الدفع
+                $paymentResult = $this->paymentService->initiatePayment($bookingData, $totalAmount, $user);
+
+                if ($paymentResult['success'] && !empty($paymentResult['redirect_url'])) {
+                    session(['payment_transaction_id' => $paymentResult['transaction_id']]);
+                    return redirect($paymentResult['redirect_url']);
+                }
+
+                // في حالة فشل إنشاء طلب الدفع
+                session(['booking_form_data' => $request->all()]);
+                return redirect()->route('client.bookings.create')
+                    ->with('error', 'فشل الاتصال ببوابة الدفع: ' . ($paymentResult['message'] ?? 'خطأ غير معروف'));
+            }
+
+            // الإنشاء المباشر إذا لم يكن هناك نظام دفع
+            $validated['uuid'] = (string) Str::uuid();
             $booking = $this->bookingService->createBooking($validated, $totalAmount, Auth::id());
 
             return redirect()->route('client.bookings.success', $booking->uuid)
                 ->with('success', 'تم إنشاء الحجز بنجاح!');
 
         } catch (\Exception $e) {
+            Log::error('Error creating booking: ' . $e->getMessage(), [
+                'exception' => $e,
+                'request_data' => $request->all()
+            ]);
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'عذراً، حدث خطأ أثناء إنشاء الحجز. الرجاء المحاولة مرة أخرى.');
         }
+    }
+
+    /**
+     * معالجة استجابة الدفع من بوابة الدفع
+     */
+    public function paymentCallback(Request $request)
+    {
+        if (!$this->paymentService) {
+            abort(404);
+        }
+
+        // معالجة استجابة الدفع
+        $paymentData = $this->paymentService->processPaymentResponse($request);
+
+        // التحقق من بيانات الحجز المعلقة
+        $bookingData = session('pending_booking');
+        if (!$bookingData) {
+            return redirect()->route('client.bookings.create')
+                ->with('error', 'خطأ في الدفع - لم يتم العثور على بيانات الحجز');
+        }
+
+        // البحث عن الحجز الموجود
+        $existingBooking = $this->paymentService->findExistingBooking($paymentData);
+
+        if ($existingBooking) {
+            // تحديث حالة الحجز الموجود
+            $this->paymentService->updateBookingPaymentStatus($existingBooking, $paymentData);
+
+            session()->forget(['pending_booking', 'payment_transaction_id']);
+            return redirect()->route('client.bookings.success', $existingBooking->uuid)
+                ->with('success', 'تم تأكيد الدفع بنجاح!');
+        }
+
+        // التعامل مع فشل الدفع
+        if (!$paymentData['isSuccessful'] && !$paymentData['isPending']) {
+            session()->forget(['pending_booking', 'payment_transaction_id']);
+            return redirect()->route('client.bookings.create')
+                ->with('error', 'فشل الدفع: ' . ($paymentData['message'] ?: 'خطأ غير معروف'));
+        }
+
+        // إنشاء حجز جديد
+        try {
+            $booking = $this->paymentService->createBookingFromPayment($bookingData, $paymentData);
+
+            session()->forget(['pending_booking', 'payment_transaction_id']);
+
+            $message = $paymentData['isSuccessful'] ?
+                'تم تأكيد الدفع بنجاح!' :
+                'تم إنشاء الحجز، جارٍ التحقق من حالة الدفع...';
+
+            return redirect()->route('client.bookings.success', $booking->uuid)
+                ->with('success', $message);
+
+        } catch (\Exception $e) {
+            Log::error('Error creating booking from payment: ' . $e->getMessage(), [
+                'exception' => $e,
+                'payment_data' => $paymentData,
+                'booking_data' => $bookingData
+            ]);
+
+            return redirect()->route('client.bookings.create')
+                ->with('error', 'عذراً، حدث خطأ أثناء إنشاء الحجز. الرجاء الاتصال بالدعم الفني.');
+        }
+    }
+
+    /**
+     * إعادة توجيه المستخدم من بوابة الدفع
+     */
+    public function paymentReturn(Request $request)
+    {
+        return $this->paymentCallback($request);
     }
 
     /**
@@ -170,6 +303,65 @@ class BookingController extends Controller
         session(['booking_form_data' => $formData]);
 
         return redirect()->route($request->query('redirect', 'register'));
+    }
+
+    /**
+     * إعادة محاولة الدفع لحجز موجود
+     * يستخدم عندما يفشل الدفع أو يكون الحجز في حالة انتظار الدفع
+     */
+    public function retryPayment(Booking $booking)
+    {
+        // التحقق من ملكية الحجز
+        if ($booking->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
+            abort(403, 'غير مصرح لك بتعديل هذا الحجز');
+        }
+
+        // التحقق من أن الحجز في حالة تسمح بإعادة الدفع
+        if (!in_array($booking->status, ['pending', 'payment_failed', 'payment_required'])) {
+            return redirect()->route('client.bookings.show', $booking->uuid)
+                ->with('error', 'لا يمكن إعادة الدفع لهذا الحجز في حالته الحالية');
+        }
+
+        try {
+            $user = Auth::user();
+            $payment_id = $booking->payment_id ?? 'PAY-' . strtoupper(Str::random(8)) . '-' . time();
+
+            // تجهيز بيانات الحجز لإعادة الدفع
+            $bookingData = [
+                'uuid' => $booking->uuid,
+                'user_id' => $booking->user_id,
+                'service_id' => $booking->service_id,
+                'package_id' => $booking->package_id,
+                'session_date' => $booking->session_date->format('Y-m-d'),
+                'session_time' => $booking->session_time->format('H:i'),
+                'payment_id' => $payment_id
+            ];
+
+            // إنشاء طلب دفع جديد
+            $paymentResult = $this->paymentService->initiatePayment($bookingData, $booking->total_amount, $user);
+
+            if ($paymentResult['success'] && !empty($paymentResult['redirect_url'])) {
+                // تحديث معرف الدفع في الحجز
+                $booking->payment_id = $payment_id;
+                $booking->save();
+
+                session(['payment_transaction_id' => $paymentResult['transaction_id']]);
+                return redirect($paymentResult['redirect_url']);
+            }
+
+            // في حالة فشل إنشاء طلب الدفع
+            return redirect()->route('client.bookings.show', $booking->uuid)
+                ->with('error', 'فشل الاتصال ببوابة الدفع: ' . ($paymentResult['message'] ?? 'خطأ غير معروف'));
+
+        } catch (\Exception $e) {
+            Log::error('Error retrying payment: ' . $e->getMessage(), [
+                'exception' => $e,
+                'booking_id' => $booking->id
+            ]);
+
+            return redirect()->route('client.bookings.show', $booking->uuid)
+                ->with('error', 'حدث خطأ أثناء معالجة طلب الدفع. الرجاء المحاولة مرة أخرى لاحقًا.');
+        }
     }
 
     /**

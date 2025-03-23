@@ -115,63 +115,66 @@
             </div>
         </div>
 
-        <!-- إضافة تتبع الطلب -->
-        @if(in_array($order->order_status, ['processing', 'out_for_delivery', 'on_the_way']))
-        <div class="order-tracking mt-4">
-            <h3 class="section-title">تتبع الطلب</h3>
-            <div class="tracking-timeline">
-                <div class="timeline-item {{ $order->order_status != 'pending' ? 'completed' : '' }}">
-                    <div class="timeline-icon">
+        <!-- تتبع الطلب -->
+        <div class="order-tracking mt-5 p-4">
+            <h3 class="tracking-title text-center mb-4">تتبع الطلب</h3>
+
+            <div class="tracking-stepper">
+                <div class="tracking-step {{ $order->order_status != 'pending' ? 'completed' : '' }}">
+                    <div class="step-icon">
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <div class="timeline-content">
+                    <div class="step-line"></div>
+                    <div class="step-content">
                         <h4>تم استلام الطلب</h4>
                         <p>تم استلام طلبك وهو قيد المراجعة</p>
                     </div>
                 </div>
 
-                <div class="timeline-item {{ in_array($order->order_status, ['processing', 'out_for_delivery', 'on_the_way', 'delivered', 'completed']) ? 'completed' : '' }}">
-                    <div class="timeline-icon">
+                <div class="tracking-step {{ in_array($order->order_status, ['processing', 'out_for_delivery', 'on_the_way', 'delivered', 'completed']) ? 'completed' : '' }}">
+                    <div class="step-icon">
                         <i class="bi bi-gear-fill"></i>
                     </div>
-                    <div class="timeline-content">
+                    <div class="step-line"></div>
+                    <div class="step-content">
                         <h4>قيد المعالجة</h4>
                         <p>جاري تجهيز طلبك</p>
                     </div>
                 </div>
 
-                <div class="timeline-item {{ in_array($order->order_status, ['out_for_delivery', 'on_the_way', 'delivered', 'completed']) ? 'completed' : '' }}">
-                    <div class="timeline-icon">
+                <div class="tracking-step {{ in_array($order->order_status, ['out_for_delivery', 'on_the_way', 'delivered', 'completed']) ? 'completed' : '' }}">
+                    <div class="step-icon">
                         <i class="bi bi-box-seam-fill"></i>
                     </div>
-                    <div class="timeline-content">
+                    <div class="step-line"></div>
+                    <div class="step-content">
                         <h4>جاري التوصيل</h4>
                         <p>تم تجهيز طلبك للتوصيل</p>
                     </div>
                 </div>
 
-                <div class="timeline-item {{ in_array($order->order_status, ['on_the_way', 'delivered', 'completed']) ? 'completed' : '' }}">
-                    <div class="timeline-icon">
+                <div class="tracking-step {{ in_array($order->order_status, ['on_the_way', 'delivered', 'completed']) ? 'completed' : '' }}">
+                    <div class="step-icon">
                         <i class="bi bi-truck"></i>
                     </div>
-                    <div class="timeline-content">
+                    <div class="step-line"></div>
+                    <div class="step-content">
                         <h4>في الطريق</h4>
                         <p>المندوب في طريقه إليك</p>
                     </div>
                 </div>
 
-                <div class="timeline-item {{ in_array($order->order_status, ['delivered', 'completed']) ? 'completed' : '' }}">
-                    <div class="timeline-icon">
+                <div class="tracking-step {{ in_array($order->order_status, ['delivered', 'completed']) ? 'completed' : '' }}">
+                    <div class="step-icon">
                         <i class="bi bi-house-check-fill"></i>
                     </div>
-                    <div class="timeline-content">
+                    <div class="step-content">
                         <h4>تم التوصيل</h4>
                         <p>تم توصيل طلبك بنجاح</p>
                     </div>
                 </div>
             </div>
         </div>
-        @endif
     </div>
 </main>
 @endsection

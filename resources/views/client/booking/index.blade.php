@@ -348,27 +348,19 @@
                                     <ul class="list-unstyled text-start mb-4">
                                         <li class="mb-2">
                                             <i class="fas fa-check-circle text-success me-2"></i>
-                                            يرجى تحويل المبلغ المطلوب على أحد الحسابات التالية:
+                                            سيتم تحويلك إلى بوابة الدفع الإلكتروني بعد تأكيد الحجز
                                         </li>
-                                    </ul>
-
-                                    <div class="bank-accounts bg-white p-3 rounded mb-4">
-                                        <div class="account-info mb-3 text-start">
-                                            <h6 class="text-primary mb-2">البنك الأهلي السعودي:</h6>
-                                            <p class="mb-1"><strong>رقم الحساب:</strong> 18900000406701</p>
-                                            <p class="mb-1"><strong>الآيبان (IBAN):</strong> SA8710000018900000406701</p>
-                                            <p class="mb-0"><strong>رمز السويفت:</strong> NCBKSAJE</p>
-                                        </div>
-                                    </div>
-
-                                    <ul class="list-unstyled text-start mb-0">
                                         <li class="mb-2">
-                                            <i class="fas fa-check-circle text-success me-2"></i>
-                                            يرجى إرسال صورة الإيصال على الواتساب
+                                            <i class="fas fa-credit-card text-success me-2"></i>
+                                            يمكنك الدفع باستخدام بطاقة مدى أو فيزا أو ماستركارد
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-lock text-success me-2"></i>
+                                            جميع عمليات الدفع آمنة ومشفرة بواسطة PayTabs
                                         </li>
                                         <li class="mb-2">
                                             <i class="fas fa-check-circle text-success me-2"></i>
-                                            سيتم تأكيد الحجز نهائياً بعد استلام إيصال التحويل
+                                            سيتم تأكيد الحجز تلقائيًا بعد نجاح عملية الدفع
                                         </li>
                                         <li>
                                             <i class="fas fa-check-circle text-success me-2"></i>
@@ -386,10 +378,12 @@
                 <div class="text-center">
                     @auth
                         <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-calendar-check me-2"></i>تأكيد الحجز
+                            <i class="fas fa-credit-card me-2"></i>متابعة للدفع
                         </button>
                         <div class="mt-3">
-
+                            <small class="text-muted">
+                                سيتم تحويلك إلى صفحة الدفع الآمنة بعد تأكيد الحجز
+                            </small>
                         </div>
                     @else
                         <div class="alert alert-info">

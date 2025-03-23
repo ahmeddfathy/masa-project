@@ -75,6 +75,12 @@
                                     <span class="badge bg-danger">فشل الدفع</span>
                                 @endif
                             </li>
+                            @if($booking->payment_id)
+                            <li><strong>رقم العملية:</strong> {{ $booking->payment_id }}</li>
+                            @endif
+                            @if($booking->transaction_reference)
+                            <li><strong>رقم المرجع:</strong> {{ $booking->transaction_reference }}</li>
+                            @endif
                             <li><strong>نوع الجلسة:</strong> {{ $booking->service->name }}</li>
                             <li><strong>الباقة:</strong> {{ $booking->package->name }}</li>
                             <li><strong>التاريخ:</strong> {{ $booking->session_date->format('Y-m-d') }}</li>
@@ -105,11 +111,14 @@
                             <div class="alert alert-warning">
                                 <i class="fas fa-clock me-2"></i>
                                 الحجز قيد المعالجة. سيتم تحديث حالة الحجز تلقائياً عند اكتمال عملية الدفع.
+                                <div class="mt-2">
+                                    <small>إذا واجهت أي مشاكل في الدفع، يمكنك إكمال عملية الدفع من صفحة حجوزاتي</small>
+                                </div>
                             </div>
                         @else
                             <div class="alert alert-danger">
                                 <i class="fas fa-exclamation-circle me-2"></i>
-                                فشلت عملية الدفع. يرجى المحاولة مرة أخرى أو التواصل مع الدعم الفني.
+                                فشلت عملية الدفع. يرجى المحاولة مرة أخرى من صفحة حجوزاتي أو التواصل مع الدعم الفني.
                             </div>
                         @endif
                     </div>

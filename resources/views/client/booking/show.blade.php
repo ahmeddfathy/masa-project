@@ -61,6 +61,18 @@
                             تم إلغاء الحجز
                         </span>
                         @break
+                    @case('payment_required')
+                        <span class="badge bg-warning">
+                            <i class="fas fa-credit-card me-1"></i>
+                            بانتظار الدفع
+                        </span>
+                        @break
+                    @case('payment_failed')
+                        <span class="badge bg-danger">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            فشل الدفع
+                        </span>
+                        @break
                     @default
                         <span class="badge bg-secondary">
                             <i class="fas fa-question-circle me-1"></i>
@@ -98,6 +110,36 @@
                         <br>
                         <small>السبب: {{ $booking->cancellation_reason }}</small>
                     @endif
+                </div>
+                @break
+            @case('payment_required')
+                <div class="alert alert-warning mb-4">
+                    <i class="fas fa-credit-card me-2"></i>
+                    يرجى إكمال عملية الدفع لتأكيد الحجز.
+                    <div class="mt-3">
+                        <form action="{{ route('client.bookings.retry-payment', $booking->uuid) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-credit-card me-1"></i>
+                                الدفع الآن
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @break
+            @case('payment_failed')
+                <div class="alert alert-danger mb-4">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    فشلت عملية الدفع. يرجى المحاولة مرة أخرى.
+                    <div class="mt-3">
+                        <form action="{{ route('client.bookings.retry-payment', $booking->uuid) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-credit-card me-1"></i>
+                                محاولة الدفع مرة أخرى
+                            </button>
+                        </form>
+                    </div>
                 </div>
                 @break
         @endswitch
@@ -174,6 +216,65 @@
                 @endforeach
             </div>
             @endif
+
+            <!-- Payment Information -->
+            <div class="mt-4">
+                <h5 class="text-primary mb-3">معلومات الدفع</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <h6><i class="fas fa-money-bill me-1"></i> المبلغ الإجمالي</h6>
+                            <p class="mb-0">{{ $booking->total_amount }} ريال سعودي</p>
+                        </div>
+                        <div class="info-group">
+                            <h6><i class="fas fa-receipt me-1"></i> حالة الدفع</h6>
+                            <p class="mb-0">
+                                @if($booking->status === 'confirmed')
+                                    <span class="text-success">
+                                        <i class="fas fa-check-circle me-1"></i>
+                                        تم الدفع
+                                    </span>
+                                @elseif($booking->status === 'pending')
+                                    <span class="text-warning">
+                                        <i class="fas fa-clock me-1"></i>
+                                        قيد المعالجة
+                                    </span>
+                                @elseif(in_array($booking->status, ['payment_required', 'payment_failed']))
+                                    <span class="text-danger">
+                                        <i class="fas fa-times-circle me-1"></i>
+                                        لم يتم الدفع
+                                    </span>
+                                @else
+                                    <span class="text-muted">
+                                        <i class="fas fa-question-circle me-1"></i>
+                                        غير متوفر
+                                    </span>
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        @if($booking->payment_id)
+                        <div class="info-group">
+                            <h6><i class="fas fa-hashtag me-1"></i> رقم العملية</h6>
+                            <p class="mb-0">{{ $booking->payment_id }}</p>
+                        </div>
+                        @endif
+                        @if($booking->transaction_reference)
+                        <div class="info-group">
+                            <h6><i class="fas fa-file-invoice me-1"></i> رقم المرجع</h6>
+                            <p class="mb-0">{{ $booking->transaction_reference }}</p>
+                        </div>
+                        @endif
+                        @if($booking->payment_date)
+                        <div class="info-group">
+                            <h6><i class="fas fa-calendar-check me-1"></i> تاريخ الدفع</h6>
+                            <p class="mb-0">{{ $booking->payment_date->format('Y/m/d H:i') }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
             <!-- Notes -->
             @if($booking->notes)

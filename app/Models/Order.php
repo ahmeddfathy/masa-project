@@ -24,6 +24,7 @@ class Order extends Model
     const ORDER_STATUS_PROCESSING = 'processing';
     const ORDER_STATUS_COMPLETED = 'completed';
     const ORDER_STATUS_CANCELLED = 'cancelled';
+    const ORDER_STATUS_FAILED = 'failed';
     const ORDER_STATUS_OUT_FOR_DELIVERY = 'out_for_delivery';
     const ORDER_STATUS_ON_THE_WAY = 'on_the_way';
     const ORDER_STATUS_DELIVERED = 'delivered';
@@ -41,6 +42,9 @@ class Order extends Model
         'policy_agreement',
         'uuid',
         'order_number',
+        'payment_transaction_id',
+        'payment_id',
+        'amount_paid',
     ];
 
     protected $casts = [

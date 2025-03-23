@@ -36,10 +36,13 @@
                     <h3 class="booking-number">حجز #{{ $booking->booking_number }}</h3>
                     <span class="status-badge status-{{ $booking->status }}">
                         {{ match($booking->status) {
+                            'confirmed' => 'مؤكد',
                             'completed' => 'مكتمل',
                             'cancelled' => 'ملغي',
                             'processing' => 'قيد المعالجة',
                             'pending' => 'قيد الانتظار',
+                            'payment_required' => 'بانتظار الدفع',
+                            'payment_failed' => 'فشل الدفع',
                             default => 'غير معروف'
                         } }}
                     </span>
@@ -57,6 +60,15 @@
                 <div class="booking-total">
                     {{ $booking->total_amount }} ريال سعودي
                 </div>
+                @if(in_array($booking->status, ['pending', 'payment_failed', 'payment_required']))
+                <form action="{{ route('client.bookings.retry-payment', $booking->uuid) }}" method="POST" class="ms-2">
+                    @csrf
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-credit-card"></i>
+                        إتمام الدفع
+                    </button>
+                </form>
+                @endif
                 <a href="{{ route('client.bookings.show', $booking->uuid) }}" class="btn btn-primary">
                     <i class="bi bi-eye"></i>
                     عرض التفاصيل

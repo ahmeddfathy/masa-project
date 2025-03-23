@@ -565,3 +565,182 @@ body {
         font-size: 0.9rem;
     }
 }
+
+/* Order Tracking Timeline Styles */
+.order-tracking {
+    background-color: var(--glass-background-dark);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.tracking-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-color);
+    position: relative;
+    display: inline-block;
+    padding-bottom: 10px;
+    margin-bottom: 40px;
+}
+
+.tracking-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+.tracking-stepper {
+    display: flex;
+    flex-direction: column;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.tracking-step {
+    display: flex;
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.step-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--gray-300);
+    border: 2px solid var(--gray-300);
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step-line {
+    position: absolute;
+    top: 50px;
+    left: 24px;
+    width: 2px;
+    height: calc(100% - 20px);
+    background-color: var(--gray-300);
+    z-index: 1;
+}
+
+.tracking-step:last-child .step-line {
+    display: none;
+}
+
+.step-content {
+    padding-left: 20px;
+    padding-top: 5px;
+}
+
+.step-content h4 {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.step-content p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+/* Completed Step Styles */
+.tracking-step.completed .step-icon {
+    background-color: rgba(0, 177, 64, 0.1);
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.tracking-step.completed .step-line {
+    background-color: var(--success-color);
+}
+
+/* RTL Direction Adjustments */
+.tracking-step {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+
+.step-content {
+    padding-left: 0;
+    padding-right: 20px;
+}
+
+.step-line {
+    left: auto;
+    right: 24px;
+}
+
+/* Animation */
+@keyframes fadeInStep {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tracking-step {
+    animation: fadeInStep 0.5s ease forwards;
+    opacity: 0;
+}
+
+.tracking-step:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.tracking-step:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.tracking-step:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.tracking-step:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.tracking-step:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .tracking-stepper {
+        padding: 0 10px;
+    }
+
+    .step-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+
+    .step-line {
+        top: 40px;
+        right: 19px;
+    }
+
+    .step-content h4 {
+        font-size: 1.1rem;
+    }
+
+    .step-content p {
+        font-size: 0.85rem;
+    }
+}

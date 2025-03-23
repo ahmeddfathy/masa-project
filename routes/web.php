@@ -196,6 +196,12 @@ Route::middleware([
         Route::patch('/admin/appointments/{appointment}/update-datetime', [App\Http\Controllers\Admin\AppointmentController::class, 'updateDateTime'])
             ->name('appointments.update-datetime');
     });
+
+    // Payment routes
+    Route::name('checkout.payment.')->group(function () {
+        Route::post('/checkout/payment/callback', [CheckoutController::class, 'paymentCallback'])->name('callback');
+        Route::get('/checkout/payment/return', [CheckoutController::class, 'paymentReturn'])->name('return');
+    });
 });
 
 Route::post('/appointments', [AppointmentController::class, 'store'])
@@ -226,6 +232,7 @@ Route::name('client.')->middleware(['auth'])->group(function () {
         Route::get('/client/bookings/my', [BookingController::class, 'myBookings'])->name('my');
         Route::get('/client/bookings/{booking:uuid}', [BookingController::class, 'show'])->name('show');
         Route::post('/client/bookings/available-slots', [BookingController::class, 'getAvailableTimeSlots'])->name('available-slots');
+        Route::post('/client/bookings/{booking:uuid}/retry-payment', [BookingController::class, 'retryPayment'])->name('retry-payment');
     });
 
     Route::get('/client/packages/{package}/addons', function (App\Models\Package $package) {
