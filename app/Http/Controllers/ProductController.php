@@ -26,6 +26,15 @@ class ProductController extends Controller
         $categories = $this->productService->getCategories();
         $priceRange = $this->productService->getPriceRange();
 
+        // Process each product to include coupon information
+        foreach ($products as $product) {
+            $productDetails = $this->productService->getProductDetails($product);
+            if (isset($productDetails['has_coupon']) && $productDetails['has_coupon']) {
+                $product->has_coupon = true;
+                $product->best_coupon = $productDetails['best_coupon'];
+            }
+        }
+
         if ($request->ajax()) {
             return response()->json([
                 'products' => $this->productService->formatProductsForJson($products),
@@ -48,6 +57,14 @@ class ProductController extends Controller
         }
 
         $product->load(['category', 'images', 'colors', 'sizes']);
+
+        // Get product details including coupon information
+        $productDetails = $this->productService->getProductDetails($product);
+        if (isset($productDetails['has_coupon']) && $productDetails['has_coupon']) {
+            $product->has_coupon = true;
+            $product->best_coupon = $productDetails['best_coupon'];
+            $product->discounted_price = $productDetails['discounted_price'];
+        }
 
         $availableFeatures = $this->productService->getAvailableFeatures($product);
         $relatedProducts = $this->productService->getRelatedProducts($product);
@@ -83,14 +100,16 @@ class ProductController extends Controller
                 'categories' => 'nullable|array',
                 'minPrice' => 'nullable|numeric|min:0',
                 'maxPrice' => 'nullable|numeric|min:0',
-                'sort' => 'nullable|string|in:newest,price-low,price-high'
+                'sort' => 'nullable|string|in:newest,price-low,price-high',
+                'has_discount' => 'nullable|boolean'
             ]);
 
             // Merge the validated data back to the request so it's accessible in the service
             $request->merge([
                 'max_price' => $validatedData['maxPrice'] ?? null,
                 'category' => !empty($validatedData['categories']) ? $validatedData['categories'][0] : null,
-                'sort' => $validatedData['sort'] ?? 'newest'
+                'sort' => $validatedData['sort'] ?? 'newest',
+                'has_discount' => isset($validatedData['has_discount']) ? (bool)$validatedData['has_discount'] : null
             ]);
 
             $products = $this->productService->getFilteredProducts($request);

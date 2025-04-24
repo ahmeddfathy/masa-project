@@ -46,6 +46,9 @@ class ProductService
                             ->where('product_quantities.price', '<=', $maxPrice);
                     });
                 });
+            })
+            ->when($request->has_discount, function (Builder $query) {
+                $this->filterProductsWithDiscount($query);
             });
 
         $query->when($request->sort, function (Builder $query, $sort) {
@@ -153,6 +156,10 @@ class ProductService
                 ? number_format($priceRange['min'], 2)
                 : number_format($priceRange['min'], 2) . ' - ' . number_format($priceRange['max'], 2);
 
+            // Get coupon information for this product
+            $applicableCoupons = $this->getApplicableCouponsForProduct($product);
+            $bestCoupon = !empty($applicableCoupons) ? $this->getBestCouponForProduct($product, $applicableCoupons) : null;
+
             return [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -169,7 +176,9 @@ class ProductService
                 'rating' => $product->rating ?? 0,
                 'reviews' => $product->reviews ?? 0,
                 'is_available' => $product->stock > 0,
-                'description' => Str::limit($product->description, 100)
+                'description' => Str::limit($product->description, 100),
+                'has_coupon' => $bestCoupon !== null,
+                'best_coupon' => $bestCoupon
             ];
         });
     }
@@ -385,5 +394,57 @@ class ProductService
         }
 
         return $availableFeatures;
+    }
+
+    /**
+     * Filter products that have valid discount coupons
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    protected function filterProductsWithDiscount(Builder $query): Builder
+    {
+        $now = now();
+
+        return $query->where(function($q) use ($now) {
+            // Get products that have specific coupons attached to them
+            $q->whereHas('coupons', function($couponQuery) use ($now) {
+                $couponQuery->where('coupons.is_active', true)
+                    ->where('coupons.applies_to_products', true)
+                    ->where(function($dateQuery) use ($now) {
+                        $dateQuery->whereNull('coupons.starts_at')
+                            ->orWhere('coupons.starts_at', '<=', $now);
+                    })
+                    ->where(function($expiryQuery) use ($now) {
+                        $expiryQuery->whereNull('coupons.expires_at')
+                            ->orWhere('coupons.expires_at', '>=', $now);
+                    })
+                    ->where(function($usesQuery) {
+                        $usesQuery->whereNull('coupons.max_uses')
+                            ->orWhereRaw('coupons.used_count < coupons.max_uses');
+                    });
+            });
+
+            // OR get products that have global coupons (applies_to_all_products = true)
+            $q->orWhereExists(function($globalQuery) use ($now) {
+                $globalQuery->select(DB::raw(1))
+                    ->from('coupons')
+                    ->where('coupons.is_active', true)
+                    ->where('coupons.applies_to_products', true)
+                    ->where('coupons.applies_to_all_products', true)
+                    ->where(function($dateQuery) use ($now) {
+                        $dateQuery->whereNull('coupons.starts_at')
+                            ->orWhere('coupons.starts_at', '<=', $now);
+                    })
+                    ->where(function($expiryQuery) use ($now) {
+                        $expiryQuery->whereNull('coupons.expires_at')
+                            ->orWhere('coupons.expires_at', '>=', $now);
+                    })
+                    ->where(function($usesQuery) {
+                        $usesQuery->whereNull('coupons.max_uses')
+                            ->orWhereRaw('coupons.used_count < coupons.max_uses');
+                    });
+            });
+        });
     }
 }

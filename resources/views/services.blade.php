@@ -1,4 +1,3 @@
-@extends('layouts.customer')
 
 
 <!DOCTYPE html>

@@ -88,11 +88,15 @@ body {
     padding: 0.8rem 1rem;
     font-size: var(--font-size-md);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .navbar.scrolled {
     background: var(--primary-color);
     box-shadow: var(--box-shadow);
+    padding: 0.6rem 1rem;
 }
 
 .navbar-brand {
@@ -105,6 +109,11 @@ body {
     justify-content: center;
     padding: 5px;
     margin-left: 15px;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
 }
 
 .navbar-brand img {
@@ -120,13 +129,31 @@ body {
     transition: var(--transition);
     letter-spacing: var(--letter-spacing-normal);
     opacity: 0.9;
+    margin: 0 0.25rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link .fas,
+.nav-link .far {
+    margin-left: 6px;
+    font-size: 0.9em;
+    transition: transform 0.3s ease;
+}
+
+.nav-link:hover .fas,
+.nav-link:hover .far,
+.nav-link.active .fas,
+.nav-link.active .far {
+    transform: translateY(-2px);
 }
 
 .nav-link:hover,
 .nav-link.active {
     color: var(--light-color) !important;
     opacity: 1;
-    transform: translateY(-2px);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Dropdown Styles */
@@ -134,23 +161,118 @@ body {
     border: none;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     background: var(--light-color);
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+    transform-origin: top center;
+    animation: dropdown-fade 0.3s ease;
+}
+
+@keyframes dropdown-fade {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .navbar .dropdown-item {
-    color: var(--secondary-color);
+    color: var(--primary-color);
     transition: var(--transition);
+    padding: 8px 15px;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    font-weight: var(--font-weight-medium);
 }
 
 .navbar .dropdown-item:hover,
 .navbar .dropdown-item:focus {
-    background-color: rgba(var(--secondary-rgb), 0.1);
-    color: var(--secondary-dark);
+    background-color: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary-dark);
+    transform: translateX(-3px);
 }
 
 .navbar .dropdown-item.active,
 .navbar .dropdown-item:active {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     color: var(--light-color);
+}
+
+.navbar .dropdown-toggle::after {
+    margin-right: 5px;
+    vertical-align: middle;
+    transition: transform 0.3s ease;
+}
+
+.navbar .dropdown-toggle[aria-expanded="true"]::after {
+    transform: rotate(180deg);
+}
+
+.navbar .btn-outline-light {
+    border: 1px solid rgba(255,255,255,0.5);
+    transition: all 0.3s ease;
+}
+
+.navbar .btn-outline-light:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: white;
+    transform: translateY(-2px);
+}
+
+.navbar .btn-light {
+    font-weight: var(--font-weight-semibold);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.navbar .btn-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.dropdown-divider {
+    border-top: 1px solid rgba(var(--primary-rgb), 0.1);
+    margin: 6px 0;
+}
+
+/* Navbar mobile responsiveness */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: var(--primary-color);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .nav-link {
+        padding: 10px 15px !important;
+        margin: 5px 0;
+    }
+
+    .navbar .dropdown-menu {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .navbar .dropdown-item {
+        color: white;
+    }
+
+    .navbar .dropdown-item:hover,
+    .navbar .dropdown-item:focus {
+        background-color: rgba(255,255,255,0.2);
+        color: white;
+    }
+
+    .navbar-brand {
+        width: 60px;
+        height: 60px;
+    }
 }
 
 /* Common Section Styles */

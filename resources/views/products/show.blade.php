@@ -35,8 +35,28 @@
             padding: 3px 10px;
             font-size: 0.8rem;
             margin-top: 5px;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
             animation: pulse 1.5s infinite;
+        }
+
+        .coupon-label i {
+            margin-right: 4px;
+        }
+
+        .coupon-label .coupon-code {
+            font-weight: bold;
+            border-right: 1px solid rgba(255,255,255,0.5);
+            padding-right: 5px;
+        }
+
+        .coupon-label .coupon-value {
+            font-weight: 600;
+            padding-left: 3px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 2px 6px;
         }
 
         @keyframes pulse {
@@ -46,7 +66,10 @@
         }
     </style>
 </head>
-<body>
+<body class="{{ auth()->check() ? 'user-logged-in' : '' }}">
+    <!-- Cart overlay for the sidebar background effect -->
+
+
     <!-- Fixed Buttons Group -->
     <div class="fixed-buttons-group">
         <button class="fixed-cart-btn" id="fixedCartBtn">
@@ -62,49 +85,96 @@
         </a>
         @endauth
     </div>
-
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg glass-navbar sticky-top">
-        <div class="container">
+    <nav class="navbar navbar-expand-lg modern-navbar sticky-top">
+      <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="{{ asset('assets/images/logo.png') }}" alt="Madil" height="70">
+               <img src="{{ asset('assets/images/logo.png') }}" alt="Madil" height="70">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">الرئيسية</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/about">من نحن</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/products">المنتجات</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profile">حسابي</a>
-                    </li>
-                </ul>
-                <div class="nav-buttons">
-                    <button class="btn btn-outline-primary position-relative me-2" id="cartToggle">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <!-- الرئيسية Dropdown -->
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="homeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <span class="nav-icon"><i class="fas fa-home"></i></span>
+                          <span class="nav-text">الرئيسية</span>
+                          <i class="fas fa-angle-down dropdown-indicator"></i>
+                      </a>
+                      <ul class="dropdown-menu animated-dropdown" aria-labelledby="homeDropdown">
+                          <li><a class="dropdown-item" href="/"><i class="fas fa-home me-2"></i> الرئيسية</a></li>
+                          <li><a class="dropdown-item" href="/about"><i class="fas fa-info-circle me-2"></i> من نحن</a></li>
+                          <li><a class="dropdown-item" href="/gallery"><i class="fas fa-images me-2"></i> معرض الصور</a></li>
+                          <li><a class="dropdown-item" href="/services"><i class="fas fa-concierge-bell me-2"></i> الخدمات</a></li>
+                      </ul>
+                  </li>
+                  <!-- المتجر -->
+                  <li class="nav-item">
+                      <a class="nav-link active d-flex align-items-center" href="/products">
+                          <span class="nav-icon"><i class="fas fa-shopping-bag"></i></span>
+                          <span class="nav-text">المتجر</span>
+                      </a>
+                  </li>
+                  <!-- الحجز Dropdown -->
+                  <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="bookingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <span class="nav-icon"><i class="fas fa-calendar"></i></span>
+                          <span class="nav-text">الحجز</span>
+                          <i class="fas fa-angle-down dropdown-indicator"></i>
+                      </a>
+                      <ul class="dropdown-menu animated-dropdown" aria-labelledby="bookingDropdown">
+                          <li><a class="dropdown-item" href="/client/book"><i class="fas fa-calendar-plus me-2"></i> حجز جديد</a></li>
+                          @auth
+                          <li><a class="dropdown-item" href="/client/bookings/my"><i class="fas fa-calendar-check me-2"></i> حجوزاتي</a></li>
+                          @endauth
+                      </ul>
+                  </li>
+              </ul>
+              <div class="nav-buttons d-flex align-items-center">
+                    <button class="cart-button" id="cartToggle">
+                      <span class="cart-icon-wrapper">
                         <i class="fas fa-shopping-cart"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-count">
-                            0
-                        </span>
+                        <span class="cart-count-badge cart-count">0</span>
+                      </span>
                     </button>
+                    <div class="dropdown profile-dropdown">
+                        <button class="profile-button dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="profile-icon-wrapper">
+                                <i class="fas fa-user"></i>
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu profile-dropdown-menu" aria-labelledby="profileDropdown">
                             @auth
-                                <a href="/dashboard" class="btn btn-primary">لوحة التحكم</a>
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-user-name">{{ Auth::user()->name }}</div>
+                                    <div class="dropdown-user-email">{{ Auth::user()->email }}</div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <li><a class="dropdown-item" href="/dashboard"><i class="fas fa-tachometer-alt me-2"></i> لوحة التحكم</a></li>
+                                <div class="dropdown-divider"></div>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item logout-item"><i class="fas fa-sign-out-alt me-2"></i> تسجيل الخروج</button>
+                                    </form>
+                                </li>
                             @else
-                                <a href="/login" class="btn btn-outline-primary me-2">تسجيل الدخول</a>
-                                <a href="/register" class="btn btn-primary">إنشاء حساب</a>
+                                <div class="dropdown-header">
+                                    <i class="fas fa-user-circle auth-icon"></i>
+                                    <div>تسجيل الدخول للوصول إلى حسابك</div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <li><a class="dropdown-item login-item" href="/login"><i class="fas fa-sign-in-alt me-2"></i> تسجيل الدخول</a></li>
+                                <li><a class="dropdown-item register-item" href="/register"><i class="fas fa-user-plus me-2"></i> إنشاء حساب</a></li>
                             @endauth
-                </div>
-            </div>
-        </div>
+                        </ul>
+                    </div>
+              </div>
+          </div>
+      </div>
     </nav>
-
     <!-- Add this after navbar -->
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
@@ -146,6 +216,19 @@
                     <div class="card-body">
                         @if($product->images->count() > 0)
                             <div class="main-image-wrapper mb-3">
+                                @if(isset($product->best_coupon))
+                                <div class="coupon-badge">
+                                    <i class="fas fa-ticket-alt"></i>
+                                    <span class="coupon-code">{{ $product->best_coupon['code'] }}</span>
+                                    <span class="coupon-value">
+                                        @if($product->best_coupon['type'] === 'percentage')
+                                            {{ $product->best_coupon['value'] }}%
+                                        @else
+                                            {{ $product->best_coupon['value'] }} ر.س
+                                        @endif
+                                    </span>
+                                </div>
+                                @endif
                                 <img src="{{ url('storage/' . $product->primary_image->image_path) }}"
                                     alt="{{ $product->name }}"
                                     class="main-product-image"
@@ -187,28 +270,36 @@
                     <div class="price-container">
                         <div class="product-price">
                             @if($product->min_price == $product->max_price)
+                                <span class="amount">{{ number_format($product->min_price, 2) }}</span>
+                                <span class="currency">ر.س</span>
                                 @if(isset($product->best_coupon))
-                                    <span class="old-price">{{ number_format($product->min_price, 2) }} ر.س</span>
-                                    <span class="new-price">{{ number_format($product->discounted_price, 2) }} ر.س</span>
                                     <div class="coupon-label">
                                         <i class="fas fa-ticket-alt"></i>
-                                        كوبون: {{ $product->best_coupon['code'] }}
+                                        <span class="coupon-code">{{ $product->best_coupon['code'] }}</span>
+                                        <span class="coupon-value">
+                                            @if($product->best_coupon['type'] === 'percentage')
+                                                {{ $product->best_coupon['value'] }}%
+                                            @else
+                                                {{ $product->best_coupon['value'] }} ر.س
+                                            @endif
+                                        </span>
                                     </div>
-                                @else
-                                    <span class="amount">{{ number_format($product->min_price, 2) }}</span>
-                                    <span class="currency">ر.س</span>
                                 @endif
                             @else
+                                <span class="amount">{{ number_format($product->min_price, 2) }} - {{ number_format($product->max_price, 2) }}</span>
+                                <span class="currency">ر.س</span>
                                 @if(isset($product->best_coupon))
-                                    <span class="old-price">{{ number_format($product->min_price, 2) }} - {{ number_format($product->max_price, 2) }} ر.س</span>
-                                    <span class="new-price">{{ number_format($product->discounted_price, 2) }} ر.س</span>
                                     <div class="coupon-label">
                                         <i class="fas fa-ticket-alt"></i>
-                                        كوبون: {{ $product->best_coupon['code'] }}
+                                        <span class="coupon-code">{{ $product->best_coupon['code'] }}</span>
+                                        <span class="coupon-value">
+                                            @if($product->best_coupon['type'] === 'percentage')
+                                                {{ $product->best_coupon['value'] }}%
+                                            @else
+                                                {{ $product->best_coupon['value'] }} ر.س
+                                            @endif
+                                        </span>
                                     </div>
-                                @else
-                                    <span class="amount">{{ number_format($product->min_price, 2) }} - {{ number_format($product->max_price, 2) }}</span>
-                                    <span class="currency">ر.س</span>
                                 @endif
                             @endif
                         </div>
@@ -437,18 +528,23 @@
     </div>
 
     <!-- Footer -->
-
-<footer class="glass-footer">
+    <footer class="glass-footer">
       <div class="container">
         <div class="row">
           <div class="col-lg-4">
             <div class="footer-about">
               <h5>عن الاستوديو</h5>
-              <p>نقدم خدمات التصوير الاحترافي وطباعة الصور والألبومات بأعلى جودة، مع التركيز على توثيق أجمل لحظات حياتكم</p>
+              <p>نقدم خدمات التصوير الفوتوغرافي والطباعة بأعلى جودة وأفضل الأسعار مع الالتزام بالمواعيد</p>
               <div class="social-links">
-
-                <a href="/https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#"><i class="fab fa-instagram"></i></a>
-
+                <a href="https://www.instagram.com/lens_soma_studio/?igsh=d2ZvaHZqM2VoMWsw#" class="social-link" aria-label="Instagram">
+                  <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="social-link" aria-label="Facebook">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="#" class="social-link" aria-label="Twitter">
+                  <i class="fab fa-twitter"></i>
+                </a>
               </div>
             </div>
           </div>
@@ -457,9 +553,10 @@
               <h5>روابط سريعة</h5>
               <ul>
                 <li><a href="/">الرئيسية</a></li>
-                <li><a href="/products">منتجاتنا</a></li>
+                <li><a href="/products">المنتجات</a></li>
                 <li><a href="/about">من نحن</a></li>
-                <li><a href="#contact">احجز موعد</a></li>
+                <li><a href="/services">خدماتنا</a></li>
+                <li><a href="/client/book">حجز موعد</a></li>
               </ul>
             </div>
           </div>
@@ -469,16 +566,15 @@
               <ul class="list-unstyled">
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-phone-alt ms-2"></i>
-                  <span dir="ltr">0561667885</span>
+                  <span dir="ltr">+966561667885</span>
                 </li>
                 <li class="mb-2 d-flex align-items-center">
                   <i class="fas fa-envelope ms-2"></i>
-                  <a href="mailto:info@somalens.com" class="text-decoration-none">lens_soma@outlook.sa
-</a>
+                  <a href="mailto:lens_soma@outlook.sa" class="text-decoration-none">lens_soma@outlook.sa</a>
                 </li>
                 <li class="d-flex align-items-center">
                   <i class="fas fa-map-marker-alt ms-2"></i>
-                  <span>أبها . المحالة</span>
+                  <span>أبها . المحالة</span>
                 </li>
               </ul>
             </div>
@@ -491,7 +587,6 @@
         </div>
       </div>
     </footer>
-
 
     <!-- Modal for Appointment -->
     <div class="modal fade" id="appointmentModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">

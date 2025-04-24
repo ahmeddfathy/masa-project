@@ -3,7 +3,8 @@ let activeFilters = {
     categories: [],
     minPrice: 0,
     maxPrice: 1000,
-    sort: 'newest'
+    sort: 'newest',
+    has_discount: false
 };
 
 // Initialize when document is ready
@@ -63,6 +64,7 @@ function initializeFilters() {
     // Initialize price range slider with debounce
     const priceRange = document.getElementById('priceRange');
     const priceValue = document.getElementById('priceValue');
+    const discountFilter = document.getElementById('discountFilter');
     let priceUpdateTimeout;
 
     if (priceRange) {
@@ -86,8 +88,16 @@ function initializeFilters() {
         });
     }
 
+    // Discount filter handler
+    if (discountFilter) {
+        discountFilter.addEventListener('change', function() {
+            activeFilters.has_discount = this.checked;
+            applyFilters();
+        });
+    }
+
     // Category filter handlers
-    document.querySelectorAll('.form-check-input[type="checkbox"]').forEach(checkbox => {
+    document.querySelectorAll('.form-check-input[type="checkbox"][name="categories[]"]').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const categorySlug = this.value;
             if (this.checked) {
@@ -112,14 +122,25 @@ function initializeFilters() {
 function applyFilters() {
     // Show loading state
     const productGrid = document.getElementById('productGrid');
-    productGrid.style.opacity = '0.5';
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const noProductsMessage = document.getElementById('noProductsMessage');
+
+    if (productGrid && loadingSpinner && noProductsMessage) {
+        productGrid.style.display = 'none';
+        loadingSpinner.style.display = 'block';
+        noProductsMessage.style.display = 'none';
+    } else {
+        // Fallback to old opacity transition if elements don't exist
+        if (productGrid) productGrid.style.opacity = '0.5';
+    }
 
     // Create a copy of activeFilters
     const filterData = {
         categories: activeFilters.categories,
         minPrice: Number(activeFilters.minPrice),
         maxPrice: Number(activeFilters.maxPrice),
-        sort: activeFilters.sort
+        sort: activeFilters.sort,
+        has_discount: activeFilters.has_discount
     };
 
     fetch(window.appConfig.routes.products.filter, {
@@ -152,35 +173,76 @@ function applyFilters() {
         updateProductGrid([]);
     })
     .finally(() => {
-        productGrid.style.opacity = '1';
+        // Hide loading spinner
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+        }
+
+        // Fallback to old opacity transition if elements don't exist
+        if (productGrid && !loadingSpinner) {
+            productGrid.style.opacity = '1';
+        }
     });
 }
 
 // Update Product Grid
 function updateProductGrid(products) {
     const productGrid = document.getElementById('productGrid');
+    const noProductsMessage = document.getElementById('noProductsMessage');
+
+    if (!productGrid) return;
+
     productGrid.innerHTML = '';
 
     if (!products || products.length === 0) {
-        productGrid.innerHTML = `
-            <div class="col-12 text-center py-5">
-                <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
-                <h3>لا توجد منتجات</h3>
-                <p class="text-muted">لم يتم العثور على منتجات تطابق معايير البحث</p>
-                <button onclick="resetFilters()" class="btn btn-primary mt-3">
-                    <i class="fas fa-sync-alt me-2"></i>
-                    إعادة ضبط الفلتر
-                </button>
-            </div>
-        `;
+        if (noProductsMessage) {
+            productGrid.style.display = 'none';
+            noProductsMessage.style.display = 'block';
+        } else {
+            // Fallback if no separate message element exists
+            productGrid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-box-open fa-3x mb-3 text-muted"></i>
+                    <h3>لا توجد منتجات</h3>
+                    <p class="text-muted">لم يتم العثور على منتجات تطابق معايير البحث</p>
+                    <button onclick="resetFilters()" class="btn btn-primary mt-3">
+                        <i class="fas fa-sync-alt me-2"></i>
+                        إعادة ضبط الفلتر
+                    </button>
+                </div>
+            `;
+            productGrid.style.display = 'block';
+        }
         return;
     }
 
+    // Show grid and hide no products message if it exists
+    productGrid.style.display = 'flex';
+    if (noProductsMessage) {
+        noProductsMessage.style.display = 'none';
+    }
+
     products.forEach(product => {
+        // Generate coupon badge HTML if product has a coupon
+        let couponBadgeHtml = '';
+        if (product.has_coupon && product.best_coupon) {
+            const couponValue = product.best_coupon.type === 'percentage'
+                ? `${product.best_coupon.value}%`
+                : `${product.best_coupon.value} ر.س`;
+
+            couponBadgeHtml = `
+                <div class="coupon-badge">
+                    <i class="fas fa-ticket-alt"></i>
+                    ${product.best_coupon.code} ${couponValue}
+                </div>
+            `;
+        }
+
         const productElement = document.createElement('div');
         productElement.className = 'col-md-6 col-lg-4';
         productElement.innerHTML = `
             <div class="product-card">
+                ${couponBadgeHtml}
                 <a href="/products/${product.slug}" class="product-image-wrapper">
                     <img src="${product.image_url || '/storage/' + product.images[0]?.image_path}"
                          alt="${product.name}"
@@ -298,6 +360,12 @@ function resetFilters() {
         document.getElementById('priceValue').textContent = Number(priceRangeInput.max).toLocaleString() + ' ر.س';
     }
 
+    // Reset discount filter
+    const discountFilter = document.getElementById('discountFilter');
+    if (discountFilter) {
+        discountFilter.checked = false;
+    }
+
     // Reset sort
     document.getElementById('sortSelect').value = 'newest';
 
@@ -306,7 +374,8 @@ function resetFilters() {
         categories: [],
         minPrice: Number(priceRangeInput?.min || 0),
         maxPrice: Number(priceRangeInput?.max || 1000),
-        sort: 'newest'
+        sort: 'newest',
+        has_discount: false
     };
 
     // Clear URL parameters
@@ -315,6 +384,7 @@ function resetFilters() {
     url.searchParams.delete('sort');
     url.searchParams.delete('min_price');
     url.searchParams.delete('max_price');
+    url.searchParams.delete('has_discount');
     window.history.replaceState({}, '', url.toString());
 
     // Show notification

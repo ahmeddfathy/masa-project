@@ -1817,3 +1817,51 @@ button:focus-visible {
     border-color: var(--primary-color) !important;
     color: white !important;
 }
+
+/* Coupon Badge Styles */
+.main-image-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.coupon-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #ff6b6b;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    animation: pulse 1.5s infinite;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.coupon-badge i {
+    margin-right: 4px;
+}
+
+.coupon-code {
+    font-weight: bold;
+    border-right: 1px solid rgba(255,255,255,0.5);
+    padding-right: 5px;
+}
+
+.coupon-value {
+    font-weight: 600;
+    padding-left: 3px;
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 2px 6px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

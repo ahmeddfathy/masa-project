@@ -94,6 +94,11 @@ class Product extends Model
     return $this->hasMany(ProductQuantity::class);
   }
 
+  public function coupons()
+  {
+    return $this->belongsToMany(Coupon::class, 'coupon_product');
+  }
+
   public function scopePriceRange(Builder $query, $min = null, $max = null): Builder
   {
     if ($min !== null) {
