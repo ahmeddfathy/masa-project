@@ -1,0 +1,376 @@
+/* ===== كوبونات الخصم - أنماط خاصة ===== */
+
+/* ===== أنماط عامة ===== */
+.coupons-container {
+    --primary-light: rgba(13, 110, 253, 0.1);
+    --primary-opacity: rgba(13, 110, 253, 0.7);
+    --success-light: rgba(25, 135, 84, 0.1);
+    --info-light: rgba(13, 202, 240, 0.1);
+    --warning-light: rgba(255, 193, 7, 0.1);
+    --danger-light: rgba(220, 53, 69, 0.1);
+}
+
+/* ===== أنماط البطاقات ===== */
+.coupons-container .card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.coupons-container .stat-card {
+    height: 100%;
+}
+
+/* Removed hover effect */
+.coupons-container .card:not(.stat-card):hover {
+    transform: none;
+    box-shadow: none !important;
+}
+
+.coupons-container .icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+
+.coupons-container .icon-circle i {
+    font-size: 22px;
+}
+
+/* ===== أنماط كود الكوبون ===== */
+.coupon-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background-color: var(--primary-light);
+    color: #0d6efd;
+    position: relative;
+    display: inline-block;
+}
+
+/* ===== أنماط الشارات ===== */
+.coupons-container .badge {
+    padding: 6px 10px;
+    font-weight: 500;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.bg-primary-subtle {
+    background-color: var(--primary-light);
+}
+
+.bg-success-subtle {
+    background-color: var(--success-light);
+}
+
+.bg-info-subtle {
+    background-color: var(--info-light);
+}
+
+.bg-warning-subtle {
+    background-color: var(--warning-light);
+}
+
+.bg-danger-subtle {
+    background-color: var(--danger-light);
+}
+
+/* ===== أنماط الجداول ===== */
+.coupons-container .table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.coupons-container .table thead th {
+    font-weight: 600;
+    border-bottom: none;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.coupons-container .table tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.coupons-container .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+/* Removed hover effect */
+.coupons-container .table-hover tbody tr:hover {
+    background-color: transparent;
+}
+
+/* ===== أنماط التفاصيل ===== */
+.detail-item {
+    margin-bottom: 15px;
+}
+
+.detail-item label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* ===== أنماط الأزرار ===== */
+.action-buttons .btn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    padding: 0;
+    margin-right: 5px;
+    transition: all 0.2s ease;
+}
+
+/* Removed hover effect */
+.action-buttons .btn:hover {
+    transform: none;
+}
+
+.btn-light-primary {
+    background-color: var(--primary-light);
+    color: #0d6efd;
+    border: none;
+}
+
+/* Removed hover effect */
+.btn-light-primary:hover {
+    background-color: var(--primary-light);
+    color: #0d6efd;
+}
+
+.btn-light-info {
+    background-color: var(--info-light);
+    color: #0dcaf0;
+    border: none;
+}
+
+/* Removed hover effect */
+.btn-light-info:hover {
+    background-color: var(--info-light);
+    color: #0dcaf0;
+}
+
+.btn-light-danger {
+    background-color: var(--danger-light);
+    color: #dc3545;
+    border: none;
+}
+
+/* Removed hover effect */
+.btn-light-danger:hover {
+    background-color: var(--danger-light);
+    color: #dc3545;
+}
+
+.btn-light-secondary {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+    border: none;
+}
+
+/* Removed hover effect */
+.btn-light-secondary:hover {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+}
+
+/* ===== أنماط خاصة ===== */
+.max-h-60 {
+    max-height: 250px;
+}
+
+/* ===== مؤثرات متحركة ===== */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+/* Removed hover animation for coupon code */
+.coupon-code:hover {
+    animation: none;
+    cursor: default;
+}
+
+/* ===== التخطيط المتجاوب ===== */
+@media (max-width: 768px) {
+    .action-buttons .btn {
+        width: 32px;
+        height: 32px;
+        margin-right: 2px;
+    }
+}
+
+/* ===== تحسينات إضافية ===== */
+.bg-gradient-primary {
+    background: linear-gradient(45deg, #0d6efd, #0a58ca);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(45deg, #198754, #157347);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(45deg, #0dcaf0, #0aa2c0);
+}
+
+/* تنسيق خاص لوضع "الفارغ" */
+.empty-state {
+    padding: 40px 20px;
+}
+
+.empty-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 50%;
+}
+
+/* تنسيق فواصل التنقل */
+.pagination .page-item .page-link {
+    border-radius: 6px;
+    margin: 0 3px;
+    padding: 8px 16px;
+    color: #0d6efd;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* ===== أنماط بطاقات نوع الكوبون ===== */
+.coupon-type-card {
+    width: 150px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+/* Removed hover effect */
+.coupon-type-card:hover {
+    transform: none;
+    box-shadow: none;
+    background-color: white;
+}
+
+.coupon-type-card input[type="checkbox"] {
+    pointer-events: none;
+}
+
+.coupon-type-card input[type="checkbox"]:checked + div + label {
+    font-weight: 600;
+}
+
+.coupon-type-card input[type="checkbox"]:checked ~ div {
+    color: var(--bs-primary);
+}
+
+.coupon-type-card:has(input[type="checkbox"]:checked) {
+    border-color: var(--bs-primary) !important;
+    background-color: var(--primary-light);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* تحسين على حقول الإدخال */
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: none !important;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1) !important;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #344767;
+}
+
+/* تحسين على قسم مخرجات الخطأ */
+.text-danger {
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 5px;
+}
+
+/* تحسين الأزرار الرئيسية */
+.btn-primary {
+    padding: 10px 20px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, #0d6efd, #0a58ca);
+    border: none;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Removed hover effect */
+.btn-primary:hover {
+    box-shadow: none;
+    transform: none;
+}
+
+/* تعديل التباعد بين العناصر */
+.mb-4 {
+    margin-bottom: 1.8rem !important;
+}
+
+.px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* تعديل نمط العنوان */
+.card-title {
+    font-weight: 600;
+    color: #344767;
+}
+
+/* تحسين الشريط العلوي */
+.content-header {
+    padding: 1.5rem 0;
+}
+
+/* تحسين مظهر البطاقات */
+.card-body {
+    padding: 1.5rem;
+}
+
+/* تعديل نمط الخلفية */
+body {
+    background-color: #f8f9fa;
+}

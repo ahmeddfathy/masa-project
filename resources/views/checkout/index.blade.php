@@ -3,77 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ __('Checkout') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url('assets/css/customer/checkout.css') }}">
 
+    <!-- Tabby Scripts -->
+    <script src="https://checkout-web-components.checkout.com/index.js"></script>
+    <script src="https://checkout.tabby.ai/tabby-promo.js"></script>
+
+    <!-- تجهيز بيانات الكوبون والسلة -->
+    <script>
+        // تجهيز متغيرات السلة والكوبون لتكون متاحة للملف الخارجي
+        window.cartData = {
+            subtotal: {{ $cart->total_amount }},
+            totalAmount: {{ $cart->total_amount }}
+        };
+
+        @if(session('coupon'))
+        window.sessionCoupon = {
+            coupon: {
+                code: "{{ session('coupon')->code }}",
+                type: "{{ session('coupon')->discount_type }}",
+                value: "{{ session('coupon')->discount_value }}"
+            },
+            discount_amount: {{ session('coupon')->calculateDiscount($cart->total_amount) }},
+            message: "تم تطبيق كود الخصم",
+            valid: true
+        };
+        @else
+        window.sessionCoupon = null;
+        @endif
+    </script>
+
+    <!-- JavaScript للتعامل مع الدفع والكوبونات -->
+    <script src="{{ asset('assets/js/customer/checkout.js') }}?t={{ time() }}"></script>
+
     <style>
-        /* Payment Method Styles */
-        .payment-methods {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .payment-method-option {
-            position: relative;
-        }
-
-        .payment-method-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .payment-method-label {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 2px solid #e1e1e1;
+        /* Coupon Section Styles */
+        .coupon-section {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 1px dashed #ddd;
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 15px;
+            background-color: #f9f9f9;
         }
 
-        .payment-method-option input[type="radio"]:checked + .payment-method-label {
-            border-color: #21B3B0;
-            background-color: rgba(33, 179, 176, 0.05);
-        }
-
-        .payment-icon {
+        .coupon-form {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            margin-left: 15px;
-            background-color: rgba(33, 179, 176, 0.15);
-            color: #21B3B0;
-            border-radius: 50%;
-            font-size: 18px;
+            gap: 10px;
         }
 
-        .payment-label {
-            font-weight: 600;
-            font-size: 16px;
-            flex: 1;
+        .coupon-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
         }
 
-        .payment-cards {
+        .apply-coupon-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .apply-coupon-btn:hover {
+            background-color: #45a049;
+        }
+
+        .coupon-error {
+            color: #d9534f;
+            margin-top: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .coupon-success {
+            color: #4CAF50;
+            margin-top: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .applied-coupon {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            border-right: 3px solid #4CAF50;
+            display: none;
+        }
+
+        .applied-coupon .coupon-details {
             display: flex;
-            gap: 5px;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .payment-cards img {
-            height: 24px;
-            width: auto;
+        .applied-coupon .coupon-code {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .applied-coupon .coupon-discount {
+            font-weight: bold;
+        }
+
+        .applied-coupon .remove-coupon {
+            color: #d9534f;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .price-breakdown {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .price-row.total {
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #ddd;
+        }
+
+        .discount-value {
+            color: #d9534f;
+        }
+
+        .loading .apply-coupon-btn {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading .apply-coupon-btn::after {
+            content: "...";
+            display: inline-block;
+            animation: loading-dots 1s infinite;
+        }
+
+        @keyframes loading-dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60%, 100% { content: "..."; }
         }
     </style>
-
 </head>
 <body class="checkout-container">
     <!-- Header -->
@@ -92,6 +186,12 @@
     <div class="checkout-content">
         <div class="container">
             <div class="checkout-wrapper">
+                <!-- Tabby Top Banner -->
+                <div class="tabby-top-banner">
+                    <h3>🔥 قسّم مشترياتك على 4 دفعات شهرية بدون فوائد!</h3>
+                    <p>ادفع <strong>{{ number_format($cart->total_amount / 4, 2) }} ريال</strong> اليوم والباقي لاحقاً. اختر <strong>طريقة الدفع مع تابي</strong> عند الدفع.</p>
+                </div>
+
                 <form action="{{ route('checkout.store') }}" method="POST" id="checkout-form">
                     @csrf
 
@@ -107,7 +207,7 @@
 
                     <div class="checkout-grid">
                         <!-- Bank Information -->
-                        <div class="bank-info-section">
+                        <div class="bank-info-section" id="bank-info-section">
                             <div class="bank-info-header">
                                 <i class="fas fa-info-circle"></i>
                                 <h3>معلومات الدفع</h3>
@@ -218,6 +318,71 @@
                                     <h4>الإجمالي الكلي:</h4>
                                     <span class="total-amount">{{ $cart->total_amount }} ريال</span>
                                 </div>
+
+                                <!-- Coupon Section -->
+                                <div class="coupon-section">
+                                    <h4>هل لديك كوبون خصم؟</h4>
+                                    <div class="coupon-form" id="coupon-form">
+                                        <input type="text" name="coupon_code" id="coupon-input" class="coupon-input" placeholder="أدخل كود الخصم" value="{{ session('coupon_code') }}">
+                                        <button type="button" class="apply-coupon-btn" id="apply-coupon-btn">تطبيق</button>
+                                    </div>
+                                    <p class="coupon-error" id="coupon-error">كود الخصم غير صالح، الرجاء التأكد من الكود وإعادة المحاولة.</p>
+                                    <p class="coupon-success" id="coupon-success"></p>
+
+                                    <div class="coupon-not-applicable" id="coupon-not-applicable" @if(session('coupon_error') === 'هذا الكوبون لا ينطبق على المنتجات الموجودة في السلة') style="display: flex;" @else style="display: none;" @endif>
+                                        <div class="coupon-not-applicable-icon">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                        </div>
+                                        <div class="coupon-not-applicable-text">
+                                            هذا الكوبون لا ينطبق على المنتجات الموجودة في السلة
+                                        </div>
+                                        <div class="coupon-not-applicable-close" id="close-not-applicable">
+                                            <i class="fas fa-times"></i>
+                                        </div>
+                                    </div>
+
+                                    <div class="applied-coupon" id="applied-coupon">
+                                        <div class="coupon-details">
+                                            <div>
+                                                <span>الكوبون المطبق:</span>
+                                                <span class="coupon-code" id="applied-coupon-code"></span>
+                                            </div>
+                                            <div>
+                                                <span>قيمة الخصم:</span>
+                                                <span class="coupon-discount" id="coupon-discount-value"></span>
+                                            </div>
+                                            <div>
+                                                <span class="remove-coupon" id="remove-coupon">إلغاء الكوبون <i class="fas fa-times"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="price-breakdown" id="price-breakdown">
+                                        <div class="price-row">
+                                            <span>المجموع الفرعي:</span>
+                                            <span id="subtotal-value">{{ number_format($cart->total_amount, 2) }} ريال</span>
+                                        </div>
+                                        <div class="price-row" id="discount-row" style="display: none;">
+                                            <span>الخصم:</span>
+                                            <span class="discount-value" id="discount-amount">- 0 ريال</span>
+                                        </div>
+                                        <div class="price-row total">
+                                            <span>الإجمالي النهائي:</span>
+                                            <span id="final-price">{{ number_format($cart->total_amount, 2) }} ريال</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- معلومات التقسيط البارزة -->
+                                <div class="order-summary-installment-notice">
+                                    <i class="fas fa-tags"></i>
+                                    <p>قسّم الدفع على 4 دفعات شهرية! <strong>{{ number_format($cart->total_amount / 4, 2) }} ريال</strong> فقط كل شهر مع <strong>تابي</strong></p>
+                                </div>
+
+                                <!-- Tabby Widget - بيان التقسيط -->
+                                <div class="tabby-widget-container">
+                                    <div id="tabby-promotional-widget"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -273,13 +438,58 @@
                                                 <span class="payment-icon"><i class="fas fa-credit-card"></i></span>
                                                 <span class="payment-label">الدفع الإلكتروني</span>
                                                 <div class="payment-cards">
-                                                    <img src="{{ asset('assets/images/payments/visa.png') }}" alt="Visa">
-                                                    <img src="{{ asset('assets/images/payments/mastercard.png') }}" alt="MasterCard">
-                                                    <img src="{{ asset('assets/images/payments/mada.png') }}" alt="Mada">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/800px-Visa_Inc._logo.svg.png" alt="Visa">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/800px-Mastercard-logo.svg.png" alt="MasterCard">
+                                                    <img src="https://th.bing.com/th/id/OIP.9ADTezVNvnBgWFT1QtrosAHaHa?rs=1&pid=ImgDetMain" alt="Mada">
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="payment-method-option">
+                                            <input type="radio" name="payment_method" id="payment_tabby" value="tabby"
+                                                {{ old('payment_method') == 'tabby' ? 'checked' : '' }}>
+                                            <label for="payment_tabby" class="payment-method-label tabby-shimmer">
+                                                <span class="payment-icon"><i class="fas fa-shopping-bag"></i></span>
+                                                <span class="payment-label">
+                                                    <span class="new-badge">جديد!</span>
+                                                    التقسيط مع تابي
+                                                </span>
+                                                <div class="payment-cards">
+                                                    <img src="https://th.bing.com/th/id/OIP.MYBQ1iOEIlhyysL0Y3eh4wHaFG?rs=1&pid=ImgDetMain" alt="Tabby" style="height: 30px;">
                                                 </div>
                                             </label>
                                         </div>
                                     </div>
+
+                                    <!-- Tabby Container -->
+                                    <div id="tabby-container">
+                                        <div class="tabby-promo">
+                                            <img src="https://th.bing.com/th/id/OIP.MYBQ1iOEIlhyysL0Y3eh4wHaFG?rs=1&pid=ImgDetMain" alt="Tabby" class="tabby-logo">
+                                            <p>قسّم مشترياتك على 4 دفعات بدون فوائد ورسوم إضافية.</p>
+                                        </div>
+                                        <div class="tabby-info">
+                                            <h4>كيف يعمل التقسيط مع تابي:</h4>
+                                            <ul>
+                                                <li>ادفع ربع المبلغ الآن ({{ number_format($cart->total_amount / 4, 2) }} ريال)</li>
+                                                <li>ادفع الباقي على 3 أقساط شهرية ({{ number_format($cart->total_amount / 4, 2) }} ريال كل شهر)</li>
+                                                <li>لا توجد فوائد أو رسوم إضافية</li>
+                                                <li>لا تحتاج إلى بطاقة ائتمان</li>
+                                            </ul>
+                                            <p>سيتم تحويلك إلى موقع تابي لإتمام عملية الدفع بأمان</p>
+                                        </div>
+
+                                        <!-- Tabby Product Widget - للمنتج الحالي -->
+                                        <div id="tabby-product-widget"></div>
+
+                                        <div class="tabby-disclaimer">
+                                            <strong>ملاحظة هامة:</strong> خدمة التقسيط متاحة للعملاء المؤهلين وتخضع لموافقة شركة تابي. يجب أن يكون عمر العميل 18 عاماً أو أكثر ويمتلك رقم هاتف سعودي وبطاقة مصرفية صالحة.
+                                        </div>
+
+                                        <figure class="tabby-example">
+                                            <img src="https://mintlify.s3.us-west-1.amazonaws.com/tabby-5f40add6/images/tabby-payment-method.png" alt="شاشة تابي" />
+                                            <figcaption>صورة توضيحية لشاشة الدفع عبر تابي - ستجد خطوات سهلة ومباشرة في عملية الدفع</figcaption>
+                                        </figure>
+                                    </div>
+
                                     @error('payment_method')
                                     <p class="error-message">{{ $message }}</p>
                                     @enderror
@@ -331,51 +541,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('checkout-form').addEventListener('submit', function(e) {
-            this.classList.add('loading');
-        });
-
-        // Copy functionality
-        document.querySelectorAll('.copy-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const textToCopy = this.getAttribute('data-clipboard');
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    // Visual feedback
-                    this.classList.add('copied');
-                    const originalIcon = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-check"></i>';
-
-                    setTimeout(() => {
-                        this.classList.remove('copied');
-                        this.innerHTML = originalIcon;
-                    }, 2000);
-                });
-            });
-        });
-
-        // Add JavaScript to update the button text based on payment method
-        document.addEventListener('DOMContentLoaded', function() {
-            const cashRadio = document.getElementById('payment_cash');
-            const onlineRadio = document.getElementById('payment_online');
-            const submitBtn = document.getElementById('submitBtn');
-
-            function updateButtonText() {
-                if (onlineRadio.checked) {
-                    submitBtn.innerHTML = '<i class="fas fa-credit-card me-2"></i> متابعة للدفع الإلكتروني';
-                } else {
-                    submitBtn.innerHTML = 'تأكيد الطلب';
-                }
-            }
-
-            // Initialize button text
-            updateButtonText();
-
-            // Update button text when payment method changes
-            cashRadio.addEventListener('change', updateButtonText);
-            onlineRadio.addEventListener('change', updateButtonText);
-        });
-    </script>
 </body>
 </html>

@@ -35,12 +35,12 @@ return [
         ],
     ],
 
-    'paytabs' => [
-        'profile_id' => env('PAYTABS_PROFILE_ID'),
-        'server_key' => env('PAYTABS_SERVER_KEY'),
-        'client_key' => env('PAYTABS_CLIENT_KEY'),
-        'currency' => env('PAYTABS_CURRENCY', 'SAR'),
-        'is_sandbox' => true,
+    'tabby' => [
+        'public_key' => env('TABBY_PUBLIC_KEY', 'pk_test_019562bf-5ee2-179a-87bf-fc8980809a0d'),
+        'secret_key' => env('TABBY_SECRET_KEY', 'sk_test_019562bf-5ee2-179a-87bf-fc89af2f0748'),
+        'merchant_code' => env('TABBY_MERCHANT_CODE', 'lenssoma'),
+        'currency' => env('TABBY_CURRENCY', 'SAR'),
+        'is_sandbox' => env('TABBY_IS_SANDBOX', true),
     ],
 
     'firebase' => [

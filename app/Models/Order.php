@@ -33,22 +33,27 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'total_amount',
+        'subtotal',
+        'discount_amount',
+        'coupon_id',
+        'coupon_code',
         'shipping_address',
         'phone',
         'payment_method',
         'payment_status',
+        'payment_transaction_id',
+        'payment_id',
         'order_status',
         'notes',
         'policy_agreement',
-        'uuid',
-        'order_number',
-        'payment_transaction_id',
-        'payment_id',
-        'amount_paid',
+        'amount_paid'
     ];
 
     protected $casts = [
-        'total_amount' => 'integer'
+        'total_amount' => 'float',
+        'subtotal' => 'float',
+        'discount_amount' => 'float',
+        'amount_paid' => 'float'
     ];
 
     protected static function boot()
@@ -69,6 +74,30 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * Get the coupon associated with the order.
+     */
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+
+    /**
+     * Get the formatted discount amount.
+     */
+    public function getFormattedDiscountAttribute()
+    {
+        return number_format($this->discount_amount, 2) . ' ر.س';
+    }
+
+    /**
+     * Get the formatted subtotal amount.
+     */
+    public function getFormattedSubtotalAttribute()
+    {
+        return number_format($this->subtotal, 2) . ' ر.س';
     }
 
     // Helper methods for status checks

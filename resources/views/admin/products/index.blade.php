@@ -188,5 +188,5 @@
 @endsection
 
 @section('styles')
-<link rel="stylesheet" href="/assets/css/admin/products.css">
+<link rel="stylesheet" href="{{ asset('assets/css/admin/products.css') }}?t={{ time() }}">
 @endsection

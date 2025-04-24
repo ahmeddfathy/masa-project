@@ -2,8 +2,10 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <div class="logo-container">
-                    <img src="/assets/images/logo.png" alt="عدسة سوما">
+                <div class="d-flex align-items-center">
+                    <div class="logo-container me-4">
+                        <img src="/assets/images/logo.png" alt="عدسة سوما">
+                    </div>
                 </div>
                 <p>نوثق لحظاتكم الجميلة بلمسة فنية مميزة</p>
             </div>
@@ -12,7 +14,6 @@
                 <p>
                     <i class="fas fa-phone"></i> +966561667885<br>
                     <i class="fas fa-envelope"></i> lens_soma@outlook.sa
-
                 </p>
             </div>
             <div class="col-md-4">
@@ -25,6 +26,9 @@
         </div>
         <div class="text-center mt-4">
             <p>&copy; {{ date('Y') }} عدسة سوما. جميع الحقوق محفوظة</p>
+            <div class="mada-logo mx-auto mt-3">
+                <img src="/assets/images/mada.png" alt="مدى" style="width: 100%; height: auto; object-fit: contain;">
+            </div>
         </div>
     </div>
 </footer>

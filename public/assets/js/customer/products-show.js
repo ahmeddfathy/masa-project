@@ -692,7 +692,9 @@ function toggleCart() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    loadCartItems();
+    if (document.body.classList.contains('user-logged-in')) {
+        loadCartItems();
+    }
 
     document.getElementById('closeCart').addEventListener('click', closeCart);
     document.getElementById('cartToggle').addEventListener('click', toggleCart);

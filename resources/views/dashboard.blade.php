@@ -3,7 +3,7 @@
 @section('title', 'لوحة التحكم')
 
 @section('styles')
-<link rel="stylesheet" href="{{ asset('assets/css/customer/dashboard.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/customer/dashboard.css') }}?t={{ time() }}">
 @endsection
 
 @section('content')

@@ -161,5 +161,5 @@
 @endsection
 
 @section('styles')
-    <link rel="stylesheet" href="/assets/css/admin/bookings.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/admin/bookings.css') }}?t={{ time() }}">
 @endsection

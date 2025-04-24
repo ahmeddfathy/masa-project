@@ -9,39 +9,13 @@ use Illuminate\Support\Facades\Log;
 
 class PaytabsService
 {
-    /**
-     * معرف الملف الشخصي لباي تابز
-     */
     protected $profileId;
-
-    /**
-     * مفتاح الخادم لباي تابز
-     */
     protected $serverKey;
-
-    /**
-     * العملة الافتراضية
-     */
     protected $currency;
-
-    /**
-     * وضع الاختبار
-     */
     protected $isSandbox;
-
-    /**
-     * عدد المحاولات الأقصى
-     */
     protected $maxRetries = 3;
-
-    /**
-     * رابط API لباي تابز
-     */
     protected $apiUrl = 'https://secure-egypt.paytabs.com';
 
-    /**
-     * إنشاء كائن جديد من خدمة باي تابز
-     */
     public function __construct()
     {
         $this->profileId = config('services.paytabs.profile_id');
@@ -50,14 +24,6 @@ class PaytabsService
         $this->isSandbox = config('services.paytabs.is_sandbox');
     }
 
-    /**
-     * إنشاء طلب دفع جديد
-     *
-     * @param array $bookingData بيانات الحجز
-     * @param float $amount المبلغ المطلوب دفعه
-     * @param array $customerData بيانات العميل
-     * @return array استجابة بوابة الدفع
-     */
     public function createPaymentRequest(array $bookingData, float $amount, array $customerData): array
     {
         $paymentId = $bookingData['payment_id'];
@@ -83,12 +49,6 @@ class PaytabsService
         return $this->sendRequest('/payment/request', $paymentData);
     }
 
-    /**
-     * الاستعلام عن حالة معاملة
-     *
-     * @param string $tranRef مرجع المعاملة
-     * @return array استجابة الاستعلام
-     */
     public function queryTransaction(string $tranRef): array
     {
         $data = [
@@ -99,13 +59,6 @@ class PaytabsService
         return $this->sendRequest('/payment/query', $data);
     }
 
-    /**
-     * إرسال طلب إلى واجهة برمجة تطبيقات باي تابز
-     *
-     * @param string $endpoint نقطة النهاية
-     * @param array $data البيانات المرسلة
-     * @return array استجابة الطلب
-     */
     private function sendRequest(string $endpoint, array $data): array
     {
         $attempt = 1;
@@ -150,7 +103,7 @@ class PaytabsService
             }
 
             if ($attempt < $this->maxRetries) {
-                sleep(pow(2, $attempt - 1)); // Exponential backoff
+                sleep(pow(2, $attempt - 1));
             }
             $attempt++;
         }
@@ -162,12 +115,6 @@ class PaytabsService
         ];
     }
 
-    /**
-     * استخراج بيانات الدفع من الطلب
-     *
-     * @param Request $request الطلب الحالي
-     * @return array بيانات الدفع
-     */
     public function extractPaymentData(Request $request): array
     {
         $paymentData = [
@@ -182,12 +129,6 @@ class PaytabsService
         return $paymentData;
     }
 
-    /**
-     * التحقق من حالة الدفع وتحديث البيانات
-     *
-     * @param array $paymentData بيانات الدفع الأولية
-     * @return array بيانات الدفع المحدثة
-     */
     public function verifyPaymentStatus(array $paymentData): array
     {
         if (!empty($paymentData['tranRef'])) {
@@ -208,12 +149,6 @@ class PaytabsService
         return $paymentData;
     }
 
-    /**
-     * التحقق إذا كانت حالة الدفع ناجحة
-     *
-     * @param string|null $status حالة الدفع
-     * @return bool
-     */
     private function isSuccessfulStatus($status): bool
     {
         $successStatuses = [
@@ -224,12 +159,6 @@ class PaytabsService
         return in_array($status, $successStatuses, true);
     }
 
-    /**
-     * التحقق إذا كانت حالة الدفع معلقة
-     *
-     * @param string|null $status حالة الدفع
-     * @return bool
-     */
     private function isPendingStatus($status): bool
     {
         $pendingStatuses = [
@@ -239,12 +168,6 @@ class PaytabsService
         return in_array($status, $pendingStatuses, true);
     }
 
-    /**
-     * تحضير بيانات العميل للدفع
-     *
-     * @param array $user بيانات المستخدم
-     * @return array بيانات العميل منسقة
-     */
     public function prepareCustomerDetails(array $user): array
     {
         return [

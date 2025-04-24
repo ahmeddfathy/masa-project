@@ -325,20 +325,53 @@ footer .text-center p {
 /* Footer Logo */
 footer .logo-container {
     background: white;
-    border-radius: 50%;
-    width: 100px;
-    height: 100px;
+    border-radius: 15px;
+    padding: 10px 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 5px;
-    margin-bottom: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+    max-width: 200px;
+    margin-bottom: 0;
 }
 
 footer .logo-container img {
     max-width: 100%;
     height: auto;
+    max-height: 120px;
     object-fit: contain;
+}
+
+footer .logo-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Mada Logo Styling */
+footer .mada-logo {
+    background: white;
+    border-radius: 0px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+    max-width: 90px;
+    margin: 0 auto;
+    height: 50px;
+}
+
+footer .mada-logo img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+footer .mada-logo:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 @media (max-width: 768px) {

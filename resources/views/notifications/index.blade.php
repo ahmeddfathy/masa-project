@@ -4,7 +4,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="/assets/css/customer/notifications.css">
+<link rel="stylesheet" href="{{ asset('assets/css/customer/notifications.css') }}?t={{ time() }}">
 @endsection
 
 @section('content')

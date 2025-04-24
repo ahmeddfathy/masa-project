@@ -3,7 +3,7 @@
 @section('title', 'حجوزاتي')
 
 @section('styles')
-<link rel="stylesheet" href="/assets/css/booking/my-bookings.css">
+<link rel="stylesheet" href="{{ asset('assets/css/booking/my-bookings.css') }}?t={{ time() }}">
 @endsection
 
 @section('content')

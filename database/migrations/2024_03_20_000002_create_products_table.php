@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
-            $table->integer('price');
             $table->integer('stock')->default(0);
             $table->timestamps();
             $table->softDeletes();

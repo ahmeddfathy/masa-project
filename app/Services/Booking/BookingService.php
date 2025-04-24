@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\Package;
 use App\Models\PackageAddon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 use App\Services\Booking\PackageService;
 use App\Services\Booking\GalleryService;
@@ -88,9 +89,19 @@ class BookingService
      * @param array $data بيانات الحجز
      * @param float $totalAmount التكلفة الإجمالية
      * @param int $userId معرف المستخدم
+     * @param float $discountAmount مبلغ الخصم (اختياري)
+     * @param int|null $couponId معرف الكوبون (اختياري)
+     * @param string|null $couponCode كود الكوبون (اختياري)
      * @return Booking
      */
-    public function createBooking(array $data, float $totalAmount, int $userId): Booking
+    public function createBooking(
+        array $data,
+        float $totalAmount,
+        int $userId,
+        float $discountAmount = 0,
+        ?int $couponId = null,
+        ?string $couponCode = null
+    ): Booking
     {
         $booking = Booking::create([
             'user_id' => $userId,
@@ -103,10 +114,15 @@ class BookingService
             'gender' => $data['gender'],
             'notes' => $data['notes'],
             'total_amount' => $totalAmount,
-            'status' => 'pending',
+            'status' => $data['status'] ?? 'pending',
             'booking_date' => now(),
             'image_consent' => $data['image_consent'],
             'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'payment_status' => $data['payment_status'] ?? 'pending',
+            'payment_method' => $data['payment_method'] ?? null,
+            'discount_amount' => $discountAmount,
+            'coupon_id' => $couponId,
+            'coupon_code' => $couponCode,
         ]);
 
         if (!empty($data['addons'])) {
@@ -120,7 +136,7 @@ class BookingService
             // إرسال إشعار للمستخدم
             $booking->user->notify(new BookingConfirmation($booking));
         } catch (\Exception $e) {
-            \Log::error('فشل في إرسال إشعار الحجز:', [
+            Log::error('فشل في إرسال إشعار الحجز:', [
                 'booking_id' => $booking->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()

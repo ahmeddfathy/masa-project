@@ -295,5 +295,5 @@
 @endsection
 
 @section('styles')
-<link rel="stylesheet" href="/assets/css/admin/appointments.css">
+<link rel="stylesheet" href="{{ asset('assets/css/admin/appointments.css') }}?t={{ time() }}">
 @endsection

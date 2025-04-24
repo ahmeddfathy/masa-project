@@ -4,7 +4,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-<link rel="stylesheet" href="/assets/css/customer/cart.css">
+<link rel="stylesheet" href="{{ asset('assets/css/customer/cart.css') }}?t={{ time() }}">
 <style>
   .appointment-alert {
     border-right: 4px solid #ffc107;
@@ -179,7 +179,7 @@
 @endsection
 
 @section('scripts')
-<script src="/assets/js/customer/products-show.js"></script>
+<script src="{{ asset('assets/js/customer/products-show.js') }}?t={{ time() }}"></script>
 <script>
 function showAlert(message, type = 'success') {
     const alertsContainer = document.getElementById('alerts-container');

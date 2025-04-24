@@ -48,7 +48,7 @@ class BookingController extends Controller
     public function updateStatus(Request $request, Booking $booking)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,completed,cancelled,no_show,rescheduled'
+            'status' => 'required|in:pending,confirmed,completed,cancelled'
         ]);
 
         // حفظ الحالة القديمة للمقارنة
@@ -68,8 +68,6 @@ class BookingController extends Controller
                 'confirmed' => 'مؤكد',
                 'completed' => 'مكتمل',
                 'cancelled' => 'ملغي',
-                'no_show' => 'لم يحضر',
-                'rescheduled' => 'معاد جدولته',
                 default => $validated['status']
             };
 

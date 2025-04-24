@@ -177,6 +177,26 @@ class ProductService
     public function getProductDetails(Product $product)
     {
         $priceRange = $product->getPriceRange();
+        $applicableCoupons = $this->getApplicableCouponsForProduct($product);
+
+        $bestCoupon = null;
+        $discountedPrice = null;
+
+        if (!empty($applicableCoupons)) {
+            $bestCoupon = $this->getBestCouponForProduct($product, $applicableCoupons);
+
+            if ($bestCoupon) {
+                $minPrice = $priceRange['min'];
+
+                if ($bestCoupon['type'] === 'percentage') {
+                    $discountAmount = $minPrice * ($bestCoupon['value'] / 100);
+                } else {
+                    $discountAmount = min($bestCoupon['value'], $minPrice);
+                }
+
+                $discountedPrice = $minPrice - $discountAmount;
+            }
+        }
 
         return [
             'id' => $product->id,
@@ -222,8 +242,94 @@ class ProductService
                 'allow_size_selection' => $product->allow_size_selection,
                 'allow_appointment' => $product->allow_appointment,
                 'enable_quantity_pricing' => $product->enable_quantity_pricing
-            ]
+            ],
+            'has_coupon' => $bestCoupon !== null,
+            'best_coupon' => $bestCoupon,
+            'discounted_price' => $discountedPrice
         ];
+    }
+
+    /**
+     * الحصول على الكوبونات المتاحة للمنتج
+     *
+     * @param Product $product
+     * @return array
+     */
+    protected function getApplicableCouponsForProduct(Product $product): array
+    {
+        $now = now();
+
+        $coupons = \App\Models\Coupon::where('is_active', true)
+            ->where('applies_to_products', true)
+            ->where(function($query) use ($now) {
+                $query->whereNull('starts_at')
+                      ->orWhere('starts_at', '<=', $now);
+            })
+            ->where(function($query) use ($now) {
+                $query->whereNull('expires_at')
+                      ->orWhere('expires_at', '>=', $now);
+            })
+            ->where(function($query) {
+                $query->whereNull('max_uses')
+                      ->orWhereRaw('used_count < max_uses');
+            })
+            ->where(function($query) use ($product) {
+                // الكوبونات التي تنطبق على جميع المنتجات
+                $query->where('applies_to_all_products', true)
+                // أو الكوبونات المرتبطة بهذا المنتج تحديداً
+                ->orWhereHas('products', function($q) use ($product) {
+                    $q->where('products.id', $product->id);
+                });
+            })
+            ->get();
+
+        $applicableCoupons = [];
+
+        foreach ($coupons as $coupon) {
+            $minPrice = $product->getPriceRange()['min'];
+
+            // التحقق من الحد الأدنى للطلب
+            if ($minPrice >= $coupon->min_order_amount) {
+                $discountAmount = 0;
+
+                if ($coupon->type === 'percentage') {
+                    $discountAmount = round($minPrice * ($coupon->value / 100), 2);
+                } else {
+                    $discountAmount = min($coupon->value, $minPrice);
+                }
+
+                $applicableCoupons[] = [
+                    'id' => $coupon->id,
+                    'code' => $coupon->code,
+                    'type' => $coupon->type,
+                    'value' => $coupon->value,
+                    'discount_amount' => $discountAmount,
+                    'final_price' => $minPrice - $discountAmount
+                ];
+            }
+        }
+
+        return $applicableCoupons;
+    }
+
+    /**
+     * الحصول على أفضل كوبون للمنتج (الذي يعطي أكبر خصم)
+     *
+     * @param Product $product
+     * @param array $coupons
+     * @return array|null
+     */
+    protected function getBestCouponForProduct(Product $product, array $coupons): ?array
+    {
+        if (empty($coupons)) {
+            return null;
+        }
+
+        usort($coupons, function($a, $b) {
+            return $b['discount_amount'] <=> $a['discount_amount'];
+        });
+
+        return $coupons[0];
     }
 
     public function getRelatedProducts(Product $product)

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            //
+        Schema::table('coupons', function (Blueprint $table) {
+            $table->boolean('applies_to_products')->default(true)->after('applies_to_all_products');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            //
+        Schema::table('coupons', function (Blueprint $table) {
+            $table->dropColumn('applies_to_products');
         });
     }
 };

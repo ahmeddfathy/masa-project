@@ -3,7 +3,8 @@
 @section('title', 'تفاصيل الحجز')
 
 @section('styles')
-<link rel="stylesheet" href="/assets/css/booking/show.css">
+<link rel="stylesheet" href="{{ asset('assets/css/booking/show.css') }}?t={{ time() }}">
+
 @endsection
 
 @section('content')

@@ -12,10 +12,10 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/index.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/responsive.css">
-    <link rel="stylesheet" href="/assets/css/customer/policy.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/index.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/customer/policy.css') }}?t={{ time() }}">
 </head>
 <body>
     @include('parts.navbar')

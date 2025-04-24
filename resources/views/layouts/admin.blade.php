@@ -10,7 +10,44 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/admin/admin-layout.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/admin/admin-layout.css') }}?t={{ time() }}">
+
+    <!-- Toast Notification Styles -->
+    <style>
+        .toast-container {
+            z-index: 9999;
+        }
+        .toast {
+            min-width: 300px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border: none;
+            opacity: 1;
+        }
+        .toast.error-toast .toast-header {
+            background-color: #dc3545;
+            color: white;
+        }
+        .toast.success-toast .toast-header {
+            background-color: #198754;
+            color: white;
+        }
+        .toast .toast-body {
+            background-color: #fff;
+            border-radius: 0 0 0.375rem 0.375rem;
+        }
+        .toast .toast-body ul {
+            margin-bottom: 0;
+            padding-right: 1rem;
+            padding-left: 0;
+        }
+        .toast .toast-body ul li {
+            margin-bottom: 0.25rem;
+        }
+        .toast .btn-close:focus {
+            box-shadow: none;
+        }
+    </style>
+
     @yield('styles')
 </head>
 <body class="h-100">
@@ -22,7 +59,7 @@
         <aside class="sidebar shadow-sm" id="sidebar">
             <div class="sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
-                    <img src="/assets/images/logo.png" alt="لوحة التحكم">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="لوحة التحكم">
                 </a>
             </div>
 
@@ -176,7 +213,7 @@
                 <div class="container-fluid">
                     <div class="d-flex align-items-center">
                         <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
-                            <img src="/assets/images/logo.png" alt="لوحة التحكم">
+                            <img src="{{ asset('assets/images/logo.png') }}" alt="لوحة التحكم">
                             <span class="ms-2">@yield('page_title', 'لوحة التحكم')</span>
                         </a>
                     </div>
@@ -217,6 +254,55 @@
         </main>
     </div>
 
+    <!-- Toast Notifications Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <!-- Validation Errors Toast -->
+        @if ($errors->any())
+        <div class="toast error-toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong class="me-auto">خطأ</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <ul class="mb-0 ps-3">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+        @endif
+
+        <!-- Success Toast -->
+        @if (session('success'))
+        <div class="toast success-toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">تم بنجاح</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ session('success') }}
+            </div>
+        </div>
+        @endif
+
+        <!-- Error Toast -->
+        @if (session('error'))
+        <div class="toast error-toast show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-danger text-white">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong class="me-auto">خطأ</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                {{ session('error') }}
+            </div>
+        </div>
+        @endif
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -239,6 +325,31 @@
             if (window.innerWidth >= 992 && sidebar.classList.contains('active')) {
                 toggleSidebar();
             }
+        });
+
+        // Initialize toasts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss toasts after 5 seconds
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(function(toast) {
+                setTimeout(function() {
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast._element.addEventListener('hidden.bs.toast', function() {
+                        toast.remove();
+                    });
+                    bsToast.hide();
+                }, 5000);
+            });
+
+            // Initialize toasts with close button functionality
+            const closeButtons = document.querySelectorAll('.toast .btn-close');
+            closeButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const toast = this.closest('.toast');
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.hide();
+                });
+            });
         });
     </script>
     @yield('scripts')

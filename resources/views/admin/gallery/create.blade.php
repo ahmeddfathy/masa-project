@@ -88,6 +88,6 @@
 @endpush
 
 @section('styles')
-    <link rel="stylesheet" href="/assets/css/admin/gallery.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/admin/gallery.css') }}?t={{ time() }}">
 @endsection
 @endsection

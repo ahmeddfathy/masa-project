@@ -7,9 +7,44 @@
     <title>{{ $product->name }} - lens-soma</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/assets/css/customer/products-show.css">
-    <link rel="stylesheet" href="/assets/css/customer/products.css">
-    <link rel="stylesheet" href="/assets/css/customer/quantity-pricing.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/customer/products-show.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/customer/products.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/customer/quantity-pricing.css') }}?t={{ time() }}">
+
+    <style>
+        /* أنماط السعر والكوبون */
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            margin-right: 5px;
+            display: inline-block;
+        }
+
+        .new-price {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-right: 5px;
+            font-size: 1.2rem;
+            display: inline-block;
+        }
+
+        .coupon-label {
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
     <!-- Fixed Buttons Group -->
@@ -32,7 +67,7 @@
     <nav class="navbar navbar-expand-lg glass-navbar sticky-top">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <img src="/assets/images/logo.png" alt="Madil" height="70">
+                <img src="{{ asset('assets/images/logo.png') }}" alt="Madil" height="70">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -152,11 +187,29 @@
                     <div class="price-container">
                         <div class="product-price">
                             @if($product->min_price == $product->max_price)
-                                <span class="amount">{{ number_format($product->min_price, 2) }}</span>
-                                <span class="currency">ر.س</span>
+                                @if(isset($product->best_coupon))
+                                    <span class="old-price">{{ number_format($product->min_price, 2) }} ر.س</span>
+                                    <span class="new-price">{{ number_format($product->discounted_price, 2) }} ر.س</span>
+                                    <div class="coupon-label">
+                                        <i class="fas fa-ticket-alt"></i>
+                                        كوبون: {{ $product->best_coupon['code'] }}
+                                    </div>
+                                @else
+                                    <span class="amount">{{ number_format($product->min_price, 2) }}</span>
+                                    <span class="currency">ر.س</span>
+                                @endif
                             @else
-                                <span class="amount">{{ number_format($product->min_price, 2) }} - {{ number_format($product->max_price, 2) }}</span>
-                                <span class="currency">ر.س</span>
+                                @if(isset($product->best_coupon))
+                                    <span class="old-price">{{ number_format($product->min_price, 2) }} - {{ number_format($product->max_price, 2) }} ر.س</span>
+                                    <span class="new-price">{{ number_format($product->discounted_price, 2) }} ر.س</span>
+                                    <div class="coupon-label">
+                                        <i class="fas fa-ticket-alt"></i>
+                                        كوبون: {{ $product->best_coupon['code'] }}
+                                    </div>
+                                @else
+                                    <span class="amount">{{ number_format($product->min_price, 2) }} - {{ number_format($product->max_price, 2) }}</span>
+                                    <span class="currency">ر.س</span>
+                                @endif
                             @endif
                         </div>
                     </div>
@@ -599,6 +652,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/assets/js/customer/products-show.js"></script>
+    <script src="{{ asset('assets/js/customer/products-show.js') }}?t={{ time() }}"></script>
 </body>
 </html>

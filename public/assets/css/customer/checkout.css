@@ -34,6 +34,10 @@
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
+    --tabby-primary: #FFCB05;
+    --tabby-bg: #FFF9E5;
+    --tabby-border: #FFCA28;
+    --tabby-text: #333333;
 }
 
 /* Common Styles */
@@ -337,63 +341,67 @@
 }
 
 /* Payment Method Styles */
-.payment-method {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin-top: 0.75rem;
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    margin-top: 10px;
 }
 
-.radio-group {
+.payment-method-option {
     position: relative;
-    padding: 1.25rem;
+}
+
+.payment-method-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.payment-method-label {
+    display: flex;
+    align-items: center;
+    padding: 15px;
     border: 2px solid var(--border-color);
     border-radius: var(--radius-md);
     cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-method-option input[type="radio"]:checked + .payment-method-label {
+    border-color: var(--primary-color);
+    background-color: rgba(255, 20, 147, 0.05);
+}
+
+.payment-icon {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    transition: all 0.4s ease;
-    background: white;
-}
-
-.radio-group:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 8px 20px rgba(255, 20, 147, 0.12);
-}
-
-.radio-group input[type="radio"] {
-    width: 1.25rem;
-    height: 1.25rem;
-    border: 2px solid var(--border-color);
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-left: 15px;
+    background-color: rgba(255, 20, 147, 0.15);
+    color: var(--primary-color);
     border-radius: 50%;
-    transition: all 0.3s ease;
-    position: relative;
-    margin: 0;
+    font-size: 18px;
 }
 
-.radio-group input[type="radio"]:checked {
-    border-color: var(--primary-color);
-    background-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.2);
-}
-
-.radio-group input[type="radio"]:checked::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 0.5rem;
-    height: 0.5rem;
-    background: white;
-    border-radius: 50%;
-}
-
-.radio-group span {
+.payment-label {
     font-weight: 600;
-    color: var(--heading-color);
-    font-size: 1rem;
+    font-size: 16px;
+    flex: 1;
+}
+
+.payment-cards {
+    display: flex;
+    gap: 5px;
+}
+
+.payment-cards img {
+    height: 24px;
+    width: auto;
 }
 
 /* Error Messages */
@@ -889,4 +897,325 @@
     background: var(--success-color);
     color: white;
     animation: copySuccess 0.3s ease;
+}
+
+/* Coupon Not Applicable Styles */
+.coupon-not-applicable {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 12px 15px;
+    background-color: #FFF5F5;
+    border-radius: var(--radius-md);
+    border-right: 3px solid #FF4D4D;
+    animation: fadeIn 0.5s ease, pulse-error 2s infinite ease-in-out;
+    box-shadow: 0 4px 12px rgba(255, 77, 77, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.coupon-not-applicable-close {
+    margin-right: auto;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(255, 77, 77, 0.1);
+    color: #FF4D4D;
+    transition: all 0.3s ease;
+}
+
+.coupon-not-applicable-close:hover {
+    background-color: rgba(255, 77, 77, 0.2);
+    transform: scale(1.1);
+}
+
+.coupon-not-applicable-close i {
+    font-size: 12px;
+}
+
+.coupon-not-applicable::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #FF4D4D, #FF9999);
+}
+
+.coupon-not-applicable-icon {
+    font-size: 22px;
+    color: #FF4D4D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: shake 4s infinite;
+    transform-origin: center;
+}
+
+.coupon-not-applicable-text {
+    color: #FF4D4D;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-error {
+    0% { box-shadow: 0 4px 12px rgba(255, 77, 77, 0.15); }
+    50% { box-shadow: 0 4px 20px rgba(255, 77, 77, 0.3); }
+    100% { box-shadow: 0 4px 12px rgba(255, 77, 77, 0.15); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    1%, 5% { transform: rotate(-5deg); }
+    2%, 4% { transform: rotate(5deg); }
+    3% { transform: rotate(-5deg); }
+}
+
+/* تنسيقات تابي - TABBY STYLES */
+.tabby-widget-container {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: var(--gray-100);
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--gray-300);
+}
+
+.order-summary-installment-notice {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--tabby-bg);
+    border-radius: var(--radius-md);
+    border-right: 3px solid var(--tabby-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.order-summary-installment-notice i {
+    font-size: 24px;
+    color: var(--tabby-primary);
+}
+
+.order-summary-installment-notice p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.order-summary-installment-notice strong {
+    color: var(--primary-color);
+}
+
+.tabby-top-banner {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--tabby-bg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--tabby-border);
+    text-align: center;
+}
+
+.tabby-top-banner h3 {
+    color: var(--tabby-text);
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.tabby-top-banner p {
+    color: var(--text-light);
+    margin-bottom: 0;
+}
+
+.tabby-top-banner strong {
+    color: var(--primary-color);
+}
+
+/* تأثيرات جذابة لتابي */
+.payment-method-option .payment-method-label.tabby-shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.payment-method-option .payment-method-label.tabby-shimmer::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) rotate(30deg);
+    }
+    100% {
+        transform: translateX(100%) rotate(30deg);
+    }
+}
+
+.new-badge {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-right: 8px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* تابي كونتينر */
+#tabby-container {
+    margin-top: 15px;
+    border-radius: var(--radius-md);
+    padding: 15px;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    display: none;
+}
+
+.tabby-promo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: var(--light-color);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+}
+
+.tabby-logo {
+    height: 30px;
+    margin-left: 10px;
+}
+
+.tabby-info {
+    margin-top: 10px;
+    background-color: var(--tabby-bg);
+    border-radius: var(--radius-md);
+    padding: 15px 20px;
+    border-right: 4px solid var(--tabby-primary);
+    position: relative;
+}
+
+.tabby-info::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--tabby-primary);
+    border-top-left-radius: var(--radius-md);
+    border-bottom-left-radius: var(--radius-md);
+}
+
+.tabby-info h4 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: var(--heading-color);
+    font-weight: 700;
+    text-align: center;
+}
+
+.tabby-info ul {
+    padding-right: 20px;
+    margin: 15px 0;
+    list-style-type: none;
+}
+
+.tabby-info li {
+    margin-bottom: 12px;
+    font-size: 15px;
+    color: var(--text-color);
+    position: relative;
+    padding-right: 25px;
+    line-height: 1.6;
+}
+
+.tabby-info li::before {
+    content: '•';
+    position: absolute;
+    right: 0;
+    color: var(--tabby-primary);
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.tabby-info p {
+    margin-top: 15px;
+    text-align: center;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.tabby-disclaimer {
+    margin-top: 15px;
+    padding: 12px 15px;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-light);
+}
+
+.tabby-example {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.tabby-example img {
+    max-width: 100%;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+}
+
+.tabby-example figcaption {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-top: 10px;
+}
+
+.bank-info-section {
+    display: block;
+}
+
+.bank-info-section.hidden {
+    display: none;
 }

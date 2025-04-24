@@ -23,11 +23,16 @@ class Booking extends Model
         'notes',
         'status',
         'total_amount',
+        'original_amount',
+        'discount_amount',
         'image_consent',
         'terms_consent',
         'payment_transaction_id',
         'payment_id',
         'payment_status',
+        'payment_method',
+        'coupon_id',
+        'coupon_code',
         'uuid',
         'booking_number'
     ];
@@ -38,6 +43,8 @@ class Booking extends Model
         'session_time' => 'datetime',
         'baby_birth_date' => 'date',
         'total_amount' => 'decimal:2',
+        'original_amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'image_consent' => 'boolean',
         'terms_consent' => 'boolean'
     ];

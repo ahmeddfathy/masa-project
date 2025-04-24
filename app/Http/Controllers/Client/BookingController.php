@@ -10,7 +10,7 @@ use App\Models\PackageAddon;
 use App\Services\Booking\BookingService;
 use App\Services\Booking\AvailabilityService;
 use App\Services\Booking\PaymentService;
-use App\Services\Payment\PaytabsService;
+use App\Services\Payment\StoreTabbyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -24,19 +24,19 @@ class BookingController extends Controller
     protected $bookingService;
     protected $availabilityService;
     protected $paymentService;
-    protected $paytabsService;
+    protected $tabbyService;
 
     public function __construct(
         BookingService $bookingService,
         AvailabilityService $availabilityService,
-        PaymentService $paymentService ,
-        PaytabsService $paytabsService
+        PaymentService $paymentService,
+        StoreTabbyService $tabbyService
     )
     {
         $this->bookingService = $bookingService;
         $this->availabilityService = $availabilityService;
         $this->paymentService = $paymentService;
-        $this->paytabsService = $paytabsService;
+        $this->tabbyService = $tabbyService;
     }
 
     /**
@@ -56,16 +56,56 @@ class BookingController extends Controller
             session()->forget('booking_form_data');
         }
 
+        // استعادة بيانات الحجز المعلق إذا كانت موجودة في الجلسة (مثلا عند فشل الدفع)
+        if ($pendingBooking = session('pending_booking')) {
+            // نملأ البيانات القديمة بقيم من الحجز المعلق
+            foreach ($pendingBooking as $key => $value) {
+                if (!is_array($value)) {
+                    session()->flash("_old_input.{$key}", $value);
+                }
+            }
+
+            // تعيين حقول محددة بشكل صريح
+            if (isset($pendingBooking['baby_name'])) {
+                session()->flash('_old_input.baby_name', $pendingBooking['baby_name']);
+            }
+
+            if (isset($pendingBooking['coupon_code'])) {
+                session()->flash('_old_input.coupon_code', $pendingBooking['coupon_code']);
+            }
+
+            if (isset($pendingBooking['package_id'])) {
+                session()->flash('_old_input.package_id', $pendingBooking['package_id']);
+            }
+
+            if (isset($pendingBooking['session_time'])) {
+                session()->flash('_old_input.session_time', $pendingBooking['session_time']);
+            }
+
+            // تعيين نوع الخدمة بشكل صريح
+            if (isset($pendingBooking['service_id'])) {
+                session()->flash('_old_input.service_id', $pendingBooking['service_id']);
+            }
+
+            // معالجة البيانات المركبة مثل الإضافات
+            if (isset($pendingBooking['addons']) && is_array($pendingBooking['addons'])) {
+                foreach ($pendingBooking['addons'] as $addon) {
+                    if (isset($addon['id'])) {
+                        $addonId = $addon['id'];
+                        session()->flash("_old_input.addons.{$addonId}.id", $addonId);
+                        if (isset($addon['quantity'])) {
+                            session()->flash("_old_input.addons.{$addonId}.quantity", $addon['quantity']);
+                        }
+                    }
+                }
+            }
+        }
+
         return view('client.booking.index', $data);
     }
 
-    /**
-     * إنشاء حجز جديد
-     * يتضمن التحقق من صحة البيانات والتحقق من توفر الموعد
-     */
     public function store(Request $request)
     {
-        // التحقق من صحة البيانات المدخلة
         $validated = $request->validate([
             'service_id' => 'required|exists:services,id',
             'package_id' => 'required|exists:packages,id',
@@ -76,19 +116,19 @@ class BookingController extends Controller
             'gender' => 'nullable|in:ذكر,أنثى',
             'notes' => 'nullable|string',
             'addons' => 'nullable|array',
+            'coupon_code' => 'nullable|string',
             'image_consent' => 'required|in:0,1',
-            'terms_consent' => 'required|accepted'
+            'terms_consent' => 'required|accepted',
+            'payment_method' => 'required|in:online,tabby,cod'
         ]);
 
         $package = Package::findOrFail($validated['package_id']);
 
-        // التحقق من تعارضات المواعيد
         if ($this->availabilityService->checkBookingConflicts(
             $validated['session_date'],
             $validated['session_time'],
             $package
         )) {
-            // البحث عن أقرب موعد متاح
             $nextAvailable = $this->availabilityService->getNextAvailableSlot(
                 $package,
                 $validated['session_date']
@@ -112,11 +152,78 @@ class BookingController extends Controller
         }
 
         try {
-            // حساب التكلفة الإجمالية وإنشاء الحجز
             $totalAmount = $this->bookingService->calculateTotalAmount($package, $validated['addons'] ?? []);
 
-            // إذا كان هناك نظام دفع مفعل
-            if ($this->paymentService) {
+            $coupon = null;
+            $discountAmount = 0;
+
+            if (!empty($validated['coupon_code'])) {
+                $couponCode = strtoupper(trim($validated['coupon_code']));
+                $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
+
+                if (!$coupon) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'كود الكوبون غير صالح');
+                }
+
+                if (!$coupon->isValid()) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'كود الكوبون غير صالح أو منتهي الصلاحية');
+                }
+
+                if (!$coupon->appliesToPackage($package->id)) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'هذا الكوبون لا ينطبق على الباقة المحددة');
+                }
+
+                // التحقق من استخدام الكوبون مسبقًا من قبل المستخدم الحالي
+                if ($coupon->hasBeenUsedByCurrentUser('App\\Models\\Booking')) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'لقد قمت باستخدام هذا الكوبون مسبقًا');
+                }
+
+                if (floatval($totalAmount) < floatval($coupon->min_order_amount)) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', sprintf(
+                            'الحد الأدنى للطلب لتطبيق هذا الكوبون هو %s ر.س',
+                            number_format($coupon->min_order_amount, 2)
+                        ));
+                }
+
+                $discountAmount = $coupon->calculateDiscount($totalAmount);
+                $totalAmount -= $discountAmount;
+            }
+
+            // تعديل هنا: التحقق من طريقة الدفع
+            if ($validated['payment_method'] === 'cod') {
+                // إذا كان الدفع عند الاستلام، إنشاء الحجز مباشرة
+                $booking = $this->bookingService->createBooking(
+                    array_merge($validated, [
+                        'payment_status' => 'pending',
+                        'status' => 'pending',
+                        'payment_method' => 'cod'
+                    ]),
+                    $totalAmount,
+                    Auth::id(),
+                    $discountAmount,
+                    $coupon ? $coupon->id : null,
+                    $coupon ? $coupon->code : null
+                );
+
+                if ($coupon) {
+                    $coupon->recordUsageByUser(Auth::id(), $booking);
+                }
+
+                return redirect()->route('client.bookings.success', $booking->uuid)
+                    ->with('success', 'تم إنشاء الحجز بنجاح! سيتم الدفع عند الحضور للجلسة.');
+            }
+            // تابي أو أي طريقة دفع أخرى، استمر باستخدام خدمة الدفع
+            else if ($this->paymentService) {
                 $addons = [];
                 if (!empty($validated['addons'])) {
                     foreach ($validated['addons'] as $addonData) {
@@ -137,6 +244,10 @@ class BookingController extends Controller
                 $bookingData = array_merge($validated, [
                     'user_id' => Auth::id(),
                     'total_amount' => $totalAmount,
+                    'original_amount' => $this->bookingService->calculateTotalAmount($package, $validated['addons'] ?? []),
+                    'discount_amount' => $discountAmount,
+                    'coupon_id' => $coupon ? $coupon->id : null,
+                    'coupon_code' => $coupon ? $coupon->code : null,
                     'addons' => $addons,
                     'payment_id' => $payment_id,
                     'package_name' => $package->name,
@@ -146,7 +257,6 @@ class BookingController extends Controller
 
                 $user = Auth::user();
 
-                // إنشاء طلب دفع باستخدام خدمة الدفع
                 $paymentResult = $this->paymentService->initiatePayment($bookingData, $totalAmount, $user);
 
                 if ($paymentResult['success'] && !empty($paymentResult['redirect_url'])) {
@@ -154,15 +264,20 @@ class BookingController extends Controller
                     return redirect($paymentResult['redirect_url']);
                 }
 
-                // في حالة فشل إنشاء طلب الدفع
                 session(['booking_form_data' => $request->all()]);
                 return redirect()->route('client.bookings.create')
                     ->with('error', 'فشل الاتصال ببوابة الدفع: ' . ($paymentResult['message'] ?? 'خطأ غير معروف'));
             }
 
-            // الإنشاء المباشر إذا لم يكن هناك نظام دفع
             $validated['uuid'] = (string) Str::uuid();
+            $validated['coupon_id'] = $coupon ? $coupon->id : null;
+            $validated['coupon_code'] = $coupon ? $coupon->code : null;
+            $validated['discount_amount'] = $discountAmount;
             $booking = $this->bookingService->createBooking($validated, $totalAmount, Auth::id());
+
+            if ($coupon) {
+                $coupon->recordUsageByUser(Auth::id(), $booking);
+            }
 
             return redirect()->route('client.bookings.success', $booking->uuid)
                 ->with('success', 'تم إنشاء الحجز بنجاح!');
@@ -179,30 +294,23 @@ class BookingController extends Controller
         }
     }
 
-    /**
-     * معالجة استجابة الدفع من بوابة الدفع
-     */
     public function paymentCallback(Request $request)
     {
         if (!$this->paymentService) {
             abort(404);
         }
 
-        // معالجة استجابة الدفع
         $paymentData = $this->paymentService->processPaymentResponse($request);
 
-        // التحقق من بيانات الحجز المعلقة
         $bookingData = session('pending_booking');
         if (!$bookingData) {
             return redirect()->route('client.bookings.create')
                 ->with('error', 'خطأ في الدفع - لم يتم العثور على بيانات الحجز');
         }
 
-        // البحث عن الحجز الموجود
         $existingBooking = $this->paymentService->findExistingBooking($paymentData);
 
         if ($existingBooking) {
-            // تحديث حالة الحجز الموجود
             $this->paymentService->updateBookingPaymentStatus($existingBooking, $paymentData);
 
             session()->forget(['pending_booking', 'payment_transaction_id']);
@@ -210,14 +318,12 @@ class BookingController extends Controller
                 ->with('success', 'تم تأكيد الدفع بنجاح!');
         }
 
-        // التعامل مع فشل الدفع
         if (!$paymentData['isSuccessful'] && !$paymentData['isPending']) {
-            session()->forget(['pending_booking', 'payment_transaction_id']);
             return redirect()->route('client.bookings.create')
-                ->with('error', 'فشل الدفع: ' . ($paymentData['message'] ?: 'خطأ غير معروف'));
+                ->with('error', 'فشل الدفع: ' . ($paymentData['message'] ?: 'خطأ غير معروف'))
+                ->with('retry_payment', true);
         }
 
-        // إنشاء حجز جديد
         try {
             $booking = $this->paymentService->createBookingFromPayment($bookingData, $paymentData);
 
@@ -238,24 +344,18 @@ class BookingController extends Controller
             ]);
 
             return redirect()->route('client.bookings.create')
-                ->with('error', 'عذراً، حدث خطأ أثناء إنشاء الحجز. الرجاء الاتصال بالدعم الفني.');
+                ->with('error', 'عذراً، حدث خطأ أثناء إنشاء الحجز. الرجاء المحاولة مرة أخرى.')
+                ->with('retry_payment', true);
         }
     }
 
-    /**
-     * إعادة توجيه المستخدم من بوابة الدفع
-     */
     public function paymentReturn(Request $request)
     {
         return $this->paymentCallback($request);
     }
 
-    /**
-     * عرض صفحة نجاح الحجز
-     */
     public function success(Booking $booking)
     {
-        // التحقق من ملكية الحجز
         if ($booking->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
             abort(403, 'غير مصرح لك بعرض هذا الحجز');
         }
@@ -263,9 +363,6 @@ class BookingController extends Controller
         return view('client.booking.success', compact('booking'));
     }
 
-    /**
-     * عرض قائمة حجوزات المستخدم
-     */
     public function myBookings()
     {
         $bookings = Booking::where('user_id', Auth::id())
@@ -276,12 +373,8 @@ class BookingController extends Controller
         return view('client.booking.my-bookings', compact('bookings'));
     }
 
-    /**
-     * عرض تفاصيل حجز معين
-     */
     public function show(Booking $booking)
     {
-        // التحقق من ملكية الحجز
         if ($booking->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
             abort(403, 'غير مصرح لك بعرض هذا الحجز');
         }
@@ -290,10 +383,6 @@ class BookingController extends Controller
         return view('client.booking.show', compact('booking'));
     }
 
-    /**
-     * حفظ بيانات نموذج الحجز في الجلسة
-     * يستخدم عند الحاجة للتسجيل قبل إكمال الحجز
-     */
     public function saveFormData(Request $request)
     {
         $formData = $request->all();
@@ -305,18 +394,12 @@ class BookingController extends Controller
         return redirect()->route($request->query('redirect', 'register'));
     }
 
-    /**
-     * إعادة محاولة الدفع لحجز موجود
-     * يستخدم عندما يفشل الدفع أو يكون الحجز في حالة انتظار الدفع
-     */
     public function retryPayment(Booking $booking)
     {
-        // التحقق من ملكية الحجز
         if ($booking->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
             abort(403, 'غير مصرح لك بتعديل هذا الحجز');
         }
 
-        // التحقق من أن الحجز في حالة تسمح بإعادة الدفع
         if (!in_array($booking->status, ['pending', 'payment_failed', 'payment_required'])) {
             return redirect()->route('client.bookings.show', $booking->uuid)
                 ->with('error', 'لا يمكن إعادة الدفع لهذا الحجز في حالته الحالية');
@@ -326,7 +409,6 @@ class BookingController extends Controller
             $user = Auth::user();
             $payment_id = $booking->payment_id ?? 'PAY-' . strtoupper(Str::random(8)) . '-' . time();
 
-            // تجهيز بيانات الحجز لإعادة الدفع
             $bookingData = [
                 'uuid' => $booking->uuid,
                 'user_id' => $booking->user_id,
@@ -337,11 +419,9 @@ class BookingController extends Controller
                 'payment_id' => $payment_id
             ];
 
-            // إنشاء طلب دفع جديد
             $paymentResult = $this->paymentService->initiatePayment($bookingData, $booking->total_amount, $user);
 
             if ($paymentResult['success'] && !empty($paymentResult['redirect_url'])) {
-                // تحديث معرف الدفع في الحجز
                 $booking->payment_id = $payment_id;
                 $booking->save();
 
@@ -349,7 +429,6 @@ class BookingController extends Controller
                 return redirect($paymentResult['redirect_url']);
             }
 
-            // في حالة فشل إنشاء طلب الدفع
             return redirect()->route('client.bookings.show', $booking->uuid)
                 ->with('error', 'فشل الاتصال ببوابة الدفع: ' . ($paymentResult['message'] ?? 'خطأ غير معروف'));
 
@@ -364,9 +443,6 @@ class BookingController extends Controller
         }
     }
 
-    /**
-     * الحصول على المواعيد المتاحة ليوم معين
-     */
     public function getAvailableTimeSlots(Request $request)
     {
         try {
@@ -418,26 +494,20 @@ class BookingController extends Controller
         }
     }
 
-    /**
-     * تحديث حالة الحجز
-     */
     public function updateStatus(Booking $booking, Request $request)
     {
         try {
-            // التحقق من صحة البيانات
             $validated = $request->validate([
-                'status' => 'required|in:pending,confirmed,cancelled,completed,no_show,rescheduled',
+                'status' => 'required|in:pending,confirmed,completed,cancelled',
                 'notes' => 'nullable|string'
             ]);
 
-            // تحديث حالة الحجز
             $booking->status = $validated['status'];
             if (isset($validated['notes'])) {
                 $booking->notes = $validated['notes'];
             }
             $booking->save();
 
-            // إرسال إشعار للمستخدم
             $booking->user->notify(new BookingStatusUpdated($booking));
 
             return response()->json([
@@ -456,5 +526,66 @@ class BookingController extends Controller
                 'message' => 'حدث خطأ أثناء تحديث حالة الحجز'
             ], 500);
         }
+    }
+
+    public function validateCoupon(Request $request)
+    {
+        $request->validate([
+            'coupon_code' => 'required|string',
+            'package_id' => 'required|exists:packages,id'
+        ]);
+
+        $couponCode = strtoupper(trim($request->coupon_code));
+        $packageId = $request->package_id;
+
+        $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
+
+        if (!$coupon) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'كود الخصم غير صالح'
+            ]);
+        }
+
+        if (!$coupon->isValid()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'كود الخصم منتهي الصلاحية أو تم استخدامه بالكامل'
+            ]);
+        }
+
+        if (!$coupon->appliesToPackage($packageId)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'هذا الكوبون لا ينطبق على الباقة المحددة'
+            ]);
+        }
+
+        // التحقق من استخدام المستخدم الحالي للكوبون
+        if (Auth::check() && $coupon->hasBeenUsedByCurrentUser('App\\Models\\Booking')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'لقد قمت باستخدام هذا الكوبون مسبقًا'
+            ]);
+        }
+
+        $package = Package::find($packageId);
+        if ($package && $coupon->min_order_amount > 0 && $package->base_price < $coupon->min_order_amount) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "الحد الأدنى للطلب لتطبيق هذا الكوبون هو {$coupon->min_order_amount} ر.س"
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم التحقق من كود الخصم بنجاح',
+            'coupon' => [
+                'code' => $coupon->code,
+                'discount_type' => $coupon->type,
+                'discount_value' => $coupon->value,
+                'min_order_amount' => $coupon->min_order_amount
+            ]
+        ]);
     }
 }

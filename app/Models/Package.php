@@ -38,4 +38,12 @@ class Package extends Model
     {
         return $this->belongsToMany(PackageAddon::class, 'package_addon_pivot');
     }
+
+    /**
+     * Get the coupons that can be applied to this package.
+     */
+    public function coupons(): BelongsToMany
+    {
+        return $this->belongsToMany(Coupon::class, 'coupon_package');
+    }
 }

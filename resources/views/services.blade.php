@@ -1,3 +1,6 @@
+@extends('layouts.customer')
+
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -39,9 +42,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/services.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/responsive.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/services.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}?t={{ time() }}">
 </head>
 <body>
     @include('parts.navbar')

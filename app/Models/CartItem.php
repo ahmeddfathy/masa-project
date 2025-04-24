@@ -25,8 +25,8 @@ class CartItem extends Model
   ];
 
   protected $casts = [
-    'unit_price' => 'integer',
-    'subtotal' => 'integer',
+    'unit_price' => 'float',
+    'subtotal' => 'float',
     'quantity' => 'integer',
     'needs_appointment' => 'boolean'
   ];

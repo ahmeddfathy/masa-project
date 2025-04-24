@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\{
     ProductController,
     OrderController,
@@ -15,7 +17,8 @@ use App\Http\Controllers\{
     ContactController,
     PolicyController,
     HomeController,
-    GalleryController
+    GalleryController,
+
 };
 
 use App\Http\Controllers\Admin\{
@@ -31,7 +34,8 @@ use App\Http\Controllers\Admin\{
     BookingController as AdminBookingController,
     GalleryController as AdminGalleryController,
     StudioReportsController,
-    SettingController
+
+    CouponController as AdminCouponController
 };
 
 use App\Http\Controllers\Client\BookingController;
@@ -201,7 +205,19 @@ Route::middleware([
     Route::name('checkout.payment.')->group(function () {
         Route::post('/checkout/payment/callback', [CheckoutController::class, 'paymentCallback'])->name('callback');
         Route::get('/checkout/payment/return', [CheckoutController::class, 'paymentReturn'])->name('return');
+        Route::post('/checkout/payment/tabby-webhook', [CheckoutController::class, 'tabbyWebhook'])->name('tabby-webhook')->middleware('web');
     });
+
+    // Coupon routes for checkout
+    Route::post('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.apply-coupon');
+    Route::post('/checkout/remove-coupon', [CheckoutController::class, 'removeCoupon'])->name('checkout.remove-coupon');
+    Route::post('/api/validate-coupon', [CheckoutController::class, 'validateCouponApi'])->name('api.validate-coupon');
+});
+
+// Admin coupon management routes
+Route::middleware(['auth:sanctum', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('coupons', AdminCouponController::class);
+    Route::get('/coupons/{coupon}/toggle', [AdminCouponController::class, 'toggleStatus'])->name('coupons.toggle');
 });
 
 Route::post('/appointments', [AppointmentController::class, 'store'])
@@ -233,6 +249,7 @@ Route::name('client.')->middleware(['auth'])->group(function () {
         Route::get('/client/bookings/{booking:uuid}', [BookingController::class, 'show'])->name('show');
         Route::post('/client/bookings/available-slots', [BookingController::class, 'getAvailableTimeSlots'])->name('available-slots');
         Route::post('/client/bookings/{booking:uuid}/retry-payment', [BookingController::class, 'retryPayment'])->name('retry-payment');
+        Route::post('/client/bookings/validate-coupon', [BookingController::class, 'validateCoupon'])->name('validate-coupon');
     });
 
     Route::get('/client/packages/{package}/addons', function (App\Models\Package $package) {
@@ -250,3 +267,37 @@ Route::post('/client/bookings/available-slots', [BookingController::class, 'getA
     ->middleware('web');
 
 Route::get('/policy', [PolicyController::class, 'index'])->name('policy');
+
+// Test route for Tabby
+Route::get('/test-tabby', function() {
+    $tabbyService = app(App\Services\Payment\StoreTabbyService::class);
+
+    Log::info('Tabby configuration', [
+        'api_url' => config('services.tabby.is_sandbox') ? 'SANDBOX' : 'PRODUCTION',
+        'merchant_code' => config('services.tabby.merchant_code'),
+        'public_key' => 'pk_' . substr(config('services.tabby.public_key'), 3, 8) . '...',
+        'secret_key' => 'sk_' . substr(config('services.tabby.secret_key'), 3, 8) . '...'
+    ]);
+
+    // Test API connectivity
+    try {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . config('services.tabby.secret_key'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->get('https://checkout.tabby.ai/api/v1/merchants/configuration');
+
+        return [
+            'status' => $response->successful() ? 'success' : 'error',
+            'status_code' => $response->status(),
+            'response' => $response->json(),
+            'raw_response' => $response->body()
+        ];
+    } catch (\Exception $e) {
+        return [
+            'status' => 'error',
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ];
+    }
+})->middleware('role:admin');

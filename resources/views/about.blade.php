@@ -15,7 +15,7 @@
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="من نحن - عدسة سوما | استوديو تصوير متخصص في ابها حي المحالة">
     <meta property="og:description" content="تعرف على عدسة سوما - استوديو تصوير متخصص في تصوير العائلات والأطفال في ابها حي المحالة. نقدم خدمات تصوير المواليد والأطفال بجودة عالية وتقنيات متطورة.">
-    <meta property="og:image" content="/assets/images/logo.png">
+    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="من نحن - عدسة سوما | استوديو تصوير متخصص في ابها حي المحالة">
     <meta name="twitter:description" content="تعرف على عدسة سوما - استوديو تصوير متخصص في تصوير العائلات والأطفال في ابها حي المحالة. نقدم خدمات تصوير المواليد والأطفال بجودة عالية وتقنيات متطورة.">
-    <meta name="twitter:image" content="/assets/images/logo.png">
+    <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -39,9 +39,10 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/assets/css/studio-client/style.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/about.css">
-    <link rel="stylesheet" href="/assets/css/studio-client/responsive.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/about.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}?t={{ time() }}">
+
 </head>
 <body>
     @include('parts.navbar')

@@ -11,8 +11,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/customer/dashboard.css">
-    <link rel="stylesheet" href="/assets/css/customer-layout.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/customer/dashboard.css') }}?t={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/customer-layout.css') }}?t={{ time() }}">     
     @yield('styles')
 </head>
 

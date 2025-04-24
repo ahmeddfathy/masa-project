@@ -15,7 +15,7 @@
     <meta property="og:site_name" content="عدسة سوما">
     <meta property="og:title" content="عدسة سوما - استوديو التصوير العائلي في ابها حي المحالة">
     <meta property="og:description" content="استوديو عدسة سوما يقدم أفضل خدمات التصوير الاحترافي في ابها مع خبرة في التصوير العائلي وتصوير الأطفال. إذا كنت تبحث عن استوديوهات تصوير أطفال في السعودية أو تصوير عائلي مميز، هنا تجد الإبداع والتميز.">
-    <meta property="og:image" content="/assets/images/logo.png" loading="lazy">
+    <meta property="og:image" content="{{ asset('assets/images/logo.png') }}" loading="lazy">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -26,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="عدسة سوما - استوديو التصوير العائلي في ابها حي المحالة">
     <meta name="twitter:description" content="استوديو عدسة سوما يقدم أفضل خدمات التصوير الاحترافي في ابها مع خبرة في التصوير العائلي وتصوير الأطفال. إذا كنت تبحث عن استوديوهات تصوير أطفال في السعودية أو تصوير عائلي مميز، هنا تجد الإبداع والتميز.">
-    <meta name="twitter:image" content="/assets/images/logo.png">
+        <meta name="twitter:image" content="{{ asset('assets/images/logo.png') }}">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -39,11 +39,11 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
     <!-- Critical CSS -->
-    <link rel="preload" href="{{ asset('assets/css/studio-client/style.css') }}?v={{ filemtime(public_path('assets/css/studio-client/style.css')) }}" as="style">
+    <link rel="preload" href="{{ asset('assets/css/studio-client/style.css') }}?v=<?= time(); ?>" as="style">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" as="style">
 
     <!-- Primary Styles -->
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}?v={{ filemtime(public_path('assets/css/studio-client/style.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/style.css') }}?v=<?= time(); ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
 
     <!-- Deferred CSS -->
@@ -51,8 +51,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" media="print" onload="this.media='all'">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/index.css') }}?v={{ filemtime(public_path('assets/css/studio-client/index.css')) }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}?v={{ filemtime(public_path('assets/css/studio-client/responsive.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/index.css') }}?v=<?= time(); ?>">
+    <link rel="stylesheet" href="{{ asset('assets/css/studio-client/responsive.css') }}?v=<?= time(); ?>">
 
     <noscript>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -184,6 +184,31 @@
                 <span class="carousel-control-next-icon"></span>
                 <span class="visually-hidden">التالي</span>
             </button>
+        </div>
+    </section>
+
+    <!-- Personal Story Section -->
+    <section class="story-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 offset-lg-1">
+                    <div class="story-content">
+                        <div class="story-header text-center">
+                            <h2 class="story-title">من خلف العدسة… وُلدت قصتي</h2>
+
+                        </div>
+                        <div class="story-body">
+                            <p>أنا سوما، لست مجرد مصوّرة، بل <strong>حافظة لحكايات</strong> لا تُروى بالكلمات.</p>
+                            <p>أم لطفلتين هما عالمي، ورغم كل العثرات، صنعت من <strong>الألم نورًا</strong>، ومن <strong>الصمت صوتًا</strong>، ومن كل لحظة تُوشك أن تُنسى… <strong>صورة تُخلّد للأبد</strong>.</p>
+                            <p>أسّست "عدسة سوما" في مدينة أبها، ليس كعمل، بل <strong>كحلم</strong> نضج بالدموع والتعب، حلم وُلد بين أزمات القلب وخيبات الثقة… ونما بإيماني بذاتي.</p>
+                            <p>لم أدرس التصوير في أرقى المعاهد، لكن <strong>الحياة درّبتني</strong>، و<strong>الأمومة ألهمتني</strong>، والإيمان بي رغم الانكسارات صنع هذه العدسة التي ترون بها الجمال اليوم.</p>
+                            <p>أصوّر الأطفال، ليس فقط لأنهم جميلون، بل لأنهم يشبهون قلبي: <strong>نقي، صادق، عفوي</strong>، يبحث عن حضن آمن.</p>
+                            <p>وفي كل جلسة تصوير… <strong>أخلّد لحظة لأحدهم</strong>، بينما أداوي شيئًا في داخلي.</p>
+                            <p>أنا سوما… لست كاملة، لكنني <strong>حقيقية</strong>، و<strong>مبدعة</strong>، وأصنع من الوجع <strong>فنًّا لا يُنسى</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
